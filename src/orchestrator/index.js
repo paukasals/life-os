@@ -30,15 +30,31 @@ class MasterOrchestrator {
       sleepRecovery: new SleepRecoveryAgent(),
       doctorAppointments: new DoctorAppointmentsAgent(),
     };
+    this.notifierInitialized = false;
+  }
+
+  ensureNotifier() {
+    if (!this.notifierInitialized) {
+      notifier.init();
+      this.notifierInitialized = true;
+    }
   }
 
   async runAgent(name) {
+    this.ensureNotifier();
     const agent = this.agents[name];
     if (!agent) throw new Error(`Unknown agent: ${name}`);
     console.log(`[Orchestrator] Running agent: ${name}`);
-    return agent.run().catch((err) => {
+
+    try {
+      const result = await agent.run();
+      if (result != null && !agent.hasNotified) {
+        await agent.notify(`Output: ${typeof result === 'string' ? result : JSON.stringify(result, null, 2)}`, 'telegram');
+      }
+      return result;
+    } catch (err) {
       console.error(`[Orchestrator] Agent "${name}" failed:`, err.message);
-    });
+    }
   }
 
   async runAll() {

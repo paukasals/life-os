@@ -8,6 +8,7 @@ export class BaseAgent {
     this.name = name;
     this.systemPrompt = systemPrompt;
     this.model = 'claude-opus-4-8';
+    this._hasNotified = false;
   }
 
   async think(userMessage, tools = []) {
@@ -28,7 +29,17 @@ export class BaseAgent {
   }
 
   async notify(message, channel = 'both') {
-    await notifier.send(`[${this.name}] ${message}`, channel);
+    const formatted = `[${this.name}] ${message}`;
+    await notifier.send(formatted, channel);
+    this._hasNotified = true;
+  }
+
+  resetNotificationState() {
+    this._hasNotified = false;
+  }
+
+  get hasNotified() {
+    return this._hasNotified;
   }
 
   log(message) {

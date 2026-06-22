@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TOKEN_PATH = path.join(__dirname, '../../.google-calendar-token.json');
 const CREDENTIALS_PATH = process.env.GOOGLE_CALENDAR_CREDENTIALS_PATH || path.join(__dirname, '../../credentials.json');
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/auth/callback';
 
 class GoogleCalendarService {
   constructor() {
@@ -16,12 +17,12 @@ class GoogleCalendarService {
   async initialize() {
     try {
       const credentials = JSON.parse(await fs.readFile(CREDENTIALS_PATH, 'utf-8'));
-      const { client_secret, client_id, redirect_uris } = credentials.installed;
+      const { client_secret, client_id } = credentials.installed;
       
       this.oauth2Client = new google.auth.OAuth2(
         client_id,
         client_secret,
-        redirect_uris[0]
+        REDIRECT_URI
       );
 
       // Try to load existing token
@@ -44,22 +45,28 @@ class GoogleCalendarService {
   async getAuthUrl() {
     try {
       const credentials = JSON.parse(await fs.readFile(CREDENTIALS_PATH, 'utf-8'));
-      const { client_secret, client_id, redirect_uris } = credentials.installed;
+      const { client_secret, client_id } = credentials.installed;
       
       this.oauth2Client = new google.auth.OAuth2(
         client_id,
         client_secret,
-        redirect_uris[0]
+        REDIRECT_URI
       );
 
-      const authUrl = this.oauth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: [
-          'https://www.googleapis.com/auth/calendar.readonly',
-          'https://www.googleapis.com/auth/calendar'
-        ],
-      });
-      return authUrl;
+      const scopes = [
+        'https://www.googleapis.com/auth/calendar.readonly',
+        'https://www.googleapis.com/auth/calendar',
+      ];
+
+      const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+      authUrl.searchParams.set('client_id', client_id);
+      authUrl.searchParams.set('redirect_uri', REDIRECT_URI);
+      authUrl.searchParams.set('response_type', 'code');
+      authUrl.searchParams.set('access_type', 'offline');
+      authUrl.searchParams.set('scope', scopes.join(' '));
+      authUrl.searchParams.set('prompt', 'consent');
+
+      return authUrl.toString();
     } catch (err) {
       console.error('Failed to generate auth URL:', err.message);
       return null;

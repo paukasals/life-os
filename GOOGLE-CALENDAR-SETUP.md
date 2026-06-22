@@ -42,8 +42,10 @@ This guide walks you through setting up Google Calendar integration for Life OS,
 5. Now create credentials:
    - Click **+ CREATE CREDENTIALS** again
    - Select **OAuth client ID**
-   - Choose **Desktop Application** as Application type
-   - Name it: `Life OS Desktop`
+   - Choose **Web application** as Application type
+   - Name it: `Life OS Local Callback`
+   - Under **Authorized redirect URIs**, add:
+     - `http://localhost:3000/auth/callback`
    - Click **CREATE**
 
 ## Step 4: Download Credentials
