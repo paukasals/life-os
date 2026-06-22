@@ -1,12 +1,17 @@
 import { BaseAgent } from '../../shared/base-agent.js';
+import { userProfile } from '../../shared/config.js';
 
 export class InventoryAgent extends BaseAgent {
   constructor() {
     super(
       'Inventory',
-      `You are an inventory management expert. You track stock levels, identify low-stock items,
-flag overstock risks, suggest reorder quantities based on sales velocity, and alert on
-supply chain issues. Prioritize preventing stockouts on high-velocity SKUs.`
+      `You are the inventory expert for ${userProfile.businesses.map(b => b.name).join(' & ')}.
+
+Key inventory items:
+- Lobsteria: Fresh lobster, oysters, ceviche ingredients, seafood supplies, Airstream truck maintenance
+- The Crepes & Waffles Bar: Crepe batter, waffle batter, fillings, toppings, equipment
+
+Your role: track stock by business, prevent stockouts on high-velocity items, optimize supplier relationships, and flag cost-saving opportunities.`
     );
   }
 
@@ -14,32 +19,47 @@ supply chain issues. Prioritize preventing stockouts on high-velocity SKUs.`
     this.log('Checking inventory levels...');
     const inventory = await this.fetchInventory();
 
-    const response = await this.think(
-      `Current inventory: ${JSON.stringify(inventory, null, 2)}
+    const prompt = `
+Inventory status for Lobsteria & The Crepes & Waffles Bar:
+${JSON.stringify(inventory, null, 2)}
 
-Identify items needing immediate reorder, overstock risks, and one operational recommendation.`
-    );
+Provide:
+1. **Stock Alerts**: Items needing immediate reorder
+2. **Overstock Risks**: Items to move or use
+3. **One Action**: Top operational priority (supplier call, menu adjustment, etc.)
 
+Be action-focused, not just reporting.`;
+
+    const response = await this.think(prompt);
     const summary = response.content[0].text;
     this.log(summary);
 
     if (inventory.lowStockItems?.length > 0) {
-      await this.notify(`ALERT: Low stock detected!\n${summary}`, 'both');
+      await this.notify(`⚠️ *Inventory Alert*\n${summary}`, 'telegram');
     } else {
-      await this.notify(summary, 'telegram');
+      await this.notify(`📦 *Inventory Check*\n${summary}`, 'telegram');
     }
 
     return summary;
   }
 
   async fetchInventory() {
-    // TODO: integrate with your inventory management system (Shopify, WooCommerce, custom)
+    // TODO: integrate with Shopify, Square, or custom inventory system
     return {
-      totalSKUs: 0,
+      lobsteria: {
+        lobster: { quantity: 0, unit: 'lbs', reorderLevel: 50 },
+        oysters: { quantity: 0, unit: 'count', reorderLevel: 200 },
+        cevichemix: { quantity: 0, unit: 'lbs', reorderLevel: 25 },
+      },
+      crepeswaffles: {
+        crepebatter: { quantity: 0, unit: 'L', reorderLevel: 10 },
+        wafflebatter: { quantity: 0, unit: 'L', reorderLevel: 10 },
+        fillings: { quantity: 0, unit: 'various', reorderLevel: 20 },
+      },
       lowStockItems: [],
       outOfStockItems: [],
-      overstockItems: [],
       date: new Date().toISOString().split('T')[0],
     };
   }
 }
+

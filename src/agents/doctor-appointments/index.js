@@ -1,12 +1,17 @@
 import { BaseAgent } from '../../shared/base-agent.js';
+import { userProfile, config } from '../../shared/config.js';
+import { googleCalendarService } from '../../shared/google-calendar.js';
 
 export class DoctorAppointmentsAgent extends BaseAgent {
   constructor() {
     super(
       'Doctor & Appointments',
-      `You are a meticulous health coordinator. You track medical appointments, follow-up reminders,
-medication schedules, test results, and preventive care due dates. You send timely reminders
-and help the user prepare for appointments with the right questions and documents.`
+      `You are ${userProfile.name}'s meticulous health coordinator.
+
+Track: annual checkups, sports medicine (water polo-related), training stress tests, supplement optimization, biometric monitoring.
+Prepare: appointment questions, relevant biometric data, recovery & training logs, medication/supplement list.
+
+Critical for someone training hard: quarterly check-ins with sports medicine, annual physical, HRV/readiness monitoring.`
     );
   }
 
@@ -18,31 +23,77 @@ and help the user prepare for appointments with the right questions and document
       const daysUntil = Math.ceil(
         (new Date(a.date) - new Date()) / (1000 * 60 * 60 * 24)
       );
-      return daysUntil >= 0 && daysUntil <= 7;
+      return daysUntil >= 0 && daysUntil <= 14; // 2-week window
     });
 
     if (upcoming.length === 0) {
-      this.log('No upcoming appointments in the next 7 days.');
+      this.log('No appointments in the next 2 weeks.');
       return null;
     }
 
-    const response = await this.think(
-      `Upcoming appointments: ${JSON.stringify(upcoming, null, 2)}
+    const prompt = `
+Upcoming medical appointments for ${userProfile.name}:
+${JSON.stringify(upcoming, null, 2)}
 
-For each appointment: send a reminder with the date/time, what to prepare (documents, questions),
-and any pre-appointment instructions. Flag anything overdue.`
-    );
+For each appointment:
+1. Send reminder with date/time/location
+2. List prep items (documents, questions, biometric data)
+3. Suggest any pre-appointment actions (fasting, tracking, etc.)
 
+Context: He trains hard (HIIT, Zone 2, water polo), takes supplements, and needs sports medicine perspective.`;
+
+    const response = await this.think(prompt);
     const reminders = response.content[0].text;
     this.log(reminders);
-    await this.notify(`Medical Reminders:\n\n${reminders}`, 'both');
+    await this.notify(`📋 *Medical Reminders*\n\n${reminders}`, 'telegram');
     return reminders;
   }
 
   async fetchAppointments() {
-    // TODO: integrate with Google Calendar or a local appointments store
-    return [
-      // { id: '1', type: 'General checkup', doctor: 'Dr. Smith', date: '2026-06-25T10:00:00', location: 'Clinic A' }
-    ];
+    try {
+      // Initialize Google Calendar if not already done
+      if (!googleCalendarService.calendar) {
+        const initialized = await googleCalendarService.initialize();
+        if (!initialized) {
+          this.error('Google Calendar not initialized');
+          return [];
+        }
+      }
+
+      // Fetch medical calendar events from Google Calendar
+      const calendarId = config.calendar.calendarId || 'primary';
+      const events = await googleCalendarService.getUpcomingEvents(calendarId, 14);
+
+      // Filter for medical-related events
+      const medicalEvents = events
+        .filter((event) => {
+          const title = event.summary?.toLowerCase() || '';
+          const description = event.description?.toLowerCase() || '';
+          const isMedical =
+            title.includes('doctor') ||
+            title.includes('appointment') ||
+            title.includes('physical') ||
+            title.includes('checkup') ||
+            title.includes('medical') ||
+            title.includes('sports medicine') ||
+            description.includes('medical') ||
+            description.includes('doctor');
+          return isMedical;
+        })
+        .map((event) => ({
+          id: event.id,
+          title: event.summary,
+          date: event.start?.dateTime || event.start?.date,
+          location: event.location || 'Not specified',
+          description: event.description || '',
+          notes: event.description || '',
+        }));
+
+      return medicalEvents;
+    } catch (err) {
+      this.error('Failed to fetch appointments from Google Calendar', err);
+      return [];
+    }
   }
 }
+

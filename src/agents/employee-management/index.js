@@ -1,12 +1,15 @@
 import { BaseAgent } from '../../shared/base-agent.js';
+import { userProfile } from '../../shared/config.js';
 
 export class EmployeeManagementAgent extends BaseAgent {
   constructor() {
     super(
       'Employee Management',
-      `You are an HR operations specialist. You track team schedules, pending tasks,
-leave requests, performance signals, and onboarding checklists. You help ensure
-the team is aligned, productive, and that nothing falls through the cracks.`
+      `You are the HR coordinator for ${userProfile.businesses.map(b => b.name).join(' & ')}.
+
+Team: Mix of food prep, service, and management staff across two concepts.
+Track: Schedules, shift swaps, quality feedback, cross-training opportunities, retention.
+Focus: Keep team motivated, ensure coverage, identify high-performers for leadership growth.`
     );
   }
 
@@ -14,27 +17,33 @@ the team is aligned, productive, and that nothing falls through the cracks.`
     this.log('Running HR daily check...');
     const hrData = await this.fetchHRData();
 
-    const response = await this.think(
-      `HR snapshot: ${JSON.stringify(hrData, null, 2)}
+    const prompt = `
+HR snapshot for Lobsteria & The Crepes & Waffles Bar:
+${JSON.stringify(hrData, null, 2)}
 
-Summarize: who is absent today, pending approvals, any performance flags,
-and one people-management action to take today.`
-    );
+Provide:
+1. **Attendance**: Who's in, who's out today?
+2. **Staffing**: Are we covered for service?
+3. **Performance**: Any high-performers or concerns?
+4. **One Action**: Top people-management priority today
 
+Be supportive and operational.`;
+
+    const response = await this.think(prompt);
     const summary = response.content[0].text;
     this.log(summary);
-    await this.notify(summary, 'telegram');
+    await this.notify(`👥 *Team Update*\n${summary}`, 'telegram');
     return summary;
   }
 
   async fetchHRData() {
-    // TODO: integrate with HR system (Gusto, BambooHR, Notion, etc.)
+    // TODO: integrate with HR system (Gusto, BambooHR, Square, etc.)
     return {
       teamSize: 0,
       absentToday: [],
-      pendingLeaveRequests: [],
-      openTasks: [],
-      upcomingReviews: [],
+      upcomingShifts: [],
+      pendingRequests: [],
+      highPerformers: [],
       date: new Date().toISOString().split('T')[0],
     };
   }

@@ -1,9 +1,51 @@
 import 'dotenv/config';
 
+// User Profile: Pau
+export const userProfile = {
+  name: 'Pau',
+  location: 'Miami, FL',
+  birthPlace: 'Barcelona',
+  timezone: process.env.TIMEZONE || 'Europe/Madrid',
+
+  // Businesses
+  businesses: [
+    {
+      name: 'Lobsteria',
+      description: 'Lobster rolls, oysters, ceviche from 1976 Airstream',
+      type: 'Food Truck',
+    },
+    {
+      name: 'The Crepes & Waffles Bar',
+      description: 'Crepes and waffles concept',
+      type: 'Food Service',
+    },
+  ],
+
+  // Health Profile
+  health: {
+    mealFrequency: 2, // times per day
+    dietType: 'High Protein',
+    supplements: [
+      'Omega-3',
+      'Vitamin D3 + K2',
+      'Multivitamin',
+      'Creatine',
+      'Whey Protein',
+    ],
+    training: {
+      hiit: 3, // times per week
+      zone2Cardio: 'weekly',
+      sports: ['Water Polo (Saturday)'],
+    },
+    goals: ['Energy', 'Performance', 'Recovery'],
+  },
+};
+
 export const config = {
   anthropicKey: process.env.ANTHROPIC_API_KEY,
-  timezone: process.env.TIMEZONE || 'UTC',
-  businessName: process.env.BUSINESS_NAME || 'My Business',
+  timezone: process.env.TIMEZONE || 'Europe/Madrid',
+  businessName: process.env.BUSINESS_NAME || 'Lobsteria & The Crepes & Waffles Bar',
+  userProfile,
 
   telegram: {
     token: process.env.TELEGRAM_BOT_TOKEN,

@@ -1,41 +1,68 @@
 import { BaseAgent } from '../../shared/base-agent.js';
+import { userProfile } from '../../shared/config.js';
 
 export class MealPlanningAgent extends BaseAgent {
   constructor() {
     super(
       'Meal Planning',
-      `You are a registered dietitian and meal planning expert. You create practical meal plans
-aligned with the user's health goals, dietary preferences, and schedule. You factor in
-nutritional balance, prep time, and what ingredients are available.`
+      `You are ${userProfile.name}'s registered sports dietitian and meal planning expert. 
+
+His protocol:
+- 2 meals per day (intermittent fasting window)
+- High-protein (supports HIIT + Zone 2 + water polo)
+- Whey protein daily (post-training recovery)
+- Whole foods focus: seafood (lobster rolls, oysters, ceviche), proteins, vegetables, healthy fats
+
+Your role: design meal 1 and meal 2 with macros optimized for his training, provide prep tips, and support his businesses' ingredients.`
     );
   }
 
   async run() {
     this.log('Generating meal plan...');
     const context = await this.fetchContext();
+    const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    const isSaturday = dayOfWeek === 'Saturday';
 
-    const response = await this.think(
-      `User context: ${JSON.stringify(context, null, 2)}
+    const prompt = `
+Meal plan for ${userProfile.name} on ${dayOfWeek}:
+${JSON.stringify(context, null, 2)}
 
-Suggest today's meal plan (breakfast, lunch, dinner, snacks) with approximate macros.
-Keep it realistic and aligned with the health goals. Include one quick meal prep tip.`
-    );
+${isSaturday ? 'WATER POLO DAY: Prioritize carbs + protein for energy, post-game recovery meal with whey protein.' : 'Regular training day — balance macros for performance.'}
 
+Suggest:
+1. **Meal 1** (Main breakfast): Protein + carbs + fat, ~1000-1200 cal, macros
+2. **Meal 2** (Dinner): Protein + vegetables, ~1000-1200 cal, macros
+3. **Prep Tip**: One quick win for today (leverage Lobsteria ingredients?)
+4. **Hydration**: Water + electrolyte reminder
+
+Keep it actionable, not preachy.`;
+
+    const response = await this.think(prompt);
     const plan = response.content[0].text;
     this.log(plan);
-    await this.notify(`Today's Meal Plan:\n\n${plan}`, 'telegram');
+    await this.notify(`🍽️ *Today's Meal Plan*\n\n${plan}`, 'telegram');
     return plan;
   }
 
   async fetchContext() {
-    // TODO: read user preferences from a config/profile file or database
     return {
-      dietaryPreferences: [],
-      calorieTarget: null,
-      proteinTarget: null,
-      availableIngredients: [],
-      healthGoal: 'maintain energy and focus',
+      mealsPerDay: 2,
+      dietType: 'High Protein',
+      dailyProteinTarget: '200g+', // typical for his training
+      supplements: 'Whey Protein post-meal 1 or post-training',
+      availableIngredients: [
+        'Lobster',
+        'Oysters',
+        'Fresh fish',
+        'Lean meat',
+        'Eggs',
+        'Greek yogurt',
+        'Vegetables',
+      ],
+      trainingSchedule: new Date().toLocaleDateString('en-US', { weekday: 'long' }),
+      dayOfWeek: new Date().toLocaleDateString('en-US', { weekday: 'long' }),
       date: new Date().toISOString().split('T')[0],
     };
   }
 }
+
