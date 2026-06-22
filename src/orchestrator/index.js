@@ -58,20 +58,20 @@ class MasterOrchestrator {
   }
 
   async runAll() {
+    this.ensureNotifier();
     console.log('[Orchestrator] Running all agents...');
     await Promise.allSettled(Object.keys(this.agents).map((name) => this.runAgent(name)));
     console.log('[Orchestrator] All agents completed.');
+    await notifier.send('[Life OS] Daily orchestrator run completed.', 'telegram');
   }
 
   scheduleCrons() {
-    const tz = process.env.TIMEZONE || 'UTC';
+    const tz = process.env.TIMEZONE || 'America/New_York';
 
-    // Morning briefing — 7:00 AM
+    // Master orchestrator run — 7:00 AM daily (America/New_York timezone by default)
     cron.schedule('0 7 * * *', () => {
-      this.runAgent('personalAssistant');
-      this.runAgent('sleepRecovery');
-      this.runAgent('healthWellness');
-      this.runAgent('mealPlanning');
+      console.log('[Orchestrator] Scheduled daily runAll triggered');
+      this.runAll();
     }, { timezone: tz });
 
     // Business morning — 8:30 AM
