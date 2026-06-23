@@ -191,6 +191,59 @@ export function startApiServer(port = process.env.PORT || 3000) {
     }
   });
 
+  // Convenience endpoint: POST /calendar/add (title, date HH:MM, time)
+  app.post('/calendar/add', ensureApiKey, async (req, res) => {
+    const { title, date, time, description } = req.body;
+    if (!title || !date || !time) return res.status(400).json({ error: 'Missing title, date (YYYY-MM-DD), or time (HH:MM)' });
+
+    try {
+      const initialized = await googleCalendarService.initialize();
+      if (!initialized) return res.status(500).json({ error: 'Google Calendar not initialized' });
+
+      // Parse date (YYYY-MM-DD) and time (HH:MM)
+      const startDateTime = new Date(`${date}T${time}:00`);
+      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+
+      const event = {
+        summary: title,
+        description: description || '',
+        start: { dateTime: startDateTime.toISOString() },
+        end: { dateTime: endDateTime.toISOString() },
+      };
+
+      const created = await googleCalendarService.createEvent(
+        process.env.GOOGLE_CALENDAR_ID || 'primary',
+        event
+      );
+      return res.json({ success: !!created, event: created });
+    } catch (err) {
+      console.error('POST /calendar/add error', err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Convenience endpoint: POST /task/add
+  app.post('/task/add', ensureApiKey, async (req, res) => {
+    const { title, due, notes } = req.body;
+    if (!title) return res.status(400).json({ error: 'Missing title' });
+    const item = { id: Date.now(), title, due: due || null, notes: notes || '', createdAt: new Date().toISOString() };
+    await appendJson('tasks.json', item);
+    res.json({ success: true, task: item });
+  });
+
+  // Convenience endpoint: POST /agent/run
+  app.post('/agent/run', ensureApiKey, async (req, res) => {
+    const { agent } = req.body;
+    if (!agent) return res.status(400).json({ error: 'Missing agent name' });
+    try {
+      const result = await orchestrator.runAgent(agent);
+      return res.json({ success: true, agent, result });
+    } catch (err) {
+      console.error('POST /agent/run error', err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   // Basic listing endpoints
   app.get('/api/tasks', ensureApiKey, async (req, res) => {
     const items = await readJsonSafe('tasks.json');
