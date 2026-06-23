@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import morgan from 'morgan';
+import winston from 'winston';
 import { orchestrator } from '../orchestrator/index.js';
 import { googleCalendarService } from '../shared/google-calendar.js';
 import fs from 'fs';
@@ -62,14 +63,67 @@ export function startApiServer(port = process.env.PORT || 3000) {
   const accessLogStream = fs.createWriteStream(path.join(LOGS_DIR, 'access.log'), { flags: 'a' });
   app.use(morgan('combined', { stream: accessLogStream }));
 
-  // Rate limiter: 60 requests per minute per IP by default
-  const limiter = rateLimit({
+  // Structured JSON logger for requests/responses
+  const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.json()
+    ),
+    transports: [
+      new winston.transports.File({ filename: path.join(LOGS_DIR, 'requests.jsonl') }),
+    ],
+  });
+
+  // Per-key and per-IP rate limiters
+  const apiKeyLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute window
+    max: 600, // allow more requests per API key
+    keyGenerator: (req) => (req.header('x-api-key') || req.query.api_key || req.ip),
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  const ipLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 60,
     standardHeaders: true,
     legacyHeaders: false,
   });
-  app.use(limiter);
+
+  // Select limiter based on presence of API key
+  app.use((req, res, next) => {
+    const key = req.header('x-api-key') || req.query.api_key;
+    if (key) return apiKeyLimiter(req, res, next);
+    return ipLimiter(req, res, next);
+  });
+
+  // Structured logging middleware (redact API keys)
+  app.use((req, res, next) => {
+    const start = Date.now();
+    const safeHeaders = { ...req.headers };
+    if (safeHeaders['x-api-key']) safeHeaders['x-api-key'] = '[redacted]';
+
+    res.on('finish', () => {
+      const duration = Date.now() - start;
+      const entry = {
+        timestamp: new Date().toISOString(),
+        method: req.method,
+        path: req.originalUrl,
+        status: res.statusCode,
+        durationMs: duration,
+        headers: safeHeaders,
+        body: req.body,
+        ip: req.ip,
+      };
+      try {
+        logger.info(entry);
+      } catch (e) {
+        // ignore logging errors
+      }
+    });
+    next();
+  });
 
   // Health
   app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
