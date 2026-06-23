@@ -71,6 +71,14 @@ GOOGLE_CLIENT_ID=<your-client-id-from-google-cloud>
 GOOGLE_CLIENT_SECRET=<your-client-secret-from-google-cloud>
 GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback
 
+# Google Calendar Credentials (base64-encoded for Railway deployment)
+# Encode: cat credentials.json | base64 | pbcopy
+GOOGLE_CREDENTIALS_BASE64=<paste_base64_here>
+
+# Google Calendar OAuth Token (base64-encoded for Railway deployment)
+# Encode: cat .google-calendar-token.json | base64 | pbcopy
+GOOGLE_CALENDAR_TOKEN_BASE64=<paste_base64_here>
+
 # Life OS API
 # API key used to secure the HTTP API endpoints so your Claude app can call Life OS
 LIFE_OS_API_KEY=<generate-a-strong-random-string>
