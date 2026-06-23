@@ -1,13 +1,17 @@
 import express from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import morgan from 'morgan';
 import { orchestrator } from '../orchestrator/index.js';
 import { googleCalendarService } from '../shared/google-calendar.js';
-import { promises as fs } from 'fs';
+import fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '../../src/data');
+const LOGS_DIR = path.join(__dirname, '../../logs');
 
 function ensureApiKey(req, res, next) {
   const apiKey = process.env.LIFE_OS_API_KEY;
@@ -20,7 +24,7 @@ function ensureApiKey(req, res, next) {
 
 async function ensureDataDir() {
   try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fsPromises.mkdir(DATA_DIR, { recursive: true });
   } catch (err) {
     // ignore
   }
@@ -29,7 +33,7 @@ async function ensureDataDir() {
 async function readJsonSafe(filename) {
   try {
     const p = path.join(DATA_DIR, filename);
-    const raw = await fs.readFile(p, 'utf-8');
+    const raw = await fsPromises.readFile(p, 'utf-8');
     return JSON.parse(raw);
   } catch (err) {
     return [];
@@ -40,7 +44,7 @@ async function appendJson(filename, item) {
   await ensureDataDir();
   const arr = await readJsonSafe(filename);
   arr.push(item);
-  await fs.writeFile(path.join(DATA_DIR, filename), JSON.stringify(arr, null, 2));
+  await fsPromises.writeFile(path.join(DATA_DIR, filename), JSON.stringify(arr, null, 2));
   return item;
 }
 
@@ -48,6 +52,24 @@ export function startApiServer(port = process.env.PORT || 3000) {
   const app = express();
   app.use(cors());
   app.use(express.json());
+
+  // Ensure logs directory exists and wire request logging
+  try {
+    fs.mkdirSync(LOGS_DIR, { recursive: true });
+  } catch (e) {
+    // ignore
+  }
+  const accessLogStream = fs.createWriteStream(path.join(LOGS_DIR, 'access.log'), { flags: 'a' });
+  app.use(morgan('combined', { stream: accessLogStream }));
+
+  // Rate limiter: 60 requests per minute per IP by default
+  const limiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  app.use(limiter);
 
   // Health
   app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
