@@ -71,6 +71,10 @@ GOOGLE_CLIENT_ID=<your-client-id-from-google-cloud>
 GOOGLE_CLIENT_SECRET=<your-client-secret-from-google-cloud>
 GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback
 
+# Life OS API
+# API key used to secure the HTTP API endpoints so your Claude app can call Life OS
+LIFE_OS_API_KEY=<generate-a-strong-random-string>
+
 # Google Credentials (for CI/CD initialization)
 GOOGLE_CREDENTIALS_BASE64=<paste_base64_here>
 

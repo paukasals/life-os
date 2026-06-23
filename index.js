@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { orchestrator } from './src/orchestrator/index.js';
+import { startApiServer } from './src/api/server.js';
 import { initializeCredentials } from './init-credentials.js';
 
 async function main() {
@@ -23,6 +24,8 @@ async function main() {
   } else if (command === 'run-all') {
     orchestrator.runAll().then(() => process.exit(0));
   } else {
+    // Start HTTP API and orchestrator
+    startApiServer();
     orchestrator.start();
   }
 }

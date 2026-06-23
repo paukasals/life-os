@@ -1,0 +1,132 @@
+import express from 'express';
+import cors from 'cors';
+import { orchestrator } from '../orchestrator/index.js';
+import { googleCalendarService } from '../shared/google-calendar.js';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = path.join(__dirname, '../../src/data');
+
+function ensureApiKey(req, res, next) {
+  const apiKey = process.env.LIFE_OS_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'Server not configured: missing LIFE_OS_API_KEY' });
+
+  const provided = req.header('x-api-key') || req.query.api_key;
+  if (!provided || provided !== apiKey) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+async function ensureDataDir() {
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+  } catch (err) {
+    // ignore
+  }
+}
+
+async function readJsonSafe(filename) {
+  try {
+    const p = path.join(DATA_DIR, filename);
+    const raw = await fs.readFile(p, 'utf-8');
+    return JSON.parse(raw);
+  } catch (err) {
+    return [];
+  }
+}
+
+async function appendJson(filename, item) {
+  await ensureDataDir();
+  const arr = await readJsonSafe(filename);
+  arr.push(item);
+  await fs.writeFile(path.join(DATA_DIR, filename), JSON.stringify(arr, null, 2));
+  return item;
+}
+
+export function startApiServer(port = process.env.PORT || 3000) {
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+
+  // Health
+  app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+  // Protected routes
+  app.post('/api/events', ensureApiKey, async (req, res) => {
+    const { summary, description, start, end, calendarId } = req.body;
+    try {
+      const initialized = await googleCalendarService.initialize();
+      if (!initialized) return res.status(500).json({ error: 'Google Calendar not initialized' });
+
+      const event = {
+        summary: summary || 'Quick Event',
+        description: description || '',
+        start: { dateTime: start },
+        end: { dateTime: end },
+      };
+      const created = await googleCalendarService.createEvent(calendarId || process.env.GOOGLE_CALENDAR_ID || 'primary', event);
+      return res.json({ success: !!created, event: created });
+    } catch (err) {
+      console.error('POST /api/events error', err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/tasks', ensureApiKey, async (req, res) => {
+    const { title, due, notes } = req.body;
+    if (!title) return res.status(400).json({ error: 'Missing title' });
+    const item = { id: Date.now(), title, due: due || null, notes: notes || '', createdAt: new Date().toISOString() };
+    await appendJson('tasks.json', item);
+    // Notify via orchestrator notifier if available
+    try { orchestrator.ensureNotifier && orchestrator.ensureNotifier(); } catch (e) {}
+    res.json({ success: true, task: item });
+  });
+
+  app.post('/api/expenses', ensureApiKey, async (req, res) => {
+    const { amount, category, note, date } = req.body;
+    if (typeof amount !== 'number') return res.status(400).json({ error: 'Missing amount (number)' });
+    const item = { id: Date.now(), amount, category: category || 'uncategorized', note: note || '', date: date || new Date().toISOString() };
+    await appendJson('expenses.json', item);
+    res.json({ success: true, expense: item });
+  });
+
+  app.get('/api/briefing', ensureApiKey, async (req, res) => {
+    try {
+      const result = await orchestrator.runAgent('personalAssistant');
+      return res.json({ success: true, briefing: result });
+    } catch (err) {
+      console.error('GET /api/briefing error', err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/run-agent', ensureApiKey, async (req, res) => {
+    const { agent } = req.body;
+    if (!agent) return res.status(400).json({ error: 'Missing agent name' });
+    try {
+      const result = await orchestrator.runAgent(agent);
+      return res.json({ success: true, agent, result });
+    } catch (err) {
+      console.error('POST /api/run-agent error', err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Basic listing endpoints
+  app.get('/api/tasks', ensureApiKey, async (req, res) => {
+    const items = await readJsonSafe('tasks.json');
+    res.json({ tasks: items });
+  });
+
+  app.get('/api/expenses', ensureApiKey, async (req, res) => {
+    const items = await readJsonSafe('expenses.json');
+    res.json({ expenses: items });
+  });
+
+  const server = app.listen(port, () => {
+    console.log(`[API] Life OS API listening on port ${port}`);
+  });
+
+  return server;
+}

@@ -319,6 +319,32 @@ Your Life OS is built on these principles:
 4. **Automation where it counts**: Schedules, reminders, alerts
 5. **Human judgment rules**: AI suggests, you decide
 
+## API Usage
+
+Life OS exposes a small HTTP API for remote control. Start the app and set `LIFE_OS_API_KEY` in your environment.
+
+Examples (replace `$LIFE_OS_API_KEY` with the key):
+
+```bash
+# Health check
+curl -X GET http://localhost:3000/api/health
+
+# Create a task
+curl -X POST http://localhost:3000/api/tasks \
+    -H "Content-Type: application/json" \
+    -H "x-api-key: $LIFE_OS_API_KEY" \
+    -d '{"title":"Check Lobsteria inventory","due":"2026-06-23"}'
+
+# Get today's briefing
+curl -X GET http://localhost:3000/api/briefing -H "x-api-key: $LIFE_OS_API_KEY"
+
+# Create calendar event
+curl -X POST http://localhost:3000/api/events \
+    -H "Content-Type: application/json" \
+    -H "x-api-key: $LIFE_OS_API_KEY" \
+    -d '{"summary":"Call with supplier","start":"2026-06-23T15:00:00-04:00","end":"2026-06-23T15:30:00-04:00"}'
+```
+
 ## 📚 Architecture Notes
 
 - **BaseAgent**: All agents inherit from this, implement `run()` and `fetchData()`
