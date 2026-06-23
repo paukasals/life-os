@@ -1,0 +1,1 @@
+{"level":"info","message":{"body":{},"durationMs":3,"headers":{"accept":"*/*","host":"localhost:3000","user-agent":"curl/8.7.1"},"ip":"::1","method":"GET","path":"/api/health","status":200,"timestamp":"2026-06-23T00:30:03.354Z"},"timestamp":"2026-06-23T00:30:03.354Z"}
