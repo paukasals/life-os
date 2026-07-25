@@ -31,6 +31,7 @@ class MasterOrchestrator {
       doctorAppointments: new DoctorAppointmentsAgent(),
     };
     this.notifierInitialized = false;
+    this.runHistory = {};
   }
 
   ensureNotifier() {
@@ -51,10 +52,17 @@ class MasterOrchestrator {
       if (result != null && !agent.hasNotified) {
         await agent.notify(`Output: ${typeof result === 'string' ? result : JSON.stringify(result, null, 2)}`, 'telegram');
       }
+      this.runHistory[name] = { lastRunAt: new Date().toISOString(), status: 'success' };
       return result;
     } catch (err) {
       console.error(`[Orchestrator] Agent "${name}" failed:`, err.message);
+      this.runHistory[name] = { lastRunAt: new Date().toISOString(), status: 'error', error: err.message };
+      await notifier.send(`⚠️ *${name}* failed to run: ${err.message}`, 'telegram');
     }
+  }
+
+  getStatus() {
+    return this.runHistory;
   }
 
   async runAll() {

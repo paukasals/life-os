@@ -129,6 +129,7 @@ export function startApiServer(port = process.env.PORT || 3000) {
   app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
   app.get('/', (req, res) => res.json({ status: 'ok', service: 'Life OS API', version: '1.0' }));
+  app.get('/api/status', ensureApiKey, (req, res) => res.json({ runHistory: orchestrator.getStatus() }));
 
   // Protected routes
   app.post('/api/events', ensureApiKey, async (req, res) => {
