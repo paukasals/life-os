@@ -1,0 +1,403 @@
+<title>Lobsteria — Homepage Design</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --navy: #1B3653;
+    --navy-deep: #10202F;
+    --coral: #E15C2F;
+    --coral-deep: #C64A22;
+    --gold: #D9A441;
+    --cream: #FBEEDC;
+    --cream-deep: #F3E0C4;
+
+    --bg: var(--cream);
+    --surface: #FFFFFF;
+    --surface-sunken: var(--cream-deep);
+    --text: #1B3653;
+    --text-soft: #52697F;
+    --text-faint: #8698A8;
+    --border: #E6D4B4;
+    --ph-a: #C9926B;
+    --ph-b: #8E5A3E;
+    --shadow: 0 1px 2px rgba(27,54,83,0.06), 0 12px 32px rgba(27,54,83,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10202F; --surface: #17293A; --surface-sunken: #0D1B27;
+      --text: #F2E9DA; --text-soft: #B9C6D2; --text-faint: #7C8FA0;
+      --border: #2A4256; --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10202F; --surface: #17293A; --surface-sunken: #0D1B27;
+    --text: #F2E9DA; --text-soft: #B9C6D2; --text-faint: #7C8FA0;
+    --border: #2A4256; --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display { font-family: Georgia, "Times New Roman", serif; text-wrap: balance; color: var(--text); }
+  p { color: var(--text-soft); line-height: 1.65; }
+
+  .annot {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--navy-deep); color: #F5E9D6; font-size: 12.5px;
+    padding: 8px 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .annot strong { color: var(--gold); }
+  .page { padding-top: 34px; }
+
+  /* Placeholder photo block */
+  .ph {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 6px; overflow: hidden;
+    background: repeating-linear-gradient(135deg, var(--ph-a), var(--ph-a) 14px, var(--ph-b) 14px, var(--ph-b) 28px);
+    color: #FBEEDC; text-align: center;
+  }
+  .ph .tag {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 100px; background: rgba(16,32,47,0.55); backdrop-filter: blur(2px);
+  }
+  .ph.ready { background: linear-gradient(135deg, #D97B4A, #B4552A); }
+  .ph.ready .tag { background: rgba(20,60,20,0.55); }
+  .ph .label { font-size: 13px; font-weight: 600; background: rgba(16,32,47,0.55); padding: 6px 12px; border-radius: 8px; max-width: 80%; }
+  .ph .sub { font-size: 11px; opacity: 0.85; }
+
+  /* Header / nav */
+  .site-header {
+    position: sticky; top: 34px; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px; background: rgba(251,238,220,0.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .site-header { background: rgba(16,32,47,0.85); } }
+  :root[data-theme="dark"] .site-header { background: rgba(16,32,47,0.85); }
+  .wordmark {
+    font-family: Georgia, serif; font-weight: 700; font-style: italic; font-size: 24px;
+    color: var(--navy); letter-spacing: 0.01em; display: flex; align-items: center; gap: 8px;
+  }
+  .wordmark .claw { color: var(--coral); font-style: normal; }
+  nav.mainnav { display: flex; gap: 28px; }
+  nav.mainnav a { color: var(--text); text-decoration: none; font-size: 14px; font-weight: 600; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 100px; font-size: 14px; font-weight: 700;
+    text-decoration: none; border: none; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary { background: var(--coral); color: #fff; box-shadow: 0 6px 18px rgba(225,92,47,0.35); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(225,92,47,0.42); }
+  .btn-ghost { background: transparent; border: 1.5px solid var(--navy); color: var(--navy); }
+  :root[data-theme="dark"] .btn-ghost, @media (prefers-color-scheme: dark) { }
+  .btn-ghost { }
+  :root:not([data-theme="light"]) .btn-ghost { }
+
+  /* Hero */
+  .hero {
+    position: relative; min-height: 86vh; display: flex; align-items: flex-end;
+  }
+  .hero .ph { position: absolute; inset: 0; }
+  .hero::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(0deg, rgba(16,32,47,0.88) 0%, rgba(16,32,47,0.35) 55%, rgba(16,32,47,0.15) 100%);
+  }
+  .hero-content { position: relative; z-index: 2; padding: 0 40px 64px; max-width: 720px; }
+  .eyebrow-pill {
+    display: inline-block; background: rgba(217,164,65,0.18); color: #F0D9A6;
+    border: 1px solid rgba(217,164,65,0.4); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    color: #FBEEDC; font-size: clamp(34px, 5.4vw, 60px); line-height: 1.06; margin: 0 0 16px;
+  }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero p.dek { color: #DCE4EA; font-size: 17px; max-width: 52ch; margin: 0 0 28px; line-height: 1.6; }
+  .hero .ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero .btn-ghost { border-color: rgba(251,238,220,0.6); color: #FBEEDC; }
+
+  /* Proof strip */
+  .proof {
+    display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap;
+    padding: 22px 40px; background: var(--navy); color: #F5E9D6; text-align: center;
+  }
+  .proof .stat { font-family: Georgia, serif; font-size: 20px; font-weight: 700; color: #FBEEDC; }
+  .proof .stat span { display: block; font-family: -apple-system, sans-serif; font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.05em; }
+  .proof .quote { font-style: italic; font-size: 15px; color: #E7DCC5; max-width: 40ch; }
+  .proof .quote cite { display: block; font-style: normal; font-size: 12px; color: var(--text-faint); margin-top: 4px; }
+  .proof .div { width: 1px; height: 34px; background: rgba(255,255,255,0.16); }
+
+  /* Sections */
+  section { padding: 88px 40px; }
+  .section-inner { max-width: 1080px; margin: 0 auto; }
+  .kicker {
+    font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--coral); margin-bottom: 10px;
+  }
+  h2.headline { font-size: clamp(26px, 3.4vw, 38px); margin: 0 0 14px; }
+  p.section-lede { max-width: 60ch; font-size: 16px; }
+
+  /* Menu grid */
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px; margin-top: 40px; }
+  .menu-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+    box-shadow: var(--shadow); transition: transform .2s ease;
+  }
+  .menu-card:hover { transform: translateY(-4px); }
+  .menu-card .ph { height: 190px; }
+  .menu-card .body { padding: 18px 20px 20px; }
+  .menu-card h3 { font-size: 18px; margin: 0 0 6px; }
+  .menu-card p { font-size: 13.5px; margin: 0 0 12px; }
+  .menu-card .price { font-weight: 700; color: var(--coral-deep); font-size: 14px; font-family: Georgia, serif; }
+
+  /* Story split */
+  .story {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;
+  }
+  .story .ph { border-radius: 18px; aspect-ratio: 4/5; }
+  .story blockquote {
+    margin: 24px 0 0; padding: 16px 0 0 20px; border-left: 3px solid var(--coral);
+    font-family: Georgia, serif; font-style: italic; font-size: 17px; color: var(--text);
+  }
+  .story blockquote cite { display: block; font-style: normal; font-size: 12.5px; color: var(--text-faint); margin-top: 6px; }
+
+  /* Standard */
+  .standard-strip {
+    background: var(--navy); color: #F5E9D6; border-radius: 20px; padding: 56px 44px;
+  }
+  .standard-strip .kicker { color: var(--gold); }
+  .standard-strip h2 { color: #FBEEDC; }
+  .standard-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 28px; margin-top: 36px; }
+  .standard-item .num { font-family: Georgia, serif; color: var(--gold); font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .standard-item h4 { font-size: 16.5px; color: #FBEEDC; margin: 0 0 6px; }
+  .standard-item p { color: #C7D2DC; font-size: 14px; margin: 0; }
+
+  /* Gallery */
+  .gallery { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 140px; gap: 10px; margin-top: 36px; }
+  .gallery .ph:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+  .gallery .ph:nth-child(4) { grid-row: span 2; }
+  .gallery .ph { border-radius: 12px; }
+
+  /* Location */
+  .loc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .loc-details { display: flex; flex-direction: column; gap: 18px; }
+  .loc-row { display: flex; gap: 12px; }
+  .loc-row .ic { font-size: 18px; }
+  .loc-row h4 { margin: 0 0 2px; font-size: 15px; }
+  .loc-row p { margin: 0; font-size: 14px; }
+  .loc-map { border-radius: 16px; overflow: hidden; aspect-ratio: 1/1; }
+
+  /* Email capture */
+  .capture {
+    background: var(--surface-sunken); border-radius: 20px; padding: 52px 44px; text-align: center;
+  }
+  .capture h2 { margin: 0 0 8px; }
+  .capture p { max-width: 46ch; margin: 0 auto 26px; }
+  .capture-form { display: flex; gap: 10px; max-width: 420px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  .capture-form input {
+    flex: 1; min-width: 200px; padding: 13px 16px; border-radius: 100px; border: 1.5px solid var(--border);
+    background: var(--surface); color: var(--text); font-size: 14px;
+  }
+
+  /* Footer */
+  footer.site-footer {
+    background: var(--navy-deep); color: #C7D2DC; padding: 56px 40px 28px;
+  }
+  .footer-grid { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
+  .footer-grid .wordmark { color: #FBEEDC; }
+  .footer-grid .wordmark .claw { color: var(--coral); }
+  .footer-grid p.tag { font-size: 13px; color: var(--text-faint); margin-top: 10px; max-width: 30ch; }
+  footer h5 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); margin: 0 0 14px; }
+  footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  footer a { color: #C7D2DC; text-decoration: none; font-size: 14px; }
+  footer a:hover { color: #FBEEDC; }
+  .footer-bottom {
+    max-width: 1080px; margin: 40px auto 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 12.5px; color: var(--text-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+
+  @media (max-width: 760px) {
+    .site-header { padding: 14px 20px; }
+    nav.mainnav { display: none; }
+    .hero-content, section { padding-left: 20px; padding-right: 20px; }
+    .story, .loc-wrap { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .gallery { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+
+<div class="annot">This is a <strong>design mockup</strong> — colored blocks marked 📸 stand in for your real photos/logo (I can't access the files you pasted in chat, only saw them as images). Text throughout is finished, ready to use.</div>
+
+<div class="page">
+
+  <header class="site-header">
+    <div class="wordmark"><span class="claw">🦞</span> Lobsteria</div>
+    <nav class="mainnav">
+      <a href="#menu">Menu</a>
+      <a href="#story">Our Story</a>
+      <a href="#events">Events &amp; Catering</a>
+      <a href="#visit">Visit</a>
+    </nav>
+    <a class="btn btn-primary" href="#">Order Direct</a>
+  </header>
+
+  <section class="hero" style="padding:0;">
+    <div class="ph"><span class="tag">📸 Todo</span><span class="label">Airstream, lit up at night</span><span class="sub">Your #1 priority shot — homepage hero</span></div>
+    <div class="hero-content">
+      <span class="eyebrow-pill">Wynwood, Miami · Open Nightly Until 2am</span>
+      <h1>The best lobster roll in Miami. <em>You already know where to go.</em></h1>
+      <p class="dek">Wild-caught Maine claw and knuckle, hand-cleaned in-house — never machine-picked. Served from a vintage 1977 Airstream, every night since 2019.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#">Order Direct — Skip the Fees</a>
+        <a class="btn btn-ghost" href="#menu">View Menu</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="proof">
+    <div class="stat">4.9★<span>145 Google Reviews</span></div>
+    <div class="div"></div>
+    <div class="quote">"The first bite was insane."<cite>— Tony Lopez, Google Local Guide</cite></div>
+    <div class="div"></div>
+    <div class="stat">Zero Press<span>Built on Word of Mouth</span></div>
+  </div>
+
+  <section id="menu">
+    <div class="section-inner">
+      <div class="kicker">The Menu</div>
+      <h2 class="headline">Two rolls. One standard.</h2>
+      <p class="section-lede">Every roll starts the same way: wild-caught Maine claw and knuckle, cracked and cleaned by hand. From there, two directions.</p>
+
+      <div class="menu-grid">
+        <div class="menu-card">
+          <div class="ph ready"><span class="tag">✓ Ready</span><span class="label">Connecticut Roll</span></div>
+          <div class="body">
+            <h3>Connecticut Roll</h3>
+            <p>Warm brown butter, Maine claw &amp; knuckle, fresh chives, toasted brioche.</p>
+            <div class="price">$30 – $42</div>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="ph"><span class="tag">📸 Todo</span><span class="label">Maine Roll</span></div>
+          <div class="body">
+            <h3>Maine Roll</h3>
+            <p>Cold, black garlic Old Bay mayo, onion, pickle, caper, chives, toasted brioche.</p>
+            <div class="price">$30 – $42</div>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="ph ready"><span class="tag">✓ Ready</span><span class="label">Oysters</span></div>
+          <div class="body">
+            <h3>Oysters, 5 Ways</h3>
+            <p>Raw, Rockefeller, garlic butter, passion fruit, leche de tigre. Shucked to order.</p>
+            <div class="price">From $14</div>
+          </div>
+        </div>
+        <div class="menu-card">
+          <div class="ph ready"><span class="tag">✓ Ready</span><span class="label">Ceviche de la Tía Tati</span></div>
+          <div class="body">
+            <h3>Ceviche de la Tía Tati</h3>
+            <p>A family recipe from Lima — corvina, leche de tigre, ají limo, cilantro.</p>
+            <div class="price">Market Price</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="story">
+    <div class="section-inner story">
+      <div class="ph"><span class="tag">📸 Todo</span><span class="label">Pau portrait</span><span class="sub">Chef jacket, inside the Airstream</span></div>
+      <div>
+        <div class="kicker">Our Story</div>
+        <h2 class="headline">Nobody was doing this the way it's supposed to be done.</h2>
+        <p>Pau Casals grew up shopping the stalls of La Boqueria in Barcelona — real seafood, no shortcuts, simply normal. A former professional water polo player for the Spanish national team, he came to Miami in 2012. When the pandemic took everything, he looked at what the city was calling a lobster roll and went all-in on building something else entirely.</p>
+        <blockquote>"There's nobody doing this the way it's supposed to be done."<cite>— Pau Casals, Chef-Owner</cite></blockquote>
+        <div style="margin-top:24px;"><a class="btn btn-ghost" href="#" style="border-color:var(--navy); color:var(--navy);">Read the Full Story →</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-inner standard-strip">
+      <div class="kicker">The Standard</div>
+      <h2 class="headline">No shortcuts. Ever.</h2>
+      <div class="standard-list">
+        <div class="standard-item"><div class="num">01</div><h4>Wild-Caught Maine</h4><p>Claw and knuckle only — never the tail, never a substitute.</p></div>
+        <div class="standard-item"><div class="num">02</div><h4>Hand-Cleaned In-House</h4><p>Cracked and picked by hand, every single night. Never machine-processed.</p></div>
+        <div class="standard-item"><div class="num">03</div><h4>Made to Order</h4><p>Nothing sits pre-made. Your roll starts when your order comes in.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-inner">
+      <div class="kicker">From the Airstream</div>
+      <h2 class="headline">A look inside.</h2>
+      <div class="gallery">
+        <div class="ph ready"><span class="tag">✓ Ready</span><span class="label">Oyster platter</span></div>
+        <div class="ph ready"><span class="tag">✓ Ready</span><span class="label">Leche de tigre</span></div>
+        <div class="ph"><span class="tag">📸 Todo</span><span class="label">Outdoor seating</span></div>
+        <div class="ph"><span class="tag">📸 Todo</span><span class="label">Hand-cleaning</span></div>
+        <div class="ph ready"><span class="tag">✓ Ready</span><span class="label">Grilled oysters</span></div>
+        <div class="ph ready"><span class="tag">✓ Ready</span><span class="label">Connecticut Roll</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="visit">
+    <div class="section-inner loc-wrap">
+      <div class="loc-details">
+        <div class="kicker">Visit</div>
+        <h2 class="headline">Walk up. We're here until 2.</h2>
+        <div class="loc-row"><span class="ic">📍</span><div><h4>Address</h4><p>144 NE 27th St, Miami, FL 33137 — Midtown/Wynwood</p></div></div>
+        <div class="loc-row"><span class="ic">🕔</span><div><h4>Hours</h4><p>Daily, 5pm – 2am. Walk-up only, no reservations.</p></div></div>
+        <div class="loc-row"><span class="ic">🚗</span><div><h4>Parking</h4><p>Free private parking on-site.</p></div></div>
+        <a class="btn btn-primary" href="#" style="margin-top:8px; width:fit-content;">Get Directions</a>
+      </div>
+      <div class="ph loc-map"><span class="tag">📸 Todo</span><span class="label">Google Map embed</span></div>
+    </div>
+  </section>
+
+  <section id="events">
+    <div class="section-inner capture">
+      <h2 class="headline">Feeding a crowd?</h2>
+      <p>Event boxes and full-service catering — same standard, any size. Or join the list for menu drops and event announcements before anyone else.</p>
+      <div class="capture-form">
+        <input type="email" placeholder="your@email.com" />
+        <button class="btn btn-primary">Join the List</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <div class="wordmark"><span class="claw">🦞</span> Lobsteria</div>
+        <p class="tag">Lobster rolls, oysters &amp; ceviche from a vintage 1977 Airstream. Wynwood, Miami. Since 2019.</p>
+      </div>
+      <div>
+        <h5>Explore</h5>
+        <ul><li><a href="#menu">Menu</a></li><li><a href="#story">Our Story</a></li><li><a href="#events">Catering</a></li><li><a href="#">Press</a></li></ul>
+      </div>
+      <div>
+        <h5>Visit</h5>
+        <ul><li><a href="#">144 NE 27th St, Miami</a></li><li><a href="#">Daily 5pm–2am</a></li><li><a href="#">Get Directions</a></li></ul>
+      </div>
+      <div>
+        <h5>Follow</h5>
+        <ul><li><a href="#">@lobsteriamia — Instagram</a></li><li><a href="#">@lobsteriamia — TikTok</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Lobsteria. All rights reserved.</span>
+      <span>Order Direct · UberEats · DoorDash</span>
+    </div>
+  </footer>
+
+</div>
