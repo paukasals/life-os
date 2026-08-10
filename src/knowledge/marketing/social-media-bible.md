@@ -1,6 +1,6 @@
 # LOBSTERIA — Social Media & Brand Bible
 *The definitive reference for how Lobsteria shows up in the world.*
-*Last updated: May 2026. Written after studying @homerfoodgroup, @ganasdevicio, @grab.sandwiches, @myka_greek.usa*
+*Last updated: August 2026. Written after studying @homerfoodgroup, @ganasdevicio, @grab.sandwiches, @myka_greek.usa*
 
 ---
 
@@ -28,7 +28,7 @@ He went all-in on Lobsteria. And when he looked at what Miami was calling a lobs
 
 *"There's nobody doing this the way it's supposed to be done."*
 
-That's not a marketing line. That's what he actually said. And that's what Lobsteria is: the answer to that sentence. Built from a vintage 1977 Airstream in Wynwood. Open every night until 2am. Pau at the window asking how your food is. The same music playing. The claw and the knuckle, hand-cleaned, made to order. Every single night.
+That's not a marketing line. That's what he actually said. And that's what Lobsteria is: the answer to that sentence. Built from a vintage 1977 Airstream in Wynwood. Open every night until 2am. Pau at the window asking how your food is. The same music playing. Wild-caught Maine claw and knuckle, hand-cleaned in-house, made to order. Every single night.
 
 He still plays water polo. He still races mountain bikes — including Cusco to Machu Picchu. He still watches Barça. He's not a chef who became a brand. He's a person who built a place with a standard that doesn't move.
 
@@ -95,9 +95,10 @@ Four pillars. Every post belongs to one of them. They rotate — never three of 
 The process. The ingredient decisions. The things we do that others don't — and the things we refuse to do. This is the pillar that builds credibility and earns trust. It educates without being preachy. It demonstrates without showing off.
 
 **What this looks like:**
-- Pau's hands cleaning a whole lobster. No talking. Just the process. Music playing.
+- Pau's hands cracking and cleaning claw and knuckle. No talking. Just the process. Music playing.
 - "We only use the claw and the knuckle. This is why." 20-second explanation.
-- The lobster delivery arriving. "This is what we start with every night."
+- Wild-caught Maine claw and knuckle, hand-cleaned in-house — cracked, picked, and cleaned by hand, every single night.
+- Occasionally: a whole lobster, live, cooked and broken down on camera — the same standard, shown from the very beginning. (Behind-the-scenes. Not nightly sourcing — a look at where the standard comes from.)
 - "Most lobster rolls use this part. We don't." [Visual of what's excluded vs. what goes in the roll]
 - The 15-minute wait, explained visually — not apologetically but proudly.
 - The butter being clarified. The bun being toasted. The assembly.
@@ -223,8 +224,9 @@ These are the recurring content formats that build a following through repetitio
 Format: 20–30 second Reel. Pau's hands doing something. Text overlay explaining what and why. No talking — music only.
 
 Episodes:
-- "Why we don't use the tail." [Shows the claw vs. tail — quality difference]
-- "This is what hand-cleaning actually means." [The full process, one lobster]
+- "Why we don't use the tail." [Claw and knuckle only — why this cut, every night]
+- "This is what hand-cleaning actually means." [Claw and knuckle, cracked and picked by hand — the nightly process]
+- "Starting from the whole lobster." [Occasional behind-the-scenes: live lobster, cooked and broken down on camera, same standard from the very beginning]
 - "Why it takes 15 minutes." [Everything that happens between order and plate]
 - "The butter. Why it matters." [European cultured butter, 82% fat, why this specifically]
 - "Why the bun is toasted this way." [The griddle, the butter, the split-top]
@@ -268,9 +270,9 @@ Caption format: Always just: "1:03am. Still here. 🦞"
 Format: 30-second Reel. Pau shows what the industry standard is. Then shows what Lobsteria does instead. Confident, not angry. Educational, not preachy.
 
 Episodes:
-- "Most places use pre-cooked lobster meat. We don't." [Shows the whole live/fresh lobster arriving]
+- "Most places buy pre-picked, machine-processed lobster meat. We hand-clean every claw and knuckle ourselves." [Shows the cracking and picking process]
 - "Most lobster rolls are made in advance. Ours isn't." [Shows the order coming in, the cook starting immediately]
-- "Most rolls use the tail. We throw it out." [The claw + knuckle standard]
+- "Most rolls use the tail. We don't even bring it into the kitchen." [Claw and knuckle only, always]
 - "Most caviar on food trucks is..." [Pause] "We use Caspian Sea sturgeon. Because why not."]
 
 This series is what gets people sharing — "did you know most lobster rolls are made with..." It educates the audience and positions Lobsteria as the standard without a single negative word about anyone.
@@ -425,7 +427,7 @@ Line 3: The close. Location, hours, action. Always the same format.
 ### Phase 2: The First Viral Moment (Month 2–3)
 **Goal: One video breaks 50K views.**
 
-The hand-cleaning video will be this moment. It needs to be shot and executed perfectly:
+The hand-cleaning video will be this moment. Filmed during one of the periodic whole-lobster sessions — not nightly sourcing, but real, on camera, once. It needs to be shot and executed perfectly:
 - Start with the live lobster or the whole fresh lobster
 - No talking — just Pau's hands and the music
 - Text overlay at the end: "This is why it takes 15 minutes."
@@ -465,12 +467,12 @@ These are the videos and photos that unlock everything else. Nothing else matter
 
 | Priority | Shot | Format | Series |
 |----------|------|--------|--------|
-| 🔴 1 | Pau hand-cleaning a whole lobster | Reel | The Standard #1 |
+| 🔴 1 | Pau hand-cleaning a whole lobster (occasional session — the flagship shoot) | Reel | The Standard #1 |
 | 🔴 2 | Brown butter being poured on the Connecticut Roll | Reel | Process Reel |
 | 🔴 3 | Caviar being spooned onto a roll | Reel | The Standard #6 |
 | 🔴 4 | Airstream window at midnight — Pau at the window | Reel | Open Until 2 |
 | 🟠 5 | The claw vs. the tail — quality comparison | Reel | The Other Way #1 |
-| 🟠 6 | Lobster delivery arriving — the whole live lobster | Reel | The Standard #2 |
+| 🟠 6 | Occasional whole-lobster cook + breakdown (behind-the-scenes, not nightly) | Reel | The Standard — occasional |
 | 🟠 7 | Walk-up POV — approaching the Airstream | Reel | The Place |
 | 🟠 8 | Pau interview: "Lost everything in 2020. This is what came next." | Reel | The Story |
 | 🟡 9 | Oysters being shucked to order | Reel | The Standard |
@@ -531,5 +533,5 @@ We post until that sentence is true without us having to say it.
 
 *This document is the brand bible. It doesn't change because of trends. It doesn't bend because of a slow week. It is reviewed every quarter and updated only when something fundamental changes about the brand or the business.*
 
-*Last reviewed: May 2026*
-*Next review: September 2026*
+*Last reviewed: August 2026*
+*Next review: November 2026*
