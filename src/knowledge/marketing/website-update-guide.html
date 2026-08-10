@@ -1,0 +1,447 @@
+<title>Lobsteria — Website Update Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --navy: #1B3653;
+    --navy-ink: #14283D;
+    --coral: #E15C2F;
+    --coral-deep: #C64A22;
+    --gold: #D9A441;
+    --cream: #FBEEDC;
+    --cream-warm: #F5E4CC;
+
+    --bg: var(--cream);
+    --bg-panel: #FFFFFF;
+    --bg-sunken: #F3E4CE;
+    --text: var(--navy-ink);
+    --text-soft: #4A5A6B;
+    --text-faint: #7C8B9A;
+    --border: #E4D3B8;
+    --accent: var(--coral);
+    --accent-ink: #FFFFFF;
+    --gold-ink: #8A6A1F;
+    --code-bg: #142235;
+    --code-text: #E7E4DA;
+    --shadow: 0 1px 2px rgba(27,54,83,0.06), 0 8px 24px rgba(27,54,83,0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10202F;
+      --bg-panel: #17293A;
+      --bg-sunken: #0C1A26;
+      --text: #F2E9DA;
+      --text-soft: #C3CCD6;
+      --text-faint: #8CA0AF;
+      --border: #2A4256;
+      --cream: #17293A;
+      --code-bg: #0B1622;
+      --code-text: #E7E4DA;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10202F;
+    --bg-panel: #17293A;
+    --bg-sunken: #0C1A26;
+    --text: #F2E9DA;
+    --text-soft: #C3CCD6;
+    --text-faint: #8CA0AF;
+    --border: #2A4256;
+    --cream: #17293A;
+    --code-bg: #0B1622;
+    --code-text: #E7E4DA;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display {
+    font-family: Georgia, "Times New Roman", serif;
+    text-wrap: balance;
+    color: var(--text);
+  }
+  a { color: var(--coral); }
+  code, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; }
+
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px 120px; }
+
+  /* Header */
+  header.top {
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-ink) 100%);
+    color: #F5E9D6;
+    padding: 56px 24px 40px;
+  }
+  header.top .wrap { padding-bottom: 0; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); font-weight: 600; margin-bottom: 10px;
+  }
+  header.top h1 {
+    color: #FBEEDC; font-size: clamp(28px, 4vw, 40px); margin: 0 0 12px;
+    line-height: 1.15;
+  }
+  header.top p.sub {
+    color: #C7D2DC; font-size: 16px; max-width: 60ch; line-height: 1.55; margin: 0;
+  }
+
+  /* Section nav */
+  nav.toc {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 28px;
+  }
+  nav.toc a {
+    font-size: 13px; color: #F5E9D6; text-decoration: none;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.16);
+    padding: 6px 12px; border-radius: 100px;
+  }
+  nav.toc a:hover { background: rgba(255,255,255,0.16); }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+
+  .section-label {
+    display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px;
+  }
+  .section-num {
+    font-family: Georgia, serif; font-size: 14px; color: var(--coral); font-weight: 700;
+  }
+  h2 { font-size: 26px; margin: 0 0 6px; }
+  .section-dek { color: var(--text-soft); font-size: 15.5px; max-width: 62ch; line-height: 1.6; margin: 0 0 28px; }
+
+  p { line-height: 1.65; color: var(--text-soft); }
+  ul, ol { line-height: 1.65; color: var(--text-soft); padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--text); }
+
+  /* Color swatches */
+  .palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  .swatch {
+    border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    background: var(--bg-panel); box-shadow: var(--shadow);
+  }
+  .swatch .chip { height: 84px; }
+  .swatch .info { padding: 12px 14px; }
+  .swatch .name { font-weight: 700; font-size: 14.5px; color: var(--text); }
+  .swatch .role { font-size: 12.5px; color: var(--text-faint); margin: 2px 0 8px; }
+  .swatch .hexrow {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; color: var(--text-soft);
+  }
+
+  /* Step cards */
+  .steps { display: flex; flex-direction: column; gap: 12px; counter-reset: step; }
+  .step {
+    display: grid; grid-template-columns: 34px 1fr; gap: 14px;
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; box-shadow: var(--shadow);
+  }
+  .step .num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--navy); color: #FBEEDC;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; font-family: Georgia, serif;
+    flex-shrink: 0;
+  }
+  .step h4 { margin: 2px 0 4px; font-size: 15.5px; color: var(--text); }
+  .step p { margin: 0; font-size: 14.5px; }
+  .step .path {
+    display: inline-block; margin-top: 8px; font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; background: var(--bg-sunken); color: var(--text-soft);
+    padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border);
+  }
+
+  /* Checklist */
+  .checklist { display: flex; flex-direction: column; gap: 8px; }
+  .check-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; font-size: 14.5px; box-shadow: var(--shadow);
+  }
+  .check-item .box {
+    width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--text-faint);
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .check-item.done .box { background: var(--coral); border-color: var(--coral); position: relative; }
+  .check-item.done .box::after {
+    content: ""; position: absolute; left: 5px; top: 1px; width: 5px; height: 9px;
+    border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  .check-item.done span.label { color: var(--text-faint); text-decoration: line-through; }
+  .status-tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 100px; margin-left: auto; white-space: nowrap;
+  }
+  .status-tag.ready { background: rgba(217,164,65,0.18); color: var(--gold-ink); }
+  .status-tag.have { background: rgba(225,92,47,0.14); color: var(--coral-deep); }
+  .status-tag.todo { background: var(--bg-sunken); color: var(--text-faint); }
+
+  /* Photo groups */
+  .photogrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0 22px; }
+  .photocard {
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px; text-align: center; box-shadow: var(--shadow);
+  }
+  .photocard .icon { font-size: 22px; margin-bottom: 6px; }
+  .photocard .t { font-size: 13px; font-weight: 700; color: var(--text); }
+  .photocard .s { font-size: 11.5px; color: var(--text-faint); margin-top: 2px; }
+
+  /* Code block */
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    border-radius: 10px; padding: 16px 18px; overflow-x: auto;
+    font-size: 12.5px; line-height: 1.6; box-shadow: var(--shadow);
+  }
+  .copylabel {
+    font-size: 11.5px; color: var(--text-faint); text-transform: uppercase;
+    letter-spacing: 0.06em; font-weight: 700; margin: 18px 0 6px;
+  }
+
+  .callout {
+    background: var(--bg-panel); border-left: 3px solid var(--coral);
+    border-radius: 0 10px 10px 0; padding: 14px 18px; font-size: 14.5px;
+    box-shadow: var(--shadow); margin: 18px 0;
+  }
+  .callout strong { color: var(--coral-deep); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-faint); font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-panel); box-shadow: var(--shadow); }
+
+  footer {
+    text-align: center; padding: 40px 24px; color: var(--text-faint); font-size: 13px;
+  }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Lobsteria.co — Site Rebuild</div>
+    <h1>Everything needed to update the website, done right.</h1>
+    <p class="sub">Colors, photography, the exact Square steps, and SEO — pulled from what's already in your brand files, plus the shoot you just sent over. Work top to bottom; each section stands alone if you want to jump around.</p>
+    <nav class="toc">
+      <a href="#colors">Colors</a>
+      <a href="#photos">Photography</a>
+      <a href="#square">Square, step by step</a>
+      <a href="#seo">SEO</a>
+      <a href="#launch">Launch checklist</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="colors">
+    <div class="section-label"><span class="section-num">01</span><h2>Brand palette</h2></div>
+    <p class="section-dek">Pulled directly from your logo and confirmed against the palette already written into <code>lobsteria-master-brief.md</code>. Use these exact hex values in Square's theme editor — don't let Square's default swatches drift from this.</p>
+
+    <div class="palette">
+      <div class="swatch">
+        <div class="chip" style="background:#1B3653"></div>
+        <div class="info">
+          <div class="name">Deep Navy</div>
+          <div class="role">Primary — wordmark, headers, text</div>
+          <div class="hexrow"><span>#1B3653</span><span>Primary</span></div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#E15C2F"></div>
+        <div class="info">
+          <div class="name">Lobster Coral</div>
+          <div class="role">Accent — buttons, CTAs, highlights</div>
+          <div class="hexrow"><span>#E15C2F</span><span>Accent</span></div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#FBEEDC; border-bottom:1px solid #E4D3B8;"></div>
+        <div class="info">
+          <div class="name">Warm Cream</div>
+          <div class="role">Backgrounds — never pure white</div>
+          <div class="hexrow"><span>#FBEEDC</span><span>Background</span></div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#D9A441"></div>
+        <div class="info">
+          <div class="name">Gold</div>
+          <div class="role">Sparingly — caviar/premium moments only</div>
+          <div class="hexrow"><span>#D9A441</span><span>Sparingly</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout"><strong>Where this goes in Square:</strong> Site editor → <strong>Design</strong> → <strong>Theme</strong> → Colors. Set "Primary" to the navy, "Accent/Buttons" to the coral, and "Background" to the cream — never white. If Square only gives you 2–3 color slots, navy + coral is the non-negotiable pair; cream can be a section background instead of the global one if needed.</div>
+
+    <div class="copylabel">Typography — pick from Square's font list</div>
+    <p>Square doesn't support uploading custom fonts, so match the <em>feel</em> instead of the exact face: a confident serif or script for the Lobsteria name/headers (something with the same nautical-badge character as the logo), and a clean, highly legible sans for menu text and body copy — never let both be the same weight of sans, or it reads generic. In Square's font picker, pair a serif/display heading face with a plain sans body face; avoid anything rounded or playful.</p>
+  </section>
+
+  <section id="photos">
+    <div class="section-label"><span class="section-num">02</span><h2>Photography</h2></div>
+    <p class="section-dek">The set you just sent is genuinely good — natural light, wicker mat, warm wood board, the Lobsteria card in frame. It matches the food-photography direction in your master brief almost exactly. Here's what's covered and what's still missing before the site is complete.</p>
+
+    <div class="copylabel">✓ Already shot, ready to use</div>
+    <div class="photogrid">
+      <div class="photocard"><div class="icon">🦪</div><div class="t">Oyster platter</div><div class="s">Multiple angles, branded card in frame</div></div>
+      <div class="photocard"><div class="icon">🍋</div><div class="t">Leche de tigre ceviche</div><div class="s">Hero shot + close-ups, great color</div></div>
+      <div class="photocard"><div class="icon">🥪</div><div class="t">Connecticut Roll</div><div class="s">Warm/brown-butter style — board + to-go tray, both strong</div></div>
+      <div class="photocard"><div class="icon">🔥</div><div class="t">Grilled oysters</div><div class="s">Char detail, lime, smoke</div></div>
+    </div>
+
+    <div class="copylabel">✗ Still needed — from your own shot-priority list</div>
+    <div class="checklist">
+      <div class="check-item"><div class="box"></div><span class="label">Airstream exterior, lit up at night — this is your single most important hero image; the homepage needs it above the fold</span><span class="status-tag todo">Todo</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Pau portrait — chef jacket, inside the Airstream, warm light (spec in <code>lobsteria-master-brief.md</code> §16)</span><span class="status-tag todo">Todo</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Wide shot of outdoor seating — green turf, lanterns, tables full on a Friday night</span><span class="status-tag todo">Todo</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Hand-cleaning process shot — claw and knuckle, hands only, no face needed</span><span class="status-tag todo">Todo</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Maine Roll (cold style) — black garlic Old Bay mayo, onion, pickle, capers. You have Connecticut covered; Maine still needs its own dedicated shot so the two aren't confused on the menu page</span><span class="status-tag todo">Todo</span></div>
+    </div>
+
+    <div class="callout"><strong>Before uploading anything:</strong> export at minimum <strong>2000px on the long edge</strong>, JPG, sRGB. Square compresses on upload — starting low will look soft on retina screens. Keep filenames descriptive (<code>lobsteria-connecticut-roll.jpg</code>, not <code>IMG_4021.jpg</code>) — Square uses the filename as the default alt text if you don't set one, and that's read by Google Image Search.</div>
+  </section>
+
+  <section id="square">
+    <div class="section-label"><span class="section-num">03</span><h2>Square, step by step</h2></div>
+    <p class="section-dek">Square Dashboard → <strong>Website</strong> → <strong>Edit Site</strong> opens the visual editor. Everything below happens inside it.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <h4>Set the theme colors first</h4>
+          <p>Do this before touching any page — every section you build after inherits it. Use the four hex values from Section 01.</p>
+          <span class="path">Edit Site → Design → Theme → Colors</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <h4>Homepage hero</h4>
+          <p>Full-width image + headline + one CTA button. Use the Airstream-at-night shot once you have it (placeholder: your best lobster roll shot until then). Headline: <em>"Miami's Maine Lobster Destination."</em> Button: "View Menu," coral background, links to <code>/menu</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <h4>Menu preview section</h4>
+          <p>3–4 image tiles: Connecticut Roll, Maine Roll, Oysters, Ceviche. Each links to <code>/menu</code>. Use the new photos here — the oyster platter and ceviche shots are ready right now.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <div>
+          <h4>About / story section</h4>
+          <p>Short version of Pau's story — Barcelona, La Boqueria, the pandemic pivot, the Airstream. Pull directly from the press release draft or brand bible; don't write it from scratch.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">5</div>
+        <div>
+          <h4>Hours, location, map embed</h4>
+          <p>144 NE 27th St, Miami, FL 33137 · Daily 5pm–2am · Walk-up only, free private parking. Embed a Google Map — Square has a native map block, no plugin needed.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">6</div>
+        <div>
+          <h4>Sync the menu from Square's Item Library</h4>
+          <p>Don't hand-build the online menu as static text — link it to your existing Square Item Library (the same one your POS uses) so prices and 86'd items stay in sync automatically.</p>
+          <span class="path">Online → Items → Link to Site Menu</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">7</div>
+        <div>
+          <h4>Event Boxes / Catering pages</h4>
+          <p>Two dedicated pages already planned in your SEO doc — <code>/eventboxes</code> and <code>/request-catering</code>. Build these as simple: image, description, pricing tiers (18/36/54 rolls), and a contact/order button.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">8</div>
+        <div>
+          <h4>Mobile preview before publishing</h4>
+          <p>Most of your traffic is mobile. Use Square's built-in mobile preview toggle on every page — text that looks fine on desktop regularly overflows or overlaps on phone screens in Square's editor.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="seo">
+    <div class="section-label"><span class="section-num">04</span><h2>SEO</h2></div>
+    <p class="section-dek">Good news — this part is already fully written. You (or someone) prepared complete structured data and meta tags for all five pages back in June, in <code>seo-structured-data.md</code>. It just needs to actually be pasted into Square. If it's not live yet, do this now:</p>
+
+    <div class="copylabel">Step 1 — Site-wide structured data (do once)</div>
+    <div class="checklist">
+      <div class="check-item"><div class="box"></div><span class="label">Square Dashboard → Website → Edit Site → gear icon (Site Settings) → Custom Code → Header Code</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Paste the full <code>&lt;script type="application/ld+json"&gt;</code> block below — already restaurant-schema, already under Square's 2000-char limit</span></div>
+    </div>
+
+    <pre>{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Lobsteria",
+  "url": "https://www.lobsteria.co",
+  "telephone": "+17868507848",
+  "address": {
+    "streetAddress": "144 NE 27th St",
+    "addressLocality": "Miami",
+    "addressRegion": "FL",
+    "postalCode": "33137"
+  },
+  "openingHoursSpecification": [{
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday",
+                  "Friday","Saturday","Sunday"],
+    "opens": "17:00", "closes": "02:00"
+  }],
+  "aggregateRating": {
+    "ratingValue": "4.9", "reviewCount": "145", "bestRating": "5"
+  }
+  /* full block, all fields, in seo-structured-data.md */
+}</pre>
+
+    <div class="copylabel">Step 2 — Per-page title + meta description</div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Page</th><th>Title tag (as written)</th></tr></thead>
+        <tbody>
+          <tr><td>Homepage</td><td>Lobsteria Miami — Lobster Rolls, Oysters &amp; Ceviche | Wynwood</td></tr>
+          <tr><td>/menu</td><td>Menu — Lobster Rolls, Oysters &amp; Ceviche | Lobsteria Miami</td></tr>
+          <tr><td>/about</td><td>About Lobsteria — The Story Behind the Airstream | Miami</td></tr>
+          <tr><td>/eventboxes</td><td>Event Boxes — Lobster Roll Catering | Lobsteria Miami</td></tr>
+          <tr><td>/request-catering</td><td>Book Catering — Lobsteria Miami | Lobster Rolls for Events</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:10px; font-size:13.5px;">Full title + meta description copy for all five pages is in <code>seo-structured-data.md</code> — set each one under the page's gear icon → SEO tab.</p>
+
+    <div class="callout"><strong>Verify it worked:</strong> after publishing, run <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">search.google.com/test/rich-results</a> against lobsteria.co — it should detect a "Restaurant" entity. If it doesn't, the JSON-LD didn't save correctly.</div>
+  </section>
+
+  <section id="launch">
+    <div class="section-label"><span class="section-num">05</span><h2>Final launch checklist</h2></div>
+    <p class="section-dek">Work through this once everything above is in place.</p>
+
+    <div class="checklist">
+      <div class="check-item"><div class="box"></div><span class="label">Theme colors set to the four brand hex values, not Square defaults</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Homepage hero has a real photo, not a placeholder</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Menu synced to live Square Item Library, not static text</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">All 5 pages have title + meta description set</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">JSON-LD pasted into header code, verified in Rich Results Test</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Every image has descriptive alt text (not "IMG_1234")</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Mobile preview checked on every page</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Map embed shows the correct pin — 144 NE 27th St</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Order/reservation buttons actually link out correctly (test one full order flow)</span></div>
+      <div class="check-item"><div class="box"></div><span class="label">Site submitted to Google Search Console for re-crawl after publishing</span></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>Built from lobsteria-master-brief.md, brand-strategy.md, seo-structured-data.md, and the photo set shared August 2026.</footer>
