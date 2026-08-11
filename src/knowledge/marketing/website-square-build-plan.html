@@ -1,0 +1,236 @@
+<title>Lobsteria — Square Build Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --navy: #1B3653; --navy-ink: #14283D; --coral: #E15C2F; --coral-deep: #C64A22;
+    --gold: #D9A441; --cream: #FBEEDC;
+    --bg: var(--cream); --bg-panel: #FFFFFF; --bg-sunken: #F3E4CE;
+    --text: var(--navy-ink); --text-soft: #4A5A6B; --text-faint: #7C8B9A;
+    --border: #E4D3B8; --gold-ink: #8A6A1F;
+    --code-bg: #142235; --code-text: #E7E4DA;
+    --shadow: 0 1px 2px rgba(27,54,83,0.06), 0 8px 24px rgba(27,54,83,0.06);
+    --ok: #3F7D4C; --ok-bg: rgba(63,125,76,0.12);
+    --no: #B4432A; --no-bg: rgba(180,67,42,0.1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10202F; --bg-panel: #17293A; --bg-sunken: #0C1A26;
+      --text: #F2E9DA; --text-soft: #C3CCD6; --text-faint: #8CA0AF;
+      --border: #2A4256; --code-bg: #0B1622;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+      --ok-bg: rgba(63,125,76,0.2); --no-bg: rgba(180,67,42,0.18);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10202F; --bg-panel: #17293A; --bg-sunken: #0C1A26;
+    --text: #F2E9DA; --text-soft: #C3CCD6; --text-faint: #8CA0AF;
+    --border: #2A4256; --code-bg: #0B1622;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    --ok-bg: rgba(63,125,76,0.2); --no-bg: rgba(180,67,42,0.18);
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3 { font-family: Georgia, serif; text-wrap: balance; color: var(--text); }
+  a { color: var(--coral); }
+  .wrap { max-width: 900px; margin:0 auto; padding: 0 24px 100px; }
+  header.top { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-ink) 100%); color:#F5E9D6; padding: 52px 24px 34px; }
+  header.top .wrap { padding-bottom:0; }
+  .eyebrow { font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:10px; }
+  header.top h1 { color:#FBEEDC; font-size: clamp(26px,4vw,36px); margin:0 0 10px; line-height:1.15; }
+  header.top p { color:#C7D2DC; font-size:15.5px; max-width:64ch; line-height:1.6; margin:0; }
+  nav.toc { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+  nav.toc a { font-size:12.5px; color:#F5E9D6; text-decoration:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); padding:6px 12px; border-radius:100px; }
+
+  section { padding: 48px 0; border-bottom:1px solid var(--border); }
+  section:last-of-type { border-bottom:none; }
+  .section-label { display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+  .section-num { font-family:Georgia,serif; font-size:14px; color:var(--coral); font-weight:700; }
+  h2 { font-size:23px; margin:0 0 6px; }
+  .dek { color:var(--text-soft); font-size:15px; max-width:64ch; line-height:1.6; margin:0 0 22px; }
+  p { line-height:1.6; color:var(--text-soft); }
+
+  .reality {
+    display:flex; gap:10px; align-items:flex-start; padding:14px 16px; border-radius:10px;
+    background: var(--no-bg); margin-bottom: 26px; font-size:14px;
+  }
+  .reality strong { color: var(--no); }
+
+  .block {
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px; box-shadow:var(--shadow); margin-bottom:14px;
+  }
+  .block .head { display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+  .block .order { width:26px; height:26px; border-radius:50%; background:var(--navy); color:#FBEEDC; display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; font-family:Georgia,serif; flex-shrink:0; }
+  .block h4 { margin:0; font-size:15.5px; color:var(--text); }
+  .sectiontype {
+    font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;
+    background: var(--bg-sunken); color:var(--text-soft); padding:3px 9px; border-radius:100px;
+    border:1px solid var(--border);
+  }
+  .block .body { font-size:14px; }
+  .block .copylabel { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint); font-weight:700; margin:10px 0 4px; }
+  .block .paste { background:var(--bg-sunken); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:13.5px; color:var(--text); }
+  .block .paste em { color: var(--text-faint); font-style: italic; }
+
+  pre { background:var(--code-bg); color:var(--code-text); border-radius:10px; padding:14px 16px; overflow-x:auto; font-size:12px; line-height:1.55; box-shadow:var(--shadow); }
+
+  .quotegrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; margin-top:14px; }
+  .quotecard { background:var(--bg-panel); border:1px solid var(--border); border-left:3px solid var(--coral); border-radius:0 10px 10px 0; padding:14px 16px; box-shadow:var(--shadow); }
+  .quotecard p { font-style:italic; color:var(--text); font-size:14px; margin:0 0 6px; }
+  .quotecard cite { font-style:normal; font-size:12px; color:var(--text-faint); }
+
+  .not-possible { display:flex; flex-direction:column; gap:8px; }
+  .np-item { display:flex; gap:10px; align-items:flex-start; background:var(--bg-panel); border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-size:14px; box-shadow:var(--shadow); }
+  .np-item .x { color:var(--no); font-weight:700; flex-shrink:0; }
+  .np-item .alt { color: var(--text-faint); font-size:12.5px; display:block; margin-top:2px; }
+
+  footer { text-align:center; padding:36px 24px; color:var(--text-faint); font-size:12.5px; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">lobsteria.co — Real Build Plan, Square Online</div>
+    <h1>Every section, in order, mapped to Square's actual tools.</h1>
+    <p>Square Online is a closed builder — no custom CSS, no arbitrary HTML layout, ~20 fixed section types. This plan works entirely inside those limits, using real Square section names, with finished copy ready to paste. Confirmed against Square's own documentation and current (2026) platform capabilities.</p>
+    <nav class="toc">
+      <a href="#reality">The real constraints</a>
+      <a href="#template">Template &amp; theme</a>
+      <a href="#build">Section-by-section build</a>
+      <a href="#embeds">Real embed code</a>
+      <a href="#nope">Not possible in Square</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="reality">
+    <div class="section-label"><span class="section-num">00</span><h2>What Square actually is</h2></div>
+    <div class="reality">
+      <span>⚠️</span>
+      <span><strong>No custom CSS, no custom HTML layout, no custom fonts beyond Square's curated list.</strong> You build by stacking pre-built sections (Hero, Text, Gallery, Product Grid, Form, Newsletter, Map, Embed Code) and editing their content. Everything below is built <em>only</em> from real Square sections — nothing here requires a feature Square doesn't have.</span>
+    </div>
+  </section>
+
+  <section id="template">
+    <div class="section-label"><span class="section-num">01</span><h2>Template &amp; theme setup</h2></div>
+    <p class="dek">Do this once, before building any page — it sets the foundation everything else inherits.</p>
+
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Confirm you're on an "Order Online" template, not "Shop All"</h4><span class="sectiontype">Template category</span></div>
+      <div class="body">Square Online splits templates into two categories: <strong>Shop All</strong> (retail/product sales) and <strong>Order Online</strong> (restaurants — menu-forward, built for food ordering). Lobsteria needs Order Online. Check under Site Settings → Template if you're unsure which you're on.</div>
+    </div>
+    <div class="block">
+      <div class="head"><div class="order">2</div><h4>Set brand colors in the Style panel</h4><span class="sectiontype">Design → Style</span></div>
+      <div class="body">Square gives you a small fixed set of color roles (Primary, Secondary, Background, Button/Accent — exact number depends on the theme). Set them to:
+        <div class="copylabel">Paste these hex values</div>
+        <div class="paste">Primary: <strong>#1B3653</strong> (navy) &nbsp;·&nbsp; Accent/Buttons: <strong>#E15C2F</strong> (coral) &nbsp;·&nbsp; Background: <strong>#FBEEDC</strong> (cream — never pure white) &nbsp;·&nbsp; Sparingly (if a 4th slot exists): <strong>#D9A441</strong> (gold)</div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="head"><div class="order">3</div><h4>Pick fonts from Square's list</h4><span class="sectiontype">Design → Style → Fonts</span></div>
+      <div class="body">You can't upload your own font, so match the character instead: choose a confident serif or slab for headings (something with real weight — avoid anything thin or rounded), paired with a plain, highly legible sans for body text and menu items. Don't pick two sans-serifs that look similar — the contrast between the two is what creates hierarchy.</div>
+    </div>
+  </section>
+
+  <section id="build">
+    <div class="section-label"><span class="section-num">02</span><h2>Homepage, section by section</h2></div>
+    <p class="dek">Build the homepage in exactly this order using Square's <strong>+ Add Section</strong> button. Each block below names the real Square section type and gives you the copy to paste in.</p>
+
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Hero / Banner</h4><span class="sectiontype">Section: Hero Image</span></div>
+      <div class="body">Full-width image + headline + button. Upload the Airstream-at-night photo here once shot (placeholder: your best lobster roll shot until then).
+        <div class="copylabel">Headline</div><div class="paste">The best lobster roll in Miami. You already know where to go.</div>
+        <div class="copylabel">Subtext</div><div class="paste">Wild-caught Maine claw and knuckle, hand-cleaned in-house. Served from a vintage 1977 Airstream in Wynwood, every night since 2019.</div>
+        <div class="copylabel">Button</div><div class="paste">"Order Direct" → links to your Square ordering page</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">2</div><h4>Social proof strip</h4><span class="sectiontype">Section: Text</span></div>
+      <div class="body">A short text section right under the hero — this is the fix for reviews not being visible on-site. Real quotes, pulled from your actual Google Business Profile data (not invented):
+        <div class="quotegrid">
+          <div class="quotecard"><p>"The first bite was insane."</p><cite>— Tony Lopez, Google Local Guide</cite></div>
+          <div class="quotecard"><p>"Best lobster roll in Miami."</p><cite>— Franklyn Cerrano, Google</cite></div>
+          <div class="quotecard"><p>"Amazing lobster roll and ceviche! Free parking."</p><cite>— Paul Becskehazy, Google</cite></div>
+        </div>
+        <div class="copylabel">Above the quotes, add</div><div class="paste">4.9★ · 145 Google Reviews · Zero Press. Just Word of Mouth.</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">3</div><h4>Menu highlights</h4><span class="sectiontype">Section: Product/Item Grid (linked to your Item Library)</span></div>
+      <div class="body">Don't build this as static text — link it to your live Square Item Library so prices and 86'd items sync automatically (Online → Items → Link to Site). Feature 4 items: Connecticut Roll, Maine Roll, Oysters, Ceviche de la Tía Tati. Use the descriptions and prices already in your master brief.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">4</div><h4>Our Story</h4><span class="sectiontype">Section: Text + Image (side-by-side)</span></div>
+      <div class="body">
+        <div class="copylabel">Body copy</div>
+        <div class="paste">Pau Casals grew up shopping the stalls of La Boqueria in Barcelona — real seafood, no shortcuts, simply normal. A former professional water polo player for the Spanish national team, he came to Miami in 2012. When the pandemic took everything, he looked at what the city was calling a lobster roll and went all-in on building something else entirely.</div>
+        <div class="copylabel">Pull quote (if the theme supports one)</div>
+        <div class="paste">"There's nobody doing this the way it's supposed to be done." — Pau Casals, Chef-Owner</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">5</div><h4>The Standard</h4><span class="sectiontype">Section: Text (3-column layout, if theme offers it) or 3× Text sections side by side</span></div>
+      <div class="body">Three short claims reinforcing the hand-cleaned/wild-caught positioning:
+        <div class="paste"><strong>Wild-Caught Maine</strong> — Claw and knuckle only, never a substitute.<br><br><strong>Hand-Cleaned In-House</strong> — Cracked and picked by hand, every single night.<br><br><strong>Made to Order</strong> — Nothing sits pre-made. Your roll starts when your order comes in.</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">6</div><h4>Gallery</h4><span class="sectiontype">Section: Image Gallery</span></div>
+      <div class="body">Square's built-in gallery grid (fixed layout options, not custom). Use your ready photos now (oysters, ceviche, Connecticut Roll, grilled oysters); swap in Airstream/outdoor-seating/hand-cleaning shots once reshot.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">7</div><h4>Location &amp; hours</h4><span class="sectiontype">Section: Map</span></div>
+      <div class="body">Square has a native Map section — use it directly rather than an embed if it's available in your theme (simpler, no code needed). Address: 144 NE 27th St, Miami, FL 33137. Hours: Daily 5pm–2am. Note: walk-up only, free private parking.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">8</div><h4>Newsletter signup</h4><span class="sectiontype">Section: Newsletter / Email Signup (built-in)</span></div>
+      <div class="body">This is a native Square section — no third-party form needed. This is the fix for the missing email capture.
+        <div class="copylabel">Copy</div>
+        <div class="paste">Join the list. Menu drops, event announcements, and first look at the second location.</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">9</div><h4>Footer</h4><span class="sectiontype">Site-wide, set once in theme settings</span></div>
+      <div class="body">Logo, address, hours, Instagram/TikTok links (@lobsteriamia), and a line distinguishing "Order Direct" from delivery apps — Order Direct should visually lead; UberEats/DoorDash listed smaller below it.</div>
+    </div>
+  </section>
+
+  <section id="embeds">
+    <div class="section-label"><span class="section-num">03</span><h2>Real embed code (for the 2 things that need it)</h2></div>
+    <p class="dek">Square Online has a genuine <strong>"Embed Code" section</strong> (Add Section → Embed Code) for dropping in third-party iframes/scripts. You only need this for two things — everything else above uses native Square sections.</p>
+
+    <div class="copylabel">1. Google Map — exact address, no API key required</div>
+    <pre>&lt;iframe
+  src="https://maps.google.com/maps?q=144+NE+27th+St,+Miami,+FL+33137&amp;output=embed"
+  width="100%" height="450" style="border:0;"
+  allowfullscreen="" loading="lazy"&gt;
+&lt;/iframe&gt;</pre>
+    <p style="font-size:13px;">Only use this if your theme doesn't already have a native Map section — check first, it's simpler and less likely to break.</p>
+
+    <div class="copylabel">2. Restaurant/Local Business JSON-LD (already written, from seo-structured-data.md)</div>
+    <p style="font-size:13px;">This one goes in <strong>Site Settings → Custom Code → Header Code</strong>, not an Embed Code section — different mechanism, site-wide instead of per-page. Full script is already in your repo, ready to paste.</p>
+  </section>
+
+  <section id="nope">
+    <div class="section-label"><span class="section-num">04</span><h2>Not possible in Square — don't chase these</h2></div>
+    <p class="dek">Worth knowing upfront so you don't spend time hunting for a setting that doesn't exist.</p>
+    <div class="not-possible">
+      <div class="np-item"><span class="x">✕</span><span>Custom hover animations / lift effects on cards<span class="alt">Square sections have fixed, theme-defined interactions only.</span></span></div>
+      <div class="np-item"><span class="x">✕</span><span>Asymmetric / custom-grid photo layouts<span class="alt">Gallery section offers a small set of fixed grid patterns — pick the closest one.</span></span></div>
+      <div class="np-item"><span class="x">✕</span><span>Uploading your own font file<span class="alt">Choose the closest match from Square's curated font list instead.</span></span></div>
+      <div class="np-item"><span class="x">✕</span><span>Sticky/blurred navigation bar with custom styling<span class="alt">Header behavior is fixed per-theme; some themes offer a basic sticky-header toggle, most don't.</span></span></div>
+      <div class="np-item"><span class="x">✕</span><span>Fully custom page layouts outside the section system<span class="alt">If you eventually outgrow this, that's a "move off Square" conversation, not a Square settings conversation.</span></span></div>
+    </div>
+  </section>
+
+</div>
+<footer>Verified against Square Online's 2026 platform documentation and community support threads. Built from lobsteria-master-brief.md, brand-strategy.md, seo-structured-data.md, and gbp_reviews_data.json.</footer>
