@@ -1,0 +1,260 @@
+<title>Lobsteria — Webflow Build Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --navy: #1B3653; --navy-ink: #14283D; --coral: #E15C2F; --coral-deep: #C64A22;
+    --gold: #D9A441; --cream: #FBEEDC;
+    --bg: var(--cream); --bg-panel: #FFFFFF; --bg-sunken: #F3E4CE;
+    --text: var(--navy-ink); --text-soft: #4A5A6B; --text-faint: #7C8B9A;
+    --border: #E4D3B8; --gold-ink: #8A6A1F;
+    --code-bg: #142235; --code-text: #E7E4DA;
+    --shadow: 0 1px 2px rgba(27,54,83,0.06), 0 8px 24px rgba(27,54,83,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10202F; --bg-panel: #17293A; --bg-sunken: #0C1A26;
+      --text: #F2E9DA; --text-soft: #C3CCD6; --text-faint: #8CA0AF;
+      --border: #2A4256; --code-bg: #0B1622;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10202F; --bg-panel: #17293A; --bg-sunken: #0C1A26;
+    --text: #F2E9DA; --text-soft: #C3CCD6; --text-faint: #8CA0AF;
+    --border: #2A4256; --code-bg: #0B1622;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3 { font-family: Georgia, serif; text-wrap: balance; color: var(--text); }
+  a { color: var(--coral); }
+  .wrap { max-width: 960px; margin:0 auto; padding: 0 24px 110px; }
+  header.top { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-ink) 100%); color:#F5E9D6; padding: 52px 24px 34px; }
+  header.top .wrap { padding-bottom:0; }
+  .eyebrow { font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:10px; }
+  header.top h1 { color:#FBEEDC; font-size: clamp(26px,4vw,38px); margin:0 0 10px; line-height:1.15; }
+  header.top p { color:#C7D2DC; font-size:15.5px; max-width:66ch; line-height:1.6; margin:0; }
+  nav.toc { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+  nav.toc a { font-size:12.5px; color:#F5E9D6; text-decoration:none; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); padding:6px 12px; border-radius:100px; }
+
+  section { padding: 50px 0; border-bottom:1px solid var(--border); }
+  section:last-of-type { border-bottom:none; }
+  .section-label { display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+  .section-num { font-family:Georgia,serif; font-size:14px; color:var(--coral); font-weight:700; }
+  h2 { font-size:23px; margin:0 0 6px; }
+  .dek { color:var(--text-soft); font-size:15px; max-width:66ch; line-height:1.6; margin:0 0 22px; }
+  p { line-height:1.6; color:var(--text-soft); }
+  strong { color: var(--text); }
+
+  .block { background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:18px 20px; box-shadow:var(--shadow); margin-bottom:14px; }
+  .block .head { display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+  .block .order { width:26px; height:26px; border-radius:50%; background:var(--navy); color:#FBEEDC; display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; font-family:Georgia,serif; flex-shrink:0; }
+  .block h4 { margin:0; font-size:15.5px; color:var(--text); }
+  .tag { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; background:var(--bg-sunken); color:var(--text-soft); padding:3px 9px; border-radius:100px; border:1px solid var(--border); }
+  .block .body { font-size:14px; }
+  .copylabel { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint); font-weight:700; margin:10px 0 4px; }
+  .paste { background:var(--bg-sunken); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:13.5px; color:var(--text); }
+  .interaction { display:flex; gap:8px; align-items:flex-start; background: rgba(225,92,47,0.08); border-left: 3px solid var(--coral); border-radius: 0 8px 8px 0; padding: 10px 12px; margin-top:10px; font-size:13px; }
+  .interaction strong { color: var(--coral-deep); }
+
+  .fontcard { background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:20px; box-shadow:var(--shadow); }
+  .fontcard .role { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--coral); font-weight:700; margin-bottom:8px; }
+  .fontcard .sample { font-size:32px; margin:4px 0 10px; color: var(--text); }
+  .fontcard.display .sample { font-family: Georgia, serif; font-weight:600; font-style:italic; }
+  .fontcard.body .sample { font-family: -apple-system, sans-serif; font-size:22px; }
+  .fontcard .meta { font-size:12.5px; color: var(--text-faint); }
+  .fontgrid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:16px; }
+
+  .palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top:16px; }
+  .swatch { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--bg-panel); box-shadow:var(--shadow); }
+  .swatch .chip { height:64px; }
+  .swatch .info { padding:10px 12px; }
+  .swatch .name { font-weight:700; font-size:13.5px; }
+  .swatch .hex { font-family:"SF Mono",Menlo,monospace; font-size:12px; color:var(--text-faint); }
+
+  pre { background:var(--code-bg); color:var(--code-text); border-radius:10px; padding:14px 16px; overflow-x:auto; font-size:12px; line-height:1.55; box-shadow:var(--shadow); }
+  .callout { background:var(--bg-panel); border-left:3px solid var(--coral); border-radius:0 10px 10px 0; padding:14px 18px; font-size:14px; box-shadow:var(--shadow); margin:18px 0; }
+  .callout strong { color: var(--coral-deep); }
+
+  .cms-fields { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+  .cms-field { display:flex; gap:10px; font-size:13.5px; background:var(--bg-sunken); border:1px solid var(--border); border-radius:8px; padding:8px 12px; }
+  .cms-field .fname { font-weight:700; min-width:110px; }
+  .cms-field .ftype { color:var(--text-faint); font-family:"SF Mono",Menlo,monospace; font-size:11.5px; }
+
+  footer { text-align:center; padding:40px 24px; color:var(--text-faint); font-size:12.5px; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">lobsteria.co — Webflow Rebuild</div>
+    <h1>The full build, no compromises this time.</h1>
+    <p>Webflow supports real fonts, real animation, real custom layout, and a real CMS — everything Square couldn't do. This is the complete spec: exact typography, exact colors, section-by-section structure with real interaction notes, and how the menu connects to Square without losing self-service editing.</p>
+    <nav class="toc">
+      <a href="#setup">Project setup</a>
+      <a href="#type">Typography</a>
+      <a href="#color">Color system</a>
+      <a href="#cms">Menu CMS</a>
+      <a href="#build">Homepage build</a>
+      <a href="#pages">Other pages</a>
+      <a href="#order">Square ordering</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="setup">
+    <div class="section-label"><span class="section-num">01</span><h2>Project setup</h2></div>
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Start from a restaurant template, not blank</h4></div>
+      <div class="body">Webflow's template marketplace has restaurant/food-truck templates built with proper section structure already — search "restaurant" or "food truck" in Webflow Templates. Starting from one saves real time on responsive breakpoints and section scaffolding; you're restyling, not building layout logic from zero.</div>
+    </div>
+    <div class="block">
+      <div class="head"><div class="order">2</div><h4>Set up Webflow Variables first</h4><span class="tag">Style → Variables panel</span></div>
+      <div class="body">Before touching any page, define your 4 brand colors and 2 fonts as Variables (Webflow's version of design tokens). Every section you build after references these — change a Variable once, it updates everywhere, instead of manually re-editing every section if you tweak a shade later.</div>
+    </div>
+    <div class="block">
+      <div class="head"><div class="order">3</div><h4>Point your domain</h4><span class="tag">Project Settings → Publishing</span></div>
+      <div class="body">Add lobsteria.co as a custom domain in Webflow, then update your domain's DNS (wherever it's currently registered) to point at Webflow instead of Square. Do this <strong>last</strong>, only once the site is fully built and reviewed — don't point the live domain at a half-finished site.</div>
+    </div>
+  </section>
+
+  <section id="type">
+    <div class="section-label"><span class="section-num">02</span><h2>Typography — real fonts this time</h2></div>
+    <p class="dek">Both available free in Webflow's native Google Fonts picker — no upload needed. This pairing was chosen deliberately: Fraunces has the warmth and slight vintage character that fits a 1977 Airstream without tipping into cliché nautical-script territory; Inter is disciplined and modern enough to keep the whole thing from feeling like a themed restaurant rather than a serious brand.</div>
+
+    <div class="fontgrid">
+      <div class="fontcard display">
+        <div class="role">Display / Headlines</div>
+        <div class="sample" style="font-style:normal; font-weight:900;">Fraunces</div>
+        <div class="meta">Weight 600–900 for headlines · Italic 500 for pull quotes · Use at 90pt for hero, 32–40pt for section heads</div>
+      </div>
+      <div class="fontcard body">
+        <div class="role">Body / UI</div>
+        <div class="sample">Inter</div>
+        <div class="meta">Weight 400 body copy, 600 for buttons/labels · 16–17pt body, 13pt captions · Never below 13pt on mobile</div>
+      </div>
+    </div>
+
+    <div class="callout"><strong>In Webflow:</strong> Site Settings → Fonts → Add Google Font → search "Fraunces" and "Inter" — both are hosted directly by Webflow, no performance penalty. Set Fraunces as your Heading 1–3 default and Inter as your Paragraph/body default in the Style Guide.</div>
+  </section>
+
+  <section id="color">
+    <div class="section-label"><span class="section-num">03</span><h2>Color system</h2></div>
+    <p class="dek">Same four brand colors as before — now set as real Webflow Variables instead of a fixed theme picker.</p>
+    <div class="palette">
+      <div class="swatch"><div class="chip" style="background:#1B3653"></div><div class="info"><div class="name">Navy</div><div class="hex">#1B3653 — primary text, nav, footer</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#E15C2F"></div><div class="info"><div class="name">Coral</div><div class="hex">#E15C2F — buttons, links, accents</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#FBEEDC; border-bottom:1px solid #E4D3B8;"></div><div class="info"><div class="name">Cream</div><div class="hex">#FBEEDC — page background</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#D9A441"></div><div class="info"><div class="name">Gold</div><div class="hex">#D9A441 — premium moments only</div></div></div>
+    </div>
+  </section>
+
+  <section id="cms">
+    <div class="section-label"><span class="section-num">04</span><h2>Menu as a real CMS Collection</h2></div>
+    <p class="dek">This is what Webflow gets you that raw code wouldn't: a Collection is a structured content type you (not a developer) can add/edit items in, with no code touched. It's how the menu grid stays editable without you learning Webflow's design canvas for routine updates.</p>
+
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Create a "Menu Items" Collection</h4><span class="tag">CMS → Collections → New Collection</span></div>
+      <div class="body">Fields to set up:
+        <div class="cms-fields">
+          <div class="cms-field"><span class="fname">Name</span><span class="ftype">Plain text</span></div>
+          <div class="cms-field"><span class="fname">Description</span><span class="ftype">Plain text</span></div>
+          <div class="cms-field"><span class="fname">Price</span><span class="ftype">Plain text (e.g. "$30–$42")</span></div>
+          <div class="cms-field"><span class="fname">Category</span><span class="ftype">Option: Rolls / Oysters / Ceviche / Add-Ons</span></div>
+          <div class="cms-field"><span class="fname">Photo</span><span class="ftype">Image</span></div>
+          <div class="cms-field"><span class="fname">Featured</span><span class="ftype">Switch (on = shows on homepage)</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="head"><div class="order">2</div><h4>Populate it once from your master brief</h4></div>
+      <div class="body">All 6 items are already fully specified in <code>lobsteria-master-brief.md</code> §6 — Connecticut Roll, Maine Roll, Lobster Grilled Cheese, White Truffle Roll, Surf &amp; Turf Roll, Caviar Roll, plus oysters and ceviches. Copy descriptions and prices directly in.</div>
+    </div>
+    <div class="callout"><strong>Important — this doesn't auto-sync with Square.</strong> Webflow's CMS and your Square Item Library are two separate systems. When a price changes, you'll update it in both places. This is a minor manual step (menu prices don't change often), and it's low-risk: actual checkout still runs through the embedded Square widget below, which always uses Square's live, correct price — the CMS only controls what's <em>displayed</em>, not what's <em>charged</em>.</div>
+  </section>
+
+  <section id="build">
+    <div class="section-label"><span class="section-num">05</span><h2>Homepage, section by section</h2></div>
+    <p class="dek">Same structure as the earlier mockup, now with real Webflow interaction specs — things Square genuinely couldn't do.</p>
+
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Hero</h4><span class="tag">Section + Background Video/Image element</span></div>
+      <div class="body">
+        <div class="copylabel">Headline (Fraunces, 900 weight, italic on "You already know")</div>
+        <div class="paste">The best lobster roll in Miami. <em>You already know where to go.</em></div>
+        <div class="copylabel">Subhead (Inter, 400, 18px)</div>
+        <div class="paste">Wild-caught Maine claw and knuckle, hand-cleaned in-house. Served from a vintage 1977 Airstream in Wynwood, every night since 2019.</div>
+        <div class="interaction"><strong>Interaction:</strong> on page load, fade-up the headline (0→1 opacity, 20px→0 translate-Y, 600ms, 100ms stagger between headline/subhead/buttons) — Webflow's native Interactions panel, "Page Load" trigger.</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">2</div><h4>Social proof strip</h4><span class="tag">Div block, horizontal flex</span></div>
+      <div class="body">4.9★ · 145 reviews · real quotes (Tony Lopez, Franklyn Cerrano, Paul Becskehazy — same as before). Static content, no CMS needed for 3 fixed quotes.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">3</div><h4>Menu highlights</h4><span class="tag">Collection List, filtered to Featured = true</span></div>
+      <div class="body">A Collection List element pulling from the Menu Items Collection, filtered to only show items marked "Featured." Add cards for Connecticut Roll, Maine Roll, Oysters, Ceviche.
+        <div class="interaction"><strong>Interaction:</strong> on hover, card lifts 6px + shadow deepens (200ms ease-out), image scales 1.04 inside its container (400ms ease). This is the effect that was impossible in Square — native here via Interactions.</div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">4</div><h4>Our Story</h4><span class="tag">Two-column Section</span></div>
+      <div class="body">Same copy as before (Pau's background, the pandemic pivot, the real quote). Add a scroll-triggered interaction: image fades/slides in from the left as it enters viewport, text from the right — 60% viewport trigger, 500ms ease.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">5</div><h4>The Standard</h4><span class="tag">Dark Section, 3-column Grid</span></div>
+      <div class="body">Navy background, gold numerals (01/02/03), same three claims as before (Wild-Caught Maine / Hand-Cleaned In-House / Made to Order). Grid, not fixed columns — reflows to 1 column under 480px automatically.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">6</div><h4>Gallery</h4><span class="tag">CSS Grid, custom asymmetric layout</span></div>
+      <div class="body">This is the one Square explicitly couldn't do — a real asymmetric grid (one large tile spanning 2×2, others 1×1), built with Webflow's native Grid element and manual cell placement. Populate with your ready photos now; swap in Airstream/portrait/hand-cleaning shots once reshot.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">7</div><h4>Location &amp; hours</h4><span class="tag">Section + embedded Google Map iframe</span></div>
+      <div class="body">Same real embed code as the Square plan — Webflow's "Embed" element takes raw HTML/iframes natively, same snippet works unchanged.</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">8</div><h4>Email capture</h4><span class="tag">Native Webflow Form element</span></div>
+      <div class="body">Webflow Forms submit natively (or connect to Mailchimp/Klaviyo via native integration if you want automated sequences later). Copy: "Join the list. Menu drops, event announcements, and first look at the second location."</div>
+    </div>
+
+    <div class="block">
+      <div class="head"><div class="order">9</div><h4>Footer</h4><span class="tag">Global Symbol — set once, appears on every page</span></div>
+      <div class="body">Logo, address, hours, socials, "Order Direct" leading visually over UberEats/DoorDash. Webflow Symbols mean editing the footer once updates it site-wide automatically.</div>
+    </div>
+  </section>
+
+  <section id="pages">
+    <div class="section-label"><span class="section-num">06</span><h2>Other pages — same system, lighter build</h2></div>
+    <p class="dek">Once the homepage's Style Guide and Symbols exist, these reuse almost everything — mostly new copy in existing components, not new design work.</p>
+    <ul>
+      <li><strong>/menu</strong> — full Collection List (all items, not just Featured), grouped by Category field</li>
+      <li><strong>/about</strong> — expanded version of the homepage Story section, full Pau narrative from the brand bible</li>
+      <li><strong>/eventboxes</strong> and <strong>/request-catering</strong> — reuse the menu-card component style for box tiers (18/36/54 rolls), form element for catering inquiries</li>
+      <li><strong>/press</strong> — empty for now, ready to populate once the press release lands coverage</li>
+    </ul>
+  </section>
+
+  <section id="order">
+    <div class="section-label"><span class="section-num">07</span><h2>Connecting Square ordering</h2></div>
+    <p class="dek">This is the piece that keeps your POS connection intact — checkout stays on Square, live pricing and inventory included.</p>
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Get your Square Online checkout link</h4></div>
+      <div class="body">From Square Dashboard → Online Checkout, or your existing Square Online store URL — this is the actual transaction page, unaffected by moving the marketing site to Webflow.</div>
+    </div>
+    <div class="block">
+      <div class="head"><div class="order">2</div><h4>"Order Direct" buttons link out, not embed</h4></div>
+      <div class="body">Simplest and most reliable: every "Order Direct" button on the Webflow site links directly to that Square checkout URL in a new tab, rather than trying to embed Square's full ordering flow inline (embedding checkout flows cross-domain gets fragile — a clean link-out is more robust and is what most restaurants actually do).</div>
+    </div>
+  </section>
+
+</div>
+<footer>Built from lobsteria-master-brief.md, brand-strategy.md, seo-structured-data.md, and gbp_reviews_data.json.</footer>
