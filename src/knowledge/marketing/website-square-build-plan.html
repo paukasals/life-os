@@ -97,6 +97,8 @@
       <a href="#template">Template &amp; theme</a>
       <a href="#build">Section-by-section build</a>
       <a href="#embeds">Real embed code</a>
+      <a href="#analytics">Analytics &amp; tracking</a>
+      <a href="#domain">Domain cleanup</a>
       <a href="#nope">Not possible in Square</a>
     </nav>
   </div>
@@ -220,8 +222,35 @@
     <p style="font-size:13px;">This one goes in <strong>Site Settings → Custom Code → Header Code</strong>, not an Embed Code section — different mechanism, site-wide instead of per-page. Full script is already in your repo, ready to paste.</p>
   </section>
 
+  <section id="analytics">
+    <div class="section-label"><span class="section-num">04</span><h2>Analytics &amp; tracking</h2></div>
+    <p class="dek">Without this, you have no way to know which content, ads, or channels are actually driving orders. Square has a dedicated panel for this — no custom code needed.</p>
+
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Add Google Analytics + Meta Pixel via Tracking Tools</h4><span class="sectiontype">Sales Channels → Online → Settings → Tracking Tools</span></div>
+      <div class="body">This is a native Square panel built exactly for this — separate from the Header Code area you used for SEO. Click <strong>"Add new code"</strong>, name it (e.g. "Google Analytics" / "Meta Pixel"), and paste each tracking ID/snippet in. Square inserts it into the site header for you.
+        <div class="copylabel">You'll need</div>
+        <div class="paste">A Google Analytics 4 Measurement ID (from analytics.google.com — free) and a Meta Pixel ID (from Meta Events Manager, business.facebook.com — free, useful even if you're not running ads yet).</div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="head"><div class="order">2</div><h4>Set up an "Order Complete" conversion event</h4></div>
+      <div class="body">Once the base pixel/Analytics is installed, mark your order-confirmation page as a goal/conversion in both Google Analytics and Meta Events Manager. Without this specific step, you'll see traffic numbers but never know how many visits actually turned into an order — the number that actually matters.</div>
+    </div>
+    <div class="callout"><strong>Why this matters more than it sounds:</strong> if you ever run a paid ad (Instagram/Meta ads are already referenced in your own files), this is what tells you whether that specific ad made money or not. Install it now, before you need the historical data — you can't retroactively track traffic that already happened.</div>
+  </section>
+
+  <section id="domain">
+    <div class="section-label"><span class="section-num">05</span><h2>Domain cleanup</h2></div>
+    <p class="dek">A small technical loose end, five minutes to check.</p>
+    <div class="block">
+      <div class="head"><div class="order">1</div><h4>Confirm the old domain redirects</h4></div>
+      <div class="body">Your master brief references <strong>cevicheandlobsterbar.com</strong> as an earlier concept name. Visit it directly — if it doesn't automatically forward to lobsteria.co, set up a redirect wherever that domain is registered. Any old backlinks, saved bookmarks, or leftover mentions pointing at it are otherwise just lost traffic and lost SEO value instead of flowing to your current site.</div>
+    </div>
+  </section>
+
   <section id="nope">
-    <div class="section-label"><span class="section-num">04</span><h2>Not possible in Square — don't chase these</h2></div>
+    <div class="section-label"><span class="section-num">06</span><h2>Not possible in Square — don't chase these</h2></div>
     <p class="dek">Worth knowing upfront so you don't spend time hunting for a setting that doesn't exist.</p>
     <div class="not-possible">
       <div class="np-item"><span class="x">✕</span><span>Custom hover animations / lift effects on cards<span class="alt">Square sections have fixed, theme-defined interactions only.</span></span></div>
