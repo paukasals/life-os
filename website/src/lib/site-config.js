@@ -24,12 +24,12 @@ export const siteConfig = {
     tiktok: "https://tiktok.com/@lobsteria", // TODO
     facebook: "https://facebook.com/lobsteria", // TODO
   },
-  // Set from Uber Eats Manager → Webshop tab → Actions → Copy Link.
-  // Until this is set, the Order Now buttons link to the Uber Eats search
-  // page instead so the site still works end-to-end.
+  // From Uber Eats Manager → Webshop tab → Actions → Copy Link.
+  // NEXT_PUBLIC_UBER_EATS_WEBSHOP_URL (set in Railway/`.env.local`) overrides
+  // this if you ever regenerate the link.
   uberEatsWebshopUrl:
     process.env.NEXT_PUBLIC_UBER_EATS_WEBSHOP_URL ||
-    "https://www.ubereats.com/store/lobsteria",
+    "https://www.order.store/store/lobsteria/vE-vJZpjXCe-RwCXZR_Oyw",
   hours: [
     { days: "Tue – Thu", time: "11:30 AM – 8:00 PM" },
     { days: "Fri – Sat", time: "11:30 AM – 9:30 PM" },
