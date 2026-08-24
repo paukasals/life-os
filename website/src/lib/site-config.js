@@ -4,44 +4,44 @@
 
 export const siteConfig = {
   name: "Lobsteria",
-  tagline: "Fresh lobster, oysters & ceviche from our Airstream",
+  tagline: "Miami's lobster roll",
   description:
-    "Lobsteria is a coastal-inspired Airstream food truck serving fresh lobster rolls, oysters, and ceviche. Order online for pickup or delivery, or find us at our next location.",
-  url: "https://lobsteria.com", // TODO: set to the real production domain
-  phone: "+1 (555) 123-4567", // TODO
-  email: "hello@lobsteria.com", // TODO
+    "Lobsteria is a converted 1977 Airstream in Miami's Wynwood, serving hand-cleaned wild-caught Maine lobster rolls, a five-preparation raw oyster bar, and Peruvian & Nikkei ceviche. 4.9 stars, 145+ Google reviews, zero paid ads.",
+  url: "https://lobsteria.co",
+  phone: "+1 (305) 555-0142", // TODO: confirm real number
+  email: "hello@lobsteria.co", // TODO: confirm real inbox
   address: {
-    // Airstream trucks move around — set this to a home base / commissary
-    // address, or remove and rely on the Locations page schedule instead.
-    line1: "Rotating locations — see schedule",
+    line1: "Wynwood", // TODO: add exact street address
     city: "Miami",
     region: "FL",
     postalCode: "",
     country: "US",
   },
   social: {
-    instagram: "https://instagram.com/lobsteria", // TODO
-    tiktok: "https://tiktok.com/@lobsteria", // TODO
-    facebook: "https://facebook.com/lobsteria", // TODO
+    instagram: "https://instagram.com/lobsteriamia",
+    tiktok: "https://tiktok.com/@lobsteriamia", // TODO: confirm handle
+    facebook: "https://facebook.com/lobsteriamia", // TODO: confirm handle
   },
-  // From Uber Eats Manager → Webshop tab → Actions → Copy Link.
+  // Set from Uber Eats Manager → Webshop tab → Actions → Copy Link.
   // NEXT_PUBLIC_UBER_EATS_WEBSHOP_URL (set in Railway/`.env.local`) overrides
   // this if you ever regenerate the link.
   uberEatsWebshopUrl:
     process.env.NEXT_PUBLIC_UBER_EATS_WEBSHOP_URL ||
     "https://www.order.store/store/lobsteria/vE-vJZpjXCe-RwCXZR_Oyw",
   hours: [
-    { days: "Tue – Thu", time: "11:30 AM – 8:00 PM" },
+    { days: "Tue – Thu", time: "11:30 AM – 8:00 PM" }, // TODO: confirm real hours
     { days: "Fri – Sat", time: "11:30 AM – 9:30 PM" },
     { days: "Sun", time: "12:00 PM – 6:00 PM" },
     { days: "Mon", time: "Closed" },
   ],
+  founded: 2019,
+  rating: { value: 4.9, count: 145 },
 };
 
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/menu", label: "Menu" },
-  { href: "/locations", label: "Locations" },
+  { href: "/locations", label: "Visit Us" },
   { href: "/about", label: "Our Story" },
   { href: "/contact", label: "Contact" },
 ];

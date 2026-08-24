@@ -51,6 +51,11 @@ const restaurantJsonLd = {
     addressRegion: siteConfig.address.region,
     addressCountry: siteConfig.address.country,
   },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: siteConfig.rating.value,
+    reviewCount: siteConfig.rating.count,
+  },
   sameAs: Object.values(siteConfig.social),
 };
 

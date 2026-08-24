@@ -1,51 +1,77 @@
+import Image from "next/image";
 import OrderButton from "@/components/OrderButton";
-import { schedule } from "@/lib/locations-data";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata = {
-  title: "Locations",
-  description: "Find the Lobsteria Airstream — weekly schedule and stops.",
+  title: "Visit Us",
+  description: "Find Lobsteria's Airstream in Wynwood, Miami — hours, address, and directions.",
 };
 
 export default function LocationsPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
       <div className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-coral">Find the truck</p>
-        <h1 className="mt-2 font-display text-4xl font-semibold">Weekly schedule</h1>
+        <p className="text-sm font-semibold uppercase tracking-widest text-coral">Visit us</p>
+        <h1 className="mt-2 font-display text-4xl font-semibold">Find the Airstream</h1>
         <p className="mx-auto mt-3 max-w-lg text-navy/70">
-          Can&apos;t make it to a stop? Order online for pickup or delivery instead.
+          Lobsteria is parked in Wynwood, Miami — a restored 1977 Airstream with outdoor seating.
+          Can&apos;t make it in? Order online for pickup or delivery instead.
         </p>
         <div className="mt-6">
           <OrderButton size="lg" />
         </div>
       </div>
 
-      <div className="mt-14 aspect-[16/7] w-full rounded-3xl bg-sand-dark" />
-
-      <div className="mt-14 overflow-hidden rounded-2xl ring-1 ring-navy/10">
-        <table className="w-full text-left">
-          <thead className="bg-navy text-sand">
-            <tr>
-              <th className="px-6 py-3 text-sm font-semibold">Day</th>
-              <th className="px-6 py-3 text-sm font-semibold">Location</th>
-              <th className="px-6 py-3 text-sm font-semibold">Hours</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-navy/10 bg-shell">
-            {schedule.map((row) => (
-              <tr key={row.day}>
-                <td className="px-6 py-4 text-sm font-medium">{row.day}</td>
-                <td className="px-6 py-4 text-sm text-navy/70">{row.stop}</td>
-                <td className="px-6 py-4 text-sm text-navy/70">{row.time}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="relative mt-14 aspect-[16/9] w-full overflow-hidden rounded-3xl">
+        <Image
+          src="/images/ambiance-night.jpeg"
+          alt="Lobsteria's Airstream and outdoor seating in Wynwood, Miami"
+          fill
+          sizes="(min-width: 768px) 768px, 100vw"
+          className="object-cover"
+        />
       </div>
 
-      <p className="mt-6 text-center text-sm text-navy/60">
-        Schedule can shift for weather, private events, and catering. Follow us on Instagram for
-        real-time location updates.
+      <div className="mt-14 grid gap-8 sm:grid-cols-2">
+        <div className="rounded-2xl bg-shell p-6 ring-1 ring-navy/10">
+          <h2 className="font-display text-lg font-semibold">Address</h2>
+          <p className="mt-2 text-navy/70">
+            {siteConfig.address.line1}
+            <br />
+            {siteConfig.address.city}, {siteConfig.address.region}
+          </p>
+          <p className="mt-2 text-sm text-navy/50">
+            {/* TODO: add exact street address once confirmed */}
+            Exact street address coming soon — follow{" "}
+            <a
+              href={siteConfig.social.instagram}
+              className="font-semibold text-teal hover:text-coral"
+            >
+              @lobsteriamia
+            </a>{" "}
+            for the pin.
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-shell p-6 ring-1 ring-navy/10">
+          <h2 className="font-display text-lg font-semibold">Hours</h2>
+          <ul className="mt-2 space-y-1.5 text-navy/70">
+            {siteConfig.hours.map((h) => (
+              <li key={h.days} className="flex justify-between gap-4">
+                <span>{h.days}</span>
+                <span>{h.time}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <p className="mt-10 text-center text-sm text-navy/60">
+        Planning a wedding, corporate event, or private party? Lobsteria caters — see{" "}
+        <a href="/contact" className="font-semibold text-teal hover:text-coral">
+          Contact
+        </a>{" "}
+        for event boxes and booking.
       </p>
     </div>
   );

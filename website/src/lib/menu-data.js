@@ -1,50 +1,78 @@
-// Sample menu — replace with Lobsteria's real dishes and prices.
+// Real Lobsteria menu structure and confirmed pricing (from the on-site
+// sandwich-board menu). Items without a confirmed price show "MP" — fill in
+// the real number as soon as you have it, don't guess.
 export const menu = [
   {
-    category: "Signatures",
+    category: "Lobster Rolls",
     items: [
       {
-        name: "Classic Lobster Roll",
-        price: "$22",
-        description: "Chilled Maine lobster, brown butter, chives, toasted brioche.",
+        name: "Connecticut Roll",
+        price: "$24.95",
+        description:
+          "Hand-cleaned wild-caught Maine lobster, tossed warm in brown butter, toasted split-top bun.",
         featured: true,
+        image: "/images/connecticut-lobster-roll.webp",
       },
       {
-        name: "Hot Buttered Lobster Roll",
-        price: "$22",
-        description: "Warm lobster tossed in drawn butter, lemon, toasted split-top bun.",
+        name: "Maine Roll",
+        price: "$24.95",
+        description:
+          "Hand-cleaned wild-caught Maine lobster, served cold with our secret Old Bay mayo.",
         featured: true,
+        image: "/images/connecticut.png",
       },
       {
-        name: "Lobsteria Ceviche",
-        price: "$16",
-        description: "Lime-cured lobster & shrimp, red onion, cilantro, aji amarillo, plantain chips.",
-        featured: true,
+        name: "Prawns Roll",
+        price: "$17.95",
+        description: "Chilled or warm prawns, brown butter or Old Bay mayo, toasted bun.",
       },
     ],
   },
   {
-    category: "Raw Bar",
+    category: "Caviar Add-On",
     items: [
-      { name: "Oysters on the Half Shell", price: "$3/ea", description: "Daily selection, mignonette, cocktail sauce." },
-      { name: "Chargrilled Oysters", price: "$18 / half dozen", description: "Garlic herb butter, parmesan, grilled to order." },
-      { name: "Shrimp Cocktail", price: "$14", description: "Poached gulf shrimp, house cocktail sauce." },
+      {
+        name: "Sturgeon Caviar, on anything",
+        price: "from $30",
+        description:
+          "Add sturgeon caviar to nearly any roll, oyster, or ceviche on the menu.",
+        image: "/images/lobster-caviar.png",
+      },
     ],
   },
   {
-    category: "Bowls & Sides",
+    category: "Raw Oyster Bar",
     items: [
-      { name: "Lobster Mac & Cheese", price: "$15", description: "Cavatappi, three-cheese sauce, buttered breadcrumbs." },
-      { name: "Elote Street Corn", price: "$8", description: "Cotija, chili lime crema, cilantro." },
-      { name: "Truffle Fries", price: "$9", description: "Hand-cut fries, truffle oil, parmesan, parsley." },
+      {
+        name: "Oysters on the Half Shell",
+        price: "MP",
+        description: "Daily selection, five preparations available.",
+        image: "/images/oyster-platter.jpg",
+      },
+      {
+        name: "Chargrilled Oysters",
+        price: "MP",
+        description: "Garlic herb butter, grilled to order.",
+      },
     ],
   },
   {
-    category: "Drinks",
+    category: "Peruvian & Nikkei Ceviche",
     items: [
-      { name: "Fresh-Squeezed Limeade", price: "$5", description: "Lime, cane sugar, soda water." },
-      { name: "Mango Passionfruit Agua Fresca", price: "$6", description: "Fresh fruit, lightly sweetened." },
-      { name: "Bottled Water / Soda", price: "$3", description: "" },
+      {
+        name: "Corvina Ceviche",
+        price: "$15.95",
+        description:
+          "Peruvian-style, leche de tigre made from a recipe passed down by a close friend's grandmother in Peru — \"Tía Tati's\" recipe.",
+        featured: true,
+        image: "/images/ceviche.webp",
+      },
+      {
+        name: "Nikkei Ceviche Roll",
+        price: "MP",
+        description: "Peruvian-Japanese style, crispy nori, citrus.",
+        image: "/images/nikkei-ceviche-roll.png",
+      },
     ],
   },
 ];
