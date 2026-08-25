@@ -1,5 +1,6 @@
 import Image from "next/image";
 import OrderButton from "@/components/OrderButton";
+import Reveal from "@/components/Reveal";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata = {
@@ -22,18 +23,19 @@ export default function LocationsPage() {
         </div>
       </div>
 
-      <div className="relative mt-14 aspect-[16/9] w-full overflow-hidden rounded-3xl">
+      <Reveal className="relative mt-14 aspect-[16/9] w-full overflow-hidden rounded-3xl">
         <Image
           src="/images/ambiance-night.jpeg"
           alt="Lobsteria's Airstream and outdoor seating in Wynwood, Miami"
           fill
           sizes="(min-width: 768px) 768px, 100vw"
           className="object-cover"
+          priority
         />
-      </div>
+      </Reveal>
 
       <div className="mt-14 grid gap-8 sm:grid-cols-2">
-        <div className="rounded-2xl bg-shell p-6 ring-1 ring-navy/10">
+        <Reveal delay={0} className="rounded-2xl bg-shell p-6 ring-1 ring-navy/10">
           <h2 className="font-display text-lg font-semibold">Address</h2>
           <p className="mt-2 text-navy/70">
             {siteConfig.address.line1}
@@ -51,9 +53,9 @@ export default function LocationsPage() {
             </a>{" "}
             for the pin.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="rounded-2xl bg-shell p-6 ring-1 ring-navy/10">
+        <Reveal delay={100} className="rounded-2xl bg-shell p-6 ring-1 ring-navy/10">
           <h2 className="font-display text-lg font-semibold">Hours</h2>
           <ul className="mt-2 space-y-1.5 text-navy/70">
             {siteConfig.hours.map((h) => (
@@ -63,7 +65,7 @@ export default function LocationsPage() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </div>
 
       <p className="mt-10 text-center text-sm text-navy/60">

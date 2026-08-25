@@ -1,30 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { navLinks, siteConfig } from "@/lib/site-config";
 import OrderButton from "./OrderButton";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-navy/10 bg-sand/95 backdrop-blur">
+    <header
+      className={`sticky top-0 z-50 border-b bg-sand/95 backdrop-blur transition-shadow ${
+        scrolled ? "border-navy/10 shadow-sm" : "border-transparent"
+      }`}
+    >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="font-display text-2xl font-semibold text-navy">
           {siteConfig.name}
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-navy/80 transition-colors hover:text-coral"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative py-1 text-sm font-medium transition-colors ${
+                  active ? "text-coral" : "text-navy/80 hover:text-coral"
+                }`}
+              >
+                {link.label}
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 w-full bg-coral transition-transform duration-300 ${
+                    active ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden md:block">
@@ -56,7 +80,9 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="text-base font-medium text-navy/80 hover:text-coral"
+                className={`text-base font-medium ${
+                  pathname === link.href ? "text-coral" : "text-navy/80 hover:text-coral"
+                }`}
               >
                 {link.label}
               </Link>

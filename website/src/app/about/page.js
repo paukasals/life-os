@@ -1,6 +1,9 @@
 import Image from "next/image";
 import OrderButton from "@/components/OrderButton";
+import Reveal from "@/components/Reveal";
+import AnimatedCounter from "@/components/AnimatedCounter";
 import { siteConfig } from "@/lib/site-config";
+import { timeline } from "@/lib/story-data";
 
 export const metadata = {
   title: "Our Story",
@@ -10,58 +13,66 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <p className="text-center text-sm font-semibold uppercase tracking-widest text-coral">
-        Our story
-      </p>
-      <h1 className="mt-2 text-center font-display text-4xl font-semibold">
-        A standard, not just a menu
-      </h1>
+    <div>
+      <div className="mx-auto max-w-3xl px-6 py-16 text-center">
+        <p className="text-sm font-semibold uppercase tracking-widest text-coral">Our story</p>
+        <h1 className="mt-2 font-display text-4xl font-semibold">A standard, not just a menu</h1>
+      </div>
 
-      <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl">
+      <Reveal className="relative mx-auto aspect-[21/9] w-full max-w-5xl overflow-hidden rounded-3xl px-0 sm:px-6">
         <Image
           src="/images/airstream-hero.jpg"
           alt="Lobsteria's restored 1977 Airstream in Wynwood, Miami"
           fill
-          sizes="(min-width: 768px) 768px, 100vw"
+          sizes="(min-width: 1024px) 1024px, 100vw"
           className="object-cover"
+          priority
         />
-      </div>
+      </Reveal>
 
-      <div className="mt-10 space-y-6 text-navy/80">
-        <p>
-          Pau Casals grew up shopping the stalls of La Boqueria market in Barcelona with his
-          family — fresh fish, real seafood, no shortcuts. That was just normal. It stuck with
-          him.
-        </p>
-        <p>
-          Before Lobsteria, Pau played professional water polo for the Spanish national team,
-          competing at the U.S. Open. He worked restaurant shifts on the side during his athletic
-          career, then moved into property management after retiring from the sport. Then the
-          pandemic took it all away.
-        </p>
-        <p>
-          Pau looked at what Miami was calling a lobster roll and knew exactly what was wrong
-          with it. He restored a 1977 Airstream and went all-in on Lobsteria: wild-caught Maine
-          lobster claw and knuckle, hand-cleaned in-house — the sweetest, most tender part —
-          finished to order in one of two signature styles, the Connecticut Roll (warm, brown
-          butter) or the Maine Roll (cold, secret Old Bay mayo).
-        </p>
-        <p>
-          The menu grew from there: a five-preparation raw oyster bar, Peruvian and Nikkei
-          ceviche — including a leche de tigre recipe passed down by a close friend&apos;s
-          grandmother in Peru, known in the kitchen as &quot;Tía Tati&apos;s&quot; recipe — and a
-          sturgeon caviar add-on for nearly anything on the menu.
-        </p>
-        <p>
-          Since opening in {siteConfig.founded}, Lobsteria has built a {siteConfig.rating.value}★
-          rating across {siteConfig.rating.count}+ Google reviews without a single paid ad
-          campaign. Just word of mouth, and a standard we don&apos;t compromise on.
-        </p>
-      </div>
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <div className="relative space-y-12 border-l-2 border-teal/20 pl-8">
+          {timeline.map((step, i) => (
+            <Reveal key={step.title} delay={i * 100} className="relative">
+              <span className="absolute -left-[2.55rem] top-1 flex h-5 w-5 items-center justify-center rounded-full bg-teal ring-4 ring-sand" />
+              <p className="text-xs font-semibold uppercase tracking-widest text-coral">
+                {step.year}
+              </p>
+              <h2 className="mt-1 font-display text-xl font-semibold text-navy">{step.title}</h2>
+              <p className="mt-2 text-navy/70">{step.text}</p>
+            </Reveal>
+          ))}
+        </div>
 
-      <div className="mt-12 text-center">
-        <OrderButton size="lg" />
+        <Reveal className="mt-16 grid grid-cols-3 divide-x divide-navy/10 rounded-2xl bg-shell py-8 text-center ring-1 ring-navy/10">
+          <div>
+            <div className="flex items-center justify-center gap-1 font-display text-3xl font-semibold text-navy">
+              <AnimatedCounter value={siteConfig.rating.value} decimals={1} />
+              <span className="text-coral">★</span>
+            </div>
+            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-navy/50">Rating</p>
+          </div>
+          <div>
+            <AnimatedCounter
+              value={siteConfig.rating.count}
+              suffix="+"
+              className="font-display text-3xl font-semibold text-navy"
+            />
+            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-navy/50">
+              Google reviews
+            </p>
+          </div>
+          <div>
+            <p className="font-display text-3xl font-semibold text-navy">{siteConfig.founded}</p>
+            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-navy/50">
+              Founded
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="mt-12 text-center">
+          <OrderButton size="lg" />
+        </div>
       </div>
     </div>
   );

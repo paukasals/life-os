@@ -4,6 +4,7 @@
 export const menu = [
   {
     category: "Lobster Rolls",
+    banner: "/images/connecticut-lobster-roll.webp",
     items: [
       {
         name: "Connecticut Roll",
@@ -30,6 +31,7 @@ export const menu = [
   },
   {
     category: "Caviar Add-On",
+    banner: "/images/lobster-caviar.png",
     items: [
       {
         name: "Sturgeon Caviar, on anything",
@@ -42,6 +44,7 @@ export const menu = [
   },
   {
     category: "Raw Oyster Bar",
+    banner: "/images/oyster-platter.jpg",
     items: [
       {
         name: "Oysters on the Half Shell",
@@ -58,6 +61,7 @@ export const menu = [
   },
   {
     category: "Peruvian & Nikkei Ceviche",
+    banner: "/images/nikkei-ceviche-roll.png",
     items: [
       {
         name: "Corvina Ceviche",
