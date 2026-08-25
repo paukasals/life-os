@@ -2,13 +2,13 @@
 
 :root {
   --background: #fbf7ef; /* sand */
-  --foreground: #10312b; /* deep teal-black */
+  --foreground: #142240; /* deep navy, matches the logo */
 
   --color-sand: #fbf7ef;
   --color-sand-dark: #f0e8d8;
-  --color-navy: #10312b;
-  --color-teal: #146b5f;
-  --color-teal-light: #1e8f7e;
+  --color-navy: #142240;
+  --color-teal: #3d5a85;
+  --color-teal-light: #6d87ac;
   --color-coral: #ff6b4a;
   --color-coral-dark: #e5502f;
   --color-shell: #ffffff;
