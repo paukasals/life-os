@@ -1,5 +1,13 @@
 import { BaseAgent } from '../../shared/base-agent.js';
 import { userProfile } from '../../shared/config.js';
+import { quickbooksService } from '../../shared/quickbooks.js';
+
+// Each business is tracked in its own QuickBooks Online company; map business name
+// to the key its tokens are stored under (see setup-quickbooks.js).
+const QUICKBOOKS_BUSINESS_KEYS = {
+  Lobsteria: 'lobsteria',
+  'The Crepes & Waffles Bar': 'crepeswaffles',
+};
 
 export class FinanceAgent extends BaseAgent {
   constructor() {
@@ -19,9 +27,9 @@ Be precise with numbers and proactive about runway.`
     this.log('Starting financial snapshot...');
     const data = await this.fetchFinancials();
 
-    // If no data (not integrated), skip Claude analysis
-    if (!data || Object.keys(data).length === 0) {
-      this.log('Finance system not yet integrated. Waiting for cloud system connection...');
+    // If no business has a QuickBooks connection yet, skip Claude analysis
+    if (!data.connected) {
+      this.log('QuickBooks not yet connected for any business. Run: node setup-quickbooks.js <business>');
       return null;
     }
 
@@ -45,32 +53,67 @@ Be precise and strategic.`;
   }
 
   async fetchFinancials() {
-    // TODO: Integrate with your separate Finance Claude Code session
-    // Option 1: REST API endpoint
-    //   - If your Finance system exposes an API, call it here
-    //   - Example: const data = await fetch('https://finance-system.railway.app/snapshot').then(r => r.json())
-    // 
-    // Option 2: Direct import (if sharing the same codebase)
-    //   - import { getFinanceSnapshot } from './path/to/finance-module'
-    //   - const data = await getFinanceSnapshot()
-    //
-    // Option 3: Webhook-based
-    //   - Subscribe to webhooks from your Finance system
-    //   - Store latest data in cache/state
-    //
-    // For now, returning null signals "not yet integrated"
-    
-    return {
-      lobsteria: { revenue: 0, expenses: 0, margin: 0 },
-      crepeswaffles: { revenue: 0, expenses: 0, margin: 0 },
+    const today = new Date();
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startDate = monthStart.toISOString().split('T')[0];
+    const endDate = today.toISOString().split('T')[0];
+
+    const data = {
+      lobsteria: { revenue: 0, expenses: 0, margin: 0, cashBalance: 0, connected: false },
+      crepeswaffles: { revenue: 0, expenses: 0, margin: 0, cashBalance: 0, connected: false },
       combined: {
         cashBalance: 0,
         monthlyRevenue: 0,
         monthlyExpenses: 0,
         runway: 0,
       },
-      date: new Date().toISOString().split('T')[0],
+      date: endDate,
+      connected: false,
     };
+
+    for (const business of userProfile.businesses) {
+      const key = QUICKBOOKS_BUSINESS_KEYS[business.name];
+      if (!key) continue;
+
+      const configured = await quickbooksService.isConfigured(key);
+      if (!configured) continue;
+
+      try {
+        const [pnl, balance] = await Promise.all([
+          quickbooksService.getProfitAndLoss(key, startDate, endDate),
+          quickbooksService.getBalanceSheet(key, endDate),
+        ]);
+
+        const revenue = pnl.Income || 0;
+        const expenses = (pnl.COGS || 0) + (pnl.Expenses || 0);
+        const netIncome = pnl.NetIncome ?? (revenue - expenses);
+        const cashBalance = balance.BankAccounts || 0;
+
+        data[key] = {
+          revenue,
+          expenses,
+          margin: revenue > 0 ? Number(((netIncome / revenue) * 100).toFixed(2)) : 0,
+          cashBalance,
+          connected: true,
+        };
+        data.connected = true;
+        data.combined.cashBalance += cashBalance;
+        data.combined.monthlyRevenue += revenue;
+        data.combined.monthlyExpenses += expenses;
+      } catch (err) {
+        this.error(`QuickBooks fetch failed for "${key}"`, err);
+      }
+    }
+
+    // Rough runway estimate: cash on hand / projected full-month burn, based on
+    // how much of the current month has elapsed.
+    const daysElapsed = Math.max(1, Math.round((today - monthStart) / 86400000) + 1);
+    const projectedMonthlyExpenses = (data.combined.monthlyExpenses / daysElapsed) * 30;
+    data.combined.runway = projectedMonthlyExpenses > 0
+      ? Number((data.combined.cashBalance / projectedMonthlyExpenses).toFixed(1))
+      : 0;
+
+    return data;
   }
 }
 

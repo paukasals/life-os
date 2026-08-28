@@ -4,3 +4,4 @@ logs/*.log
 .DS_Store
 credentials.json
 .google-calendar-token.json
+.quickbooks-tokens.json

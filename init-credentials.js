@@ -76,5 +76,21 @@ export async function initializeCredentials() {
     }
   }
 
+  // QuickBooks tokens (one file, keyed by business) from base64 if provided (Railway env)
+  if (process.env.QUICKBOOKS_TOKENS_BASE64) {
+    const quickbooksTokensPath = path.join(__dirname, '.quickbooks-tokens.json');
+    try {
+      const tokensJson = Buffer.from(
+        process.env.QUICKBOOKS_TOKENS_BASE64,
+        'base64'
+      ).toString('utf-8');
+      await fs.writeFile(quickbooksTokensPath, tokensJson);
+      console.log('✅ .quickbooks-tokens.json created from QUICKBOOKS_TOKENS_BASE64');
+    } catch (err) {
+      console.error('❌ Failed to create QuickBooks tokens from base64:', err.message);
+      // Non-fatal; the Finance Agent falls back to "not connected" for QuickBooks
+    }
+  }
+
   return true;
 }

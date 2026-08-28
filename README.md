@@ -104,12 +104,12 @@ Two revenue streams:
 Tracks: Daily revenue, MTD vs target, top products, opportunities to scale.
 
 ### Finance Agent (8:30 AM, Weekdays)
-Monitors:
-- Daily cash position
-- Revenue vs forecast
+Monitors, pulled live from QuickBooks Online (see `QUICKBOOKS-SETUP.md`):
+- Daily cash position (bank account balances)
+- Revenue vs forecast (month-to-date P&L)
 - Cost of goods sold (seafood, ingredients)
 - Labor and overhead
-- Profitability by location
+- Profitability by location (each business is its own QuickBooks company)
 
 ### Marketing Agent (8:30 AM, Weekdays)
 Analyzes:
@@ -227,6 +227,7 @@ To fully activate your Life OS, integrate these APIs:
 - [ ] Set up calendar with recurring events
 
 ### 💰 Finance APIs (Real revenue tracking)
+- [x] **QuickBooks Online**: Connect accounting data for the Finance Agent — see `QUICKBOOKS-SETUP.md`
 - [ ] **Stripe**: Connect payment processing
 - [ ] **Square**: Connect POS system (if using)
 - [ ] **Bank API**: Connect business bank account
