@@ -48,7 +48,7 @@ export default function AboutPage() {
           <div>
             <div className="flex items-center justify-center gap-1 font-display text-3xl font-semibold text-navy">
               <AnimatedCounter value={siteConfig.rating.value} decimals={1} />
-              <span className="text-coral">★</span>
+              <span className="text-gold">★</span>
             </div>
             <p className="mt-1 text-xs font-medium uppercase tracking-wide text-navy/50">Rating</p>
           </div>

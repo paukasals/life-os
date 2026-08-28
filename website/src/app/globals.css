@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fbf7ef; /* sand */
-  --foreground: #142240; /* deep navy, matches the logo */
+  --background: #fbeeda; /* warm cream, from the logo background */
+  --foreground: #1b3a5c; /* navy, from the logo type/linework */
 
-  --color-sand: #fbf7ef;
-  --color-sand-dark: #f0e8d8;
-  --color-navy: #142240;
-  --color-teal: #3d5a85;
-  --color-teal-light: #6d87ac;
-  --color-coral: #ff6b4a;
-  --color-coral-dark: #e5502f;
+  --color-sand: #fbeeda;
+  --color-sand-dark: #f2e0c4;
+  --color-navy: #1b3a5c;
+  --color-teal: #3f6790;
+  --color-teal-light: #7fa4c4;
+  --color-coral: #e15a34; /* lobster red-orange, from the logo */
+  --color-coral-dark: #c2472a;
+  --color-gold: #d89a3e; /* star accent, from the logo */
   --color-shell: #ffffff;
 }
 
@@ -24,6 +25,7 @@
   --color-teal-light: var(--color-teal-light);
   --color-coral: var(--color-coral);
   --color-coral-dark: var(--color-coral-dark);
+  --color-gold: var(--color-gold);
   --color-shell: var(--color-shell);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);

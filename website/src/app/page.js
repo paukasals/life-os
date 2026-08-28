@@ -58,7 +58,7 @@ export default function Home() {
                   decimals={1}
                   className="font-display text-3xl font-semibold"
                 />
-                <span className="text-coral">★</span>
+                <span className="text-gold">★</span>
               </div>
               <p className="text-xs font-medium text-navy/60">
                 <AnimatedCounter value={siteConfig.rating.count} suffix="+" /> Google reviews
