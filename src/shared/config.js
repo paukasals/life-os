@@ -16,7 +16,7 @@ export const userProfile = {
     },
     {
       name: 'The Crepes & Waffles Bar',
-      description: 'Crepes and waffles concept',
+      description: 'Crepes and waffles concept, launching a Catering & Cakes division (crepe/waffle canapes + celebration cakes) in a 50/50 profit-share with a pastry chef partner',
       type: 'Food Service',
     },
   ],

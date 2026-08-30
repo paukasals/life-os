@@ -5,5 +5,68 @@
     "due": "2026-06-23",
     "notes": "",
     "createdAt": "2026-06-23T00:26:50.623Z"
+  },
+  {
+    "id": 1798694400001,
+    "title": "Catering launch: finalize products, sizes, minimums and real pricing",
+    "due": "2026-08-31",
+    "notes": "With the pastry chef. See crepes-waffles-catering-brief.md for the product/package structure to price against.",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400002,
+    "title": "Catering launch: chef produces all 8 core flavors across 4 formats for photography",
+    "due": "2026-09-01",
+    "notes": "",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400003,
+    "title": "Catering launch: photo/video shoot (hero spread + each flavor + Reel process shots)",
+    "due": "2026-09-02",
+    "notes": "Shot list: crepes-waffles-catering-social-content.md",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400004,
+    "title": "Catering launch: build /catering landing page",
+    "due": "2026-09-03",
+    "notes": "Copy ready in crepes-waffles-catering-landing-page-copy.md",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400005,
+    "title": "Catering launch: add quote form + GA4/conversion tracking",
+    "due": "2026-09-04",
+    "notes": "Tracking checklist in crepes-waffles-catering-google-ads.md",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400006,
+    "title": "Catering launch: announce to existing customers (banner, QR, Instagram, GBP post)",
+    "due": "2026-09-05",
+    "notes": "",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400007,
+    "title": "Catering launch: launch Google Search campaigns (Catering + Cakes)",
+    "due": "2026-09-07",
+    "notes": "Campaign structure, keywords and RSA copy ready in crepes-waffles-catering-google-ads.md",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400008,
+    "title": "Catering launch: build 50-account B2B target list (planners, hotels, offices, brokerages)",
+    "due": "2026-09-08",
+    "notes": "See crepes-waffles-catering-b2b-outreach.md",
+    "createdAt": "2026-08-30T00:00:00.000Z"
+  },
+  {
+    "id": 1798694400009,
+    "title": "Catering launch: agree 60-90 day profit-share pilot terms with the chef",
+    "due": "2026-09-05",
+    "notes": "Draft terms in crepes-waffles-catering-partnership-terms.md",
+    "createdAt": "2026-08-30T00:00:00.000Z"
   }
 ]
