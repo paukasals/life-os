@@ -7,6 +7,7 @@ import { InventoryAgent } from '../agents/inventory/index.js';
 import { RevenueDashboardAgent } from '../agents/revenue-dashboard/index.js';
 import { CustomerReviewMonitorAgent } from '../agents/customer-review-monitor/index.js';
 import { ContentCalendarAgent } from '../agents/content-calendar/index.js';
+import { AdsManagerAgent } from '../agents/ads-manager/index.js';
 import { EmployeeManagementAgent } from '../agents/employee-management/index.js';
 import { PersonalAssistantAgent } from '../agents/personal-assistant/index.js';
 import { HealthWellnessAgent } from '../agents/health-wellness/index.js';
@@ -23,6 +24,7 @@ class MasterOrchestrator {
       revenueDashboard: new RevenueDashboardAgent(),
       reviewMonitor: new CustomerReviewMonitorAgent(),
       contentCalendar: new ContentCalendarAgent(),
+      adsManager: new AdsManagerAgent(),
       employeeManagement: new EmployeeManagementAgent(),
       personalAssistant: new PersonalAssistantAgent(),
       healthWellness: new HealthWellnessAgent(),
@@ -79,6 +81,7 @@ class MasterOrchestrator {
       this.runAgent('revenueDashboard');
       this.runAgent('finance');
       this.runAgent('marketing');
+      this.runAgent('adsManager');
       this.runAgent('inventory');
       this.runAgent('employeeManagement');
     }, { timezone: tz });

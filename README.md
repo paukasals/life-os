@@ -20,11 +20,12 @@ Welcome, Pau! Your Life OS is a **master orchestrator** that coordinates all asp
              │   ├── Revenue Dashboard
              │   ├── Finance Report
              │   ├── Marketing Review
+             │   ├── Ads Manager (auto-pause on CAC guardrail)
              │   ├── Inventory Check
              │   └── Employee Management
              │
-             ├── 9:00 AM (Weekdays) ← Content Calendar
-             ├── Every 4 hours ← Customer Review Monitor
+             ├── 9:00 AM (Weekdays) ← Content Calendar (drafts + can auto-post)
+             ├── Every 4 hours ← Review Responder (drafts + can auto-post)
              │
              └── Output: Telegram notifications 📱
 ```
@@ -118,26 +119,69 @@ Analyzes:
 - Organic social (Instagram, TikTok, LinkedIn)
 - CAC, repeat rate, AOV tracking
 
+Sits above the three execution agents below — Review Responder, Content Calendar, and Ads Manager — and
+synthesizes what they're doing into one report.
+
+## 🤖 Marketing Autopilot
+
+Three agents can take real action on Lobsteria's behalf, not just report:
+
+| Agent | What it does live | Channel switch |
+|---|---|---|
+| **Review Responder** (`reviewMonitor`, every 4h) | Fetches unanswered Google reviews, drafts on-brand replies, posts them | `MARKETING_AUTOPILOT_REVIEWS` |
+| **Content Calendar** (`contentCalendar`, 9 AM weekdays) | Drafts a caption for the next queued post, publishes it to TikTok | `MARKETING_AUTOPILOT_SOCIAL` |
+| **Ads Manager** (`adsManager`, 8:30 AM weekdays) | Pauses a campaign if its trailing CAC breaches `AD_MAX_CAC` — nothing else | `MARKETING_AUTOPILOT_ADS` |
+
+**Everything defaults to `dry-run`.** Agents draft replies/captions and report what they *would* do via
+Telegram, but nothing posts publicly or spends money until you flip the switch:
+
+```bash
+# Global default for all three channels
+MARKETING_AUTOPILOT=dry-run   # or: live
+
+# Or go live per channel (overrides the global default)
+MARKETING_AUTOPILOT_REVIEWS=live
+MARKETING_AUTOPILOT_SOCIAL=live
+MARKETING_AUTOPILOT_ADS=live
+```
+
+Each channel also needs its own credentials before it can act live — see `.env.example` for
+`GBP_CLIENT_ID`/`GBP_CLIENT_SECRET`/`GBP_REFRESH_TOKEN` (reviews), `TIKTOK_ACCESS_TOKEN` (social), and
+`META_ACCESS_TOKEN`/`META_AD_ACCOUNT_ID` or the `GOOGLE_ADS_*` vars (ads). Missing credentials means the
+agent no-ops and says so in its Telegram report — it never fails silently or fakes an action.
+
+**Feeding the content queue**: Content Calendar can write captions but can't shoot footage. Drop a finished
+photo/video (already hosted at a public URL, same as the old manual TikTok workflow) into the queue and the
+agent picks it up on its next run:
+
+```bash
+curl -X POST http://localhost:3000/api/content-queue \
+    -H "Content-Type: application/json" \
+    -H "x-api-key: $LIFE_OS_API_KEY" \
+    -d '{"platform":"tiktok","mediaUrl":"https://lobsteria.co/uploads/.../photo.jpg","idea":"Maine lobster roll, brown butter close-up","mediaType":"PHOTO"}'
+```
+
+**Ads Manager guardrail**: the only live action it ever takes on its own is pausing a campaign whose 7-day
+CAC exceeds `AD_MAX_CAC`. It never increases budget or reallocates spend automatically — those stay
+recommendations in its report for Pau to approve.
+
 ### Inventory Agent (8:30 AM, Weekdays)
 Tracks stock by business:
 - **Lobsteria**: Lobster, oysters, ceviche mix, supplies
 - **The Crepes & Waffles Bar**: Batter, fillings, toppings
 - Alerts on low stock, overstock, cost optimization
 
-### Customer Review Monitor (Every 4 hours)
-Monitors reviews across:
-- Google (Lobsteria & Crepes location pages)
-- Yelp
-- Instagram DMs & comments
-- TikTok engagement
-
-Surfaces: Sentiment, recurring themes, response drafts.
+### Review Responder (Every 4 hours)
+Fetches unanswered Google Business Profile reviews for Lobsteria, drafts an on-brand reply for each
+(warm and specific for positive reviews, an apology + direct contact for 1-3★), and — once
+`MARKETING_AUTOPILOT_REVIEWS=live` and GBP credentials are set — posts the replies automatically.
+Dry-run drafts everything and reports it via Telegram without posting.
 
 ### Content Calendar (9:00 AM, Weekdays)
-Manages social media posting:
-- **Platforms**: Instagram (Reels/photos), TikTok (food prep), LinkedIn (entrepreneur journey)
-- **Content angles**: Fresh ingredients, Airstream culture, seasonal, customer stories
-- Flags posting gaps, suggests viral ideas
+Reviews the content queue for posting gaps and suggests what to shoot next. When there's a queued,
+ready-to-post item (see **Marketing Autopilot** above), it drafts a platform-native caption and —
+in live mode — publishes it to TikTok. Human still shoots the footage; the agent handles strategy,
+copy, and (optionally) the publish step.
 
 ### Employee Management (8:30 AM, Weekdays)
 Tracks team across two locations:
@@ -231,17 +275,17 @@ To fully activate your Life OS, integrate these APIs:
 - [ ] **Square**: Connect POS system (if using)
 - [ ] **Bank API**: Connect business bank account
 
-### 📢 Marketing APIs (Ad performance)
-- [ ] **Google Ads API**: Campaign performance, ROAS
-- [ ] **Meta Marketing API**: Facebook/Instagram ad metrics
+### 📢 Marketing APIs (Ad performance + auto-pause guardrail)
+- [ ] **Google Ads API**: `GOOGLE_ADS_DEVELOPER_TOKEN` + OAuth client (`GOOGLE_ADS_CLIENT_ID/SECRET/REFRESH_TOKEN`) + `GOOGLE_ADS_CUSTOMER_ID`
+- [ ] **Meta Marketing API**: `META_ACCESS_TOKEN` + `META_AD_ACCOUNT_ID`
 
-### ⭐ Review APIs (Reputation tracking)
-- [ ] **Google Places API**: Lobsteria & Crepes location reviews
-- [ ] **Yelp API**: Review monitoring
+### ⭐ Review APIs (auto-reply)
+- [ ] **Google Business Profile API**: `GBP_CLIENT_ID/SECRET/REFRESH_TOKEN` — powers the Review Responder agent
+- [ ] **Yelp API**: Review monitoring (not yet wired to an agent)
 
-### 🎤 Social Media APIs (Content scheduling)
-- [ ] **Instagram Graph API**: Post scheduling, analytics
-- [ ] **TikTok API**: Video analytics
+### 🎤 Social Media APIs (auto-post)
+- [ ] **TikTok Content Posting API**: `TIKTOK_ACCESS_TOKEN` — powers the Content Calendar agent's live posting
+- [ ] **Instagram Graph API**: Post scheduling, analytics (not yet wired to an agent)
 
 ### 👥 HR/Inventory APIs (Team & stock)
 - [ ] **Gusto or BambooHR**: Team scheduling, payroll

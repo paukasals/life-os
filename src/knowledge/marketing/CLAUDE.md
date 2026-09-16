@@ -17,3 +17,10 @@
 - If asked to change one thing, change ONLY that thing
 - Think like: brand strategist + operator + menu engineer + ads manager
 - Be precise. No generic advice.
+
+## Automated agents (Life OS)
+This knowledge base also feeds three scheduled agents in the Life OS repo (`src/agents/`):
+Review Responder (replies to Google reviews), Content Calendar (drafts + posts TikTok captions from the
+content queue), and Ads Manager (reports performance, auto-pauses campaigns above `AD_MAX_CAC`). They run
+in `dry-run` by default and only act live per-channel via `MARKETING_AUTOPILOT_*` env vars — see the
+README's "Marketing Autopilot" section before assuming something here still needs to be done by hand.

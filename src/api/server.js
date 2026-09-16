@@ -255,6 +255,34 @@ export function startApiServer(port = process.env.PORT || 3000) {
     res.json({ expenses: items });
   });
 
+  // Content queue: drop a finished media asset (already hosted at a public
+  // URL) + a one-line idea here, and the Content Calendar agent will draft
+  // a caption and (in live mode) publish it on its next scheduled run.
+  app.get('/api/content-queue', ensureApiKey, async (req, res) => {
+    const items = await readJsonSafe('content-queue.json');
+    res.json({ items });
+  });
+
+  app.post('/api/content-queue', ensureApiKey, async (req, res) => {
+    const { platform, mediaUrl, mediaType, idea, caption, scheduledFor } = req.body;
+    if (!platform || !mediaUrl || !idea) {
+      return res.status(400).json({ error: 'Missing platform, mediaUrl, or idea' });
+    }
+    const item = {
+      id: Date.now(),
+      platform,
+      mediaUrl,
+      mediaType: mediaType || 'PHOTO',
+      idea,
+      caption: caption || null,
+      scheduledFor: scheduledFor || null,
+      status: 'ready',
+      createdAt: new Date().toISOString(),
+    };
+    await appendJson('content-queue.json', item);
+    res.json({ success: true, item });
+  });
+
   const server = app.listen(port, () => {
     console.log(`[API] Life OS API listening on port ${port}`);
   });

@@ -62,6 +62,33 @@ export const config = {
   marketing: {
     googleAdsKey: process.env.GOOGLE_ADS_API_KEY,
     metaToken: process.env.META_ACCESS_TOKEN,
+    autopilot: process.env.MARKETING_AUTOPILOT || 'dry-run',
+    gbp: {
+      clientId: process.env.GBP_CLIENT_ID,
+      clientSecret: process.env.GBP_CLIENT_SECRET,
+      refreshToken: process.env.GBP_REFRESH_TOKEN,
+      accountId: process.env.GBP_ACCOUNT_ID,
+      locationId: process.env.GBP_LOCATION_ID,
+    },
+    tiktok: {
+      clientKey: process.env.TIKTOK_CLIENT_KEY,
+      clientSecret: process.env.TIKTOK_CLIENT_SECRET,
+      accessToken: process.env.TIKTOK_ACCESS_TOKEN,
+      refreshToken: process.env.TIKTOK_REFRESH_TOKEN,
+    },
+    metaAds: {
+      accessToken: process.env.META_ACCESS_TOKEN,
+      adAccountId: process.env.META_AD_ACCOUNT_ID,
+    },
+    googleAds: {
+      developerToken: process.env.GOOGLE_ADS_DEVELOPER_TOKEN,
+      customerId: process.env.GOOGLE_ADS_CUSTOMER_ID,
+      loginCustomerId: process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID,
+      clientId: process.env.GOOGLE_ADS_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_ADS_CLIENT_SECRET,
+      refreshToken: process.env.GOOGLE_ADS_REFRESH_TOKEN,
+    },
+    maxCac: process.env.AD_MAX_CAC ? Number(process.env.AD_MAX_CAC) : null,
   },
 
   finance: {
