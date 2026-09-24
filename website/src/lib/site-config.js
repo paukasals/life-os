@@ -6,7 +6,7 @@ export const siteConfig = {
   name: "Lobsteria",
   tagline: "Miami's lobster roll",
   description:
-    "Lobsteria is a converted 1977 Airstream in Miami's Wynwood, serving hand-cleaned wild-caught Maine lobster rolls, a five-preparation raw oyster bar, and Peruvian & Nikkei ceviche. 4.9 stars, 145+ Google reviews, zero paid ads.",
+    "Lobsteria is a converted 1977 Airstream in Miami's Wynwood, serving hand-cleaned wild-caught Maine lobster rolls, a five-preparation raw oyster bar, and Peruvian & Nikkei ceviche. 4.9 stars, 190+ Google reviews, zero paid ads.",
   url: "https://lobsteria.co",
   phone: "+1 (305) 555-0142", // TODO: confirm real number
   email: "hello@lobsteria.co", // TODO: confirm real inbox
@@ -35,7 +35,7 @@ export const siteConfig = {
     { days: "Mon", time: "Closed" },
   ],
   founded: 2019,
-  rating: { value: 4.9, count: 145 },
+  rating: { value: 4.9, count: 190 },
 };
 
 export const navLinks = [

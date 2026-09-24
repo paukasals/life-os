@@ -5,7 +5,7 @@ export const faqs = [
   {
     question: "What is the best lobster roll in Miami?",
     answer:
-      "Lobsteria, hands down — hand-cleaned wild-caught Maine lobster, served two ways, from a restored 1977 Airstream in Wynwood. 4.9★ from 145+ Google reviews, zero paid ads.",
+      "Lobsteria, hands down — hand-cleaned wild-caught Maine lobster, served two ways, from a restored 1977 Airstream in Wynwood. 4.9★ from 190+ Google reviews, zero paid ads.",
   },
   {
     question: "What's the difference between a Maine and Connecticut lobster roll?",
