@@ -17,7 +17,7 @@ export const timeline = [
   {
     year: "The menu",
     title: "Wild-caught, hand-cleaned, no shortcuts",
-    text: "Maine lobster claw and knuckle, hand-cleaned in-house, finished to order in one of two signature styles: the Connecticut Roll (warm, brown butter) or the Maine Roll (cold, secret Old Bay mayo). Then a five-preparation raw oyster bar, and Peruvian & Nikkei ceviche — including a leche de tigre recipe passed down by a close friend's grandmother in Peru, known in the kitchen as \"Tía Tati's\" recipe.",
+    text: "Maine lobster claw and knuckle, hand-cleaned in-house every night, finished to order in one of two signature styles: the Connecticut Roll (warm, our secret butter, toasted bun — nothing more) or the Maine Roll (cold, black garlic Old Bay mayo, capers, red onion, pickles, fresh chives). Then a five-preparation raw oyster bar, and Peruvian & Nikkei ceviche — including a leche de tigre recipe passed down by a close friend's grandmother in Peru, known in the kitchen as \"Tía Tati's\" recipe.",
   },
   {
     year: "Since 2019",

@@ -10,7 +10,7 @@ export const faqs = [
   {
     question: "What's the difference between a Maine and Connecticut lobster roll?",
     answer:
-      "The Connecticut Roll is served warm, tossed in brown butter. The Maine Roll is served cold, with our secret Old Bay mayo. Same wild-caught lobster, hand-cleaned in-house either way.",
+      "The Connecticut Roll is warm Maine lobster in our secret butter, toasted bun — nothing more. The Maine Roll is cold: black garlic Old Bay mayo, capers, red onion, pickles, fresh chives. Same claw and knuckle, hand-cleaned every night, either way.",
   },
   {
     question: "Where can I get a lobster roll in Miami?",

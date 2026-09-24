@@ -10,7 +10,7 @@ export const menu = [
         name: "Connecticut Roll",
         price: "$24.95",
         description:
-          "Hand-cleaned wild-caught Maine lobster, tossed warm in brown butter, toasted split-top bun.",
+          "Warm Maine lobster, our secret butter, toasted bun. Nothing more.",
         featured: true,
         image: "/images/connecticut-lobster-roll.webp",
       },
@@ -18,14 +18,14 @@ export const menu = [
         name: "Maine Roll",
         price: "$24.95",
         description:
-          "Hand-cleaned wild-caught Maine lobster, served cold with our secret Old Bay mayo.",
+          "Cold. Black garlic Old Bay mayo. Capers. Red onion. Pickles. Fresh chives. Claw and knuckle — hand-cleaned, every night.",
         featured: true,
         image: "/images/connecticut.png",
       },
       {
         name: "Prawns Roll",
         price: "$17.95",
-        description: "Chilled or warm prawns, brown butter or Old Bay mayo, toasted bun.",
+        description: "Chilled or warm prawns, secret butter or Old Bay mayo, toasted bun.",
       },
     ],
   },
