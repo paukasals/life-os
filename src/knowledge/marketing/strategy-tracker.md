@@ -362,10 +362,17 @@ Each page needs: real food photo · menu details · exact location + hours · or
 
 ## 🟡 PRIORITY 3 — NEXT 60 DAYS (Jun–Jul)
 
-### Influencer Strategy
+### Influencer Strategy — Seeding Model (adopted)
+*No paid posts, no briefs, no scripts. The exchange is free food for honest content — selected one creator at a time, matched to our brand, never a blast list.*
+
 - [ ] Build Miami food micro-influencer list (10K–100K followers) — target 30 accounts
 - [ ] Macro targets (100K+): top 5 Miami food accounts
-- [ ] DM outreach template: no ask, just invite ("Come in, eat what you want, post if you love it")
+- [ ] **Per-creator fit check before any invite goes out:**
+  - Their last 10 posts already look like process/real-food content (hand-cleaning, behind-the-counter, close-ups) — not generic lifestyle or visible paid-post format
+  - Miami-based audience or frequent Miami visitors, food-focused following
+  - No invite without checking their feed first — this is the filter, not follower count
+- [ ] DM outreach, personalized per creator — reference something real from their own content, no template blast: "Come in, eat what you want, post if you love it"
+- [ ] Disclosure reminder in the invite — ask them to tag as gifted/collab per platform rules (Autocontrol/FTC); keeps it clean without changing the ask
 - [ ] VIP invite system: track who came in / what they posted / reach delivered
 - [ ] Goal: 10 influencer visits, 5 posts, 500K+ combined reach by Jul 31
 
