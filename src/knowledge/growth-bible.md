@@ -30,25 +30,26 @@ Alberto, con el equipo de datos de Globo, analizó cientos de marcas de delivery
 
 La milanesa ganaba en las dos: viene porcionada y congelada (nadie merma, nadie tiene incentivo a estirar la vida útil), y 30 segundos más o menos de freidora no cambia nada que el cliente perciba. Un burrito con poco relleno, en cambio, el cliente lo nota en el primer bocado y lo escribe en la review.
 
-### Aplicado a Lobsteria
+### Aplicado a Lobsteria — corregido
 
-Lobsteria vive estructuralmente en la columna peligrosa: **el cliente SÍ nota la diferencia** entre langosta fresca bien tratada y langosta que lleva un día de más en el envase — de hecho esa es la base de todo el posicionamiento premium ("hand-cleaned", "nothing pre-made"). No podemos ni queremos quitarle eso, porque es la ventaja competitiva.
+Versión anterior de este documento: Lobsteria "vive estructuralmente en la columna peligrosa" porque el marisco crudo/semicrudo exige mano experta, y por eso nunca podría ser tan a prueba de empleado como la milanesa. **Es un error** — y es el mismo error que Bertos habría cometido si hubiera asumido que una milanesa artesana necesita cocinero porque "se nota si está mal hecha". Su solución no fue aceptar que necesitaba cocineros: fue mover absolutamente todo lo que exige criterio al obrador, y dejar en el local solo pasos mecánicos con temporizador y medidor. Lo mismo aplica a Lobsteria, punto por punto:
 
-Lo que sí podemos — y ya empezamos a hacer esta sesión — es **quitar el incentivo a saltarse el proceso** en el eje que sí controlamos:
-- Fecha/hora la pone quien prepara en el obrador, nunca quien vende → quien está de turno no tiene nada que ganar mintiendo sobre una fecha que no escribió él.
-- Regla binaria de descarte (pasada la fecha, se tira, sin excepción) → elimina el "¿lo sirvo o no?" que es exactamente el punto donde Bertos vio que se rompían las reviews en las marcas frescas.
-- Auditoría semanal envases consumidos vs. ventas → detecta el incumplimiento sin depender de la honestidad de nadie.
+- Todo lo que hoy parece exigir "mano experta" — mezcla de mantequilla de langosta, langosta porcionada y envuelta individualmente con fecha, mezclas de cebolla/vegetales Maine, mezcla passion fruit, Nikkei, mezcla de pescado frito, mantequilla trufada, vinagreta — se resuelve una vez en el obrador. Es exactamente el marinado y el empanado de Bertos, hecho por adelantado por quien más sabe.
+- Lo que queda en el camión deja de ser "cocinar con criterio" y pasa a ser ejecución mecánica: pan que se tuesta con temporizador, patatas que se fríen con temporizador, sal con medidor, montaje con receta fija de cantidad por porción. Es el "pita el timer, lo saco" literal de Bertos.
+- El incentivo a saltarse el proceso sigue resuelto igual que antes (fecha la pone quien prepara, regla binaria de descarte, auditoría semanal) — eso no cambia.
 
-**Conclusión honesta:** Lobsteria nunca va a ser "a prueba de empleado malo" como la milanesa — y no debe intentarlo, porque esa sensibilidad a la calidad es el producto. Lo que el obrador + reglas de fecha consiguen es que la ejecución diaria no dependa del **criterio** de quien está de turno, aunque siga dependiendo de su **disciplina**. Esto tiene una consecuencia estratégica importante (ver sección 7): Lobsteria no es, por naturaleza, un negocio tan franquiciable como la milanesa. Es un negocio de **pocas unidades, alto standard, alto margen** — más parecido al Bertos de hoy (servicio de mesa, precio premium, pocos locales muy buenos) que al Bertos de 1000 locales.
+**La única pieza que de verdad no se puede empujar al obrador: las ostras.** Shuckear una ostra tiene que pasar en vivo, cerca del momento de servir — abrirla y envasarla por adelantado mata exactamente lo que el cliente paga (que esté viva/recién abierta). Es lo más cercano que tiene Lobsteria a un paso que de verdad exige mano, no solo disciplina. La mitigación aquí no es obrador, es entrenamiento + checklist visual simple (concha cerrada y firme, sin olor, se abre justo antes de servir) — mecanizable como procedimiento, pero no eliminable como paso, a diferencia de todo lo demás del menú.
+
+**Conclusión corregida:** fuera de las ostras, Lobsteria sí puede volver a la ejecución diaria tan independiente del criterio de quien esté de turno como la milanesa. Lo que no cambia con esto es la decisión de **cuántas unidades abrir** — pero esa decisión hay que tomarla ahora por razones de mercado y cadena de suministro (coste y volatilidad del marisco fresco al escalar, tamaño real del mercado de lobster roll premium frente al de un plato universal como la milanesa), no porque la ejecución sea frágil. Son dos preguntas distintas que la versión anterior de este documento tenía mezcladas.
 
 ### Aplicado a TCAWBAR
 
-Los crepes y waffles están, por diseño de producto, mucho más cerca de la milanesa que Lobsteria:
-- Un waffle frito 20 segundos de más o de menos no lo nota casi nadie (igual que la milanesa).
+Los crepes y waffles comparten el mismo patrón:
+- Un waffle frito 20 segundos de más o de menos no lo nota casi nadie (igual que la milanesa, igual que el pan y las patatas de Lobsteria con temporizador).
 - Los toppings y fillings, una vez definido el protocolo de empaquetado (sección 5), no dependen de que el empleado "tenga buen ojo" — se dosifican.
 - El incentivo a saltarse el proceso es bajo si los ingredientes llegan ya porcionados (Nutella en dosificador, fruta pre-cortada, helado en su envase) — no hay nada que "ahorrar" saltándose el paso.
 
-**Conclusión:** TCAWBAR tiene el perfil de producto correcto para ser el negocio que algún día se replica muchas veces (varios camiones, varias ubicaciones, quizá licencias a terceros). Lobsteria tiene el perfil correcto para ser pocas unidades extraordinarias. No conviene forzar a ninguno de los dos a comportarse como el otro.
+**Conclusión:** operacionalmente, Lobsteria y TCAWBAR pueden llegar al mismo nivel de "a prueba de quien esté de turno" — con la única excepción real de las ostras en Lobsteria. La diferencia entre cuántas unidades tiene sentido abrir de cada una ya no es una cuestión de riesgo de ejecución; es una cuestión de mercado (tamaño de demanda, ticket, cuántas ciudades sostienen el volumen) y de cadena de suministro (el marisco fresco escala peor y más caro que una mezcla de waffle o una pechuga de pollo). Esa pregunta se trata en la sección 7, no aquí.
 
 ---
 
