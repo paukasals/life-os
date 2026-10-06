@@ -13,6 +13,7 @@ import { HealthWellnessAgent } from '../agents/health-wellness/index.js';
 import { MealPlanningAgent } from '../agents/meal-planning/index.js';
 import { SleepRecoveryAgent } from '../agents/sleep-recovery/index.js';
 import { DoctorAppointmentsAgent } from '../agents/doctor-appointments/index.js';
+import { ShiftPrepAgent } from '../agents/shift-prep/index.js';
 
 class MasterOrchestrator {
   constructor() {
@@ -29,6 +30,7 @@ class MasterOrchestrator {
       mealPlanning: new MealPlanningAgent(),
       sleepRecovery: new SleepRecoveryAgent(),
       doctorAppointments: new DoctorAppointmentsAgent(),
+      shiftPrep: new ShiftPrepAgent(),
     };
     this.notifierInitialized = false;
   }
@@ -96,6 +98,11 @@ class MasterOrchestrator {
     // Doctor appointments — 8:00 AM daily
     cron.schedule('0 8 * * *', () => {
       this.runAgent('doctorAppointments');
+    }, { timezone: tz });
+
+    // Shift prep — 3:00 AM daily, after close, once the closing count is in
+    cron.schedule('0 3 * * *', () => {
+      this.runAgent('shiftPrep');
     }, { timezone: tz });
 
     console.log('[Orchestrator] Cron schedules registered.');

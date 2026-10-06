@@ -1,0 +1,20 @@
+[
+  {
+    "id": "example-recipe-template",
+    "name": "PLACEHOLDER - replace with a real recipe",
+    "category": "Lobsteria",
+    "type": "sauce",
+    "searchTags": ["placeholder", "template"],
+    "ingredients": [
+      "REPLACE: exact ingredient + quantity",
+      "REPLACE: exact ingredient + quantity"
+    ],
+    "instructions": [
+      "REPLACE: step 1",
+      "REPLACE: step 2"
+    ],
+    "photo": null,
+    "needsReview": true,
+    "notes": "This is a structural placeholder only - no real recipe content yet. Delete once real recipes are entered."
+  }
+]

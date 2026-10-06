@@ -1,0 +1,118 @@
+[
+  {
+    "id": "stovetop-daily",
+    "name": "Clean stovetop",
+    "area": "Lobsteria",
+    "frequency": "daily",
+    "estimatedMinutes": null,
+    "procedure": "Procedure 703 cleaner",
+    "requiresPhoto": false,
+    "needsReview": true
+  },
+  {
+    "id": "fried-oil-change",
+    "name": "Change fried oil",
+    "area": "Lobsteria",
+    "frequency": "weekly",
+    "dayOfWeek": 1,
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE cadence - confirm actual day/frequency with Pau"
+  },
+  {
+    "id": "raw-bar-sanitize-daily",
+    "name": "Sanitize raw bar / oyster station",
+    "area": "Lobsteria",
+    "frequency": "daily",
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - confirm this is wanted as a standalone daily task and its procedure"
+  },
+  {
+    "id": "ice-bin-daily",
+    "name": "Empty and sanitize ice bin",
+    "area": "shared",
+    "frequency": "daily",
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - confirm cadence/procedure"
+  },
+  {
+    "id": "hood-exhaust-weekly",
+    "name": "Clean hood / exhaust",
+    "area": "shared",
+    "frequency": "weekly",
+    "dayOfWeek": 1,
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - confirm cadence/day and procedure"
+  },
+  {
+    "id": "floor-drains-weekly",
+    "name": "Clean floor drains",
+    "area": "shared",
+    "frequency": "weekly",
+    "dayOfWeek": 1,
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - confirm cadence/day and procedure"
+  },
+  {
+    "id": "walkin-reorg-weekly",
+    "name": "Walk-in reorganization (FIFO check)",
+    "area": "shared",
+    "frequency": "weekly",
+    "dayOfWeek": 0,
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - confirm cadence/day and procedure"
+  },
+  {
+    "id": "ice-machine-descale-monthly",
+    "name": "Ice machine descale",
+    "area": "shared",
+    "frequency": "monthly",
+    "dayOfMonth": 1,
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - confirm cadence/date and procedure"
+  },
+  {
+    "id": "fire-suppression-check-monthly",
+    "name": "Fire suppression system check",
+    "area": "shared",
+    "frequency": "monthly",
+    "dayOfMonth": 1,
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - confirm cadence/date, may be a vendor visit rather than a staff task"
+  },
+  {
+    "id": "pest-control-monthly",
+    "name": "Pest control service",
+    "area": "shared",
+    "frequency": "monthly",
+    "dayOfMonth": 1,
+    "estimatedMinutes": null,
+    "procedure": "",
+    "requiresPhoto": false,
+    "needsReview": true,
+    "notes": "SAMPLE - likely a vendor visit, confirm whether it needs a staff checklist item at all"
+  }
+]

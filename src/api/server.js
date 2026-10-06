@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import winston from 'winston';
 import { orchestrator } from '../orchestrator/index.js';
 import { googleCalendarService } from '../shared/google-calendar.js';
+import { linePrepStore, cleaningStore, inventoryCountsStore } from '../shared/ops-store.js';
+import { getTodaysPrepPlan, getTodaysCleaning, searchRecipes } from '../shared/shift-ops.js';
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
 import path from 'path';
@@ -254,6 +256,39 @@ export function startApiServer(port = process.env.PORT || 3000) {
     const items = await readJsonSafe('expenses.json');
     res.json({ expenses: items });
   });
+
+  // --- Kitchen ops (iPad staff screen) ---
+
+  app.get('/api/line-prep', ensureApiKey, async (req, res) => {
+    res.json({ items: await linePrepStore.all() });
+  });
+
+  app.get('/api/cleaning-tasks', ensureApiKey, async (req, res) => {
+    res.json({ tasks: await cleaningStore.all() });
+  });
+
+  app.get('/api/recipes', ensureApiKey, async (req, res) => {
+    res.json({ recipes: await searchRecipes(req.query.q) });
+  });
+
+  app.get('/api/shift/prep-today', ensureApiKey, async (req, res) => {
+    res.json(await getTodaysPrepPlan());
+  });
+
+  app.get('/api/shift/cleaning-today', ensureApiKey, async (req, res) => {
+    res.json({ tasks: await getTodaysCleaning() });
+  });
+
+  app.post('/api/inventory/count', ensureApiKey, async (req, res) => {
+    const { itemId, qty, countedBy } = req.body;
+    if (!itemId || typeof qty !== 'number') return res.status(400).json({ error: 'Missing itemId or qty (number)' });
+    const entry = { itemId, qty, countedBy: countedBy || 'unknown', countedAt: new Date().toISOString() };
+    await inventoryCountsStore.append(entry);
+    res.json({ success: true, count: entry });
+  });
+
+  // Staff-facing iPad page: bookmark e.g. https://host/kitchen/?api_key=STAFF_KEY
+  app.use('/kitchen', ensureApiKey, express.static(path.join(__dirname, '../../public/kitchen')));
 
   const server = app.listen(port, () => {
     console.log(`[API] Life OS API listening on port ${port}`);
