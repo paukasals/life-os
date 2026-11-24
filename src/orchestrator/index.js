@@ -13,6 +13,7 @@ import { HealthWellnessAgent } from '../agents/health-wellness/index.js';
 import { MealPlanningAgent } from '../agents/meal-planning/index.js';
 import { SleepRecoveryAgent } from '../agents/sleep-recovery/index.js';
 import { DoctorAppointmentsAgent } from '../agents/doctor-appointments/index.js';
+import { CreativeStudioAgent } from '../agents/creative-studio/index.js';
 
 class MasterOrchestrator {
   constructor() {
@@ -29,6 +30,7 @@ class MasterOrchestrator {
       mealPlanning: new MealPlanningAgent(),
       sleepRecovery: new SleepRecoveryAgent(),
       doctorAppointments: new DoctorAppointmentsAgent(),
+      creativeStudio: new CreativeStudioAgent(),
     };
     this.notifierInitialized = false;
   }
