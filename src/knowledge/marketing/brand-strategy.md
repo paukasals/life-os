@@ -1,6 +1,7 @@
 # Lobsteria — Brand Strategy Document
-Last updated: May 19, 2026
+Last updated: November 24, 2026
 *For full operational brief, menu details, SOPs, and Claude instructions → see lobsteria-master-brief.md*
+*Mandatory rules that override anything below → see brand-rules.md*
 
 ---
 
@@ -12,14 +13,14 @@ Last updated: May 19, 2026
 
 **Owned line:** *"The coasts of the world, in one roll."*
 
-**One sentence:** A Barcelona-born chef who grew up at La Boqueria looked at what Miami was calling a lobster roll and said: *"Nobody is doing this the way it's supposed to be done."* He fixed that. From a 1976 Airstream.
+**One sentence:** A Barcelona-born owner who grew up at La Boqueria looked at what Miami was calling a lobster roll and said: *"Nobody is doing this the way it's supposed to be done."* He fixed that. From a 1976 Airstream.
 
 ---
 
 ## 2. BRAND POSITIONING
 
 ### What Lobsteria Is
-A premium chef-owned seafood concept operating from a vintage Airstream in Wynwood/Midtown Miami. Fine dining ingredients. Food truck energy. Open until 2am.
+A premium owner-operated seafood concept operating from a vintage Airstream in Wynwood/Midtown Miami. Fine dining ingredients. Food truck energy. Open until 2am.
 
 ### The White Space Lobsteria Owns
 - No one else in Miami is doing lobster rolls with this level of ingredient integrity
@@ -44,7 +45,7 @@ A premium chef-owned seafood concept operating from a vintage Airstream in Wynwo
 ### The Founder
 Pau grew up in Barcelona going to La Boqueria — the legendary covered market — with his family. Fresh fish, seasonal seafood, the real thing. That standard followed him across the Atlantic.
 
-He arrived in the US in 2012 on an O-1 visa — extraordinary ability — as a professional water polo player for the Spanish national team. Competed in US Opens. Transitioned into fine dining kitchens specializing in fresh seafood.
+He arrived in the US in 2012 on an O-1 visa — extraordinary ability — as a professional water polo player for the Spanish national team. Competed in US Opens. Transitioned out of professional sports and into Miami's food scene, immersing himself in seafood-focused kitchens before deciding to build something of his own.
 
 Then he tried what Miami was calling a lobster roll.
 
@@ -65,7 +66,7 @@ The flagship ceviche is named after Pau's best friend from Peru. The recipe come
 
 ## 4. BRAND VALUES
 
-1. **No shortcuts** — Every Maine lobster hand-cleaned on-site. Claw and knuckle only. Corvina, not cheap white fish. Sushi-grade salmon. Nothing pre-made.
+1. **No shortcuts** — Every wild-caught Maine lobster hand-cleaned on-site. Claw and knuckle only. Corvina, not cheap white fish. Sushi-grade salmon. Nothing pre-made.
 2. **Craftsmanship over convenience** — 10–20 minutes made to order. The wait is the difference.
 3. **Real stories** — Tía Tati's grandmother's recipe. La Boqueria. The O-1 visa. This isn't a corporate concept with a focus-grouped backstory.
 4. **Accessibility with luxury** — Caviar on a food truck. Truffle rolls. Fine dining ingredients in a walk-up Airstream. That contrast is intentional.
@@ -76,22 +77,22 @@ The flagship ceviche is named after Pau's best friend from Peru. The recipe come
 ## 5. BRAND VOICE & TONE
 
 ### The Voice
-Lobsteria speaks like a confident, passionate chef who knows exactly what they're doing — not arrogant, but certain. Mediterranean directness mixed with Miami warmth.
+Lobsteria speaks like a confident, passionate owner who knows exactly what he's doing — not arrogant, but certain. Mediterranean directness mixed with Miami warmth.
 
 ### Tone Principles
 - **Direct** — Short sentences. No fluff. Say what it is.
 - **Confident** — We don't say "try our lobster roll." We say "this is what a lobster roll is supposed to taste like."
 - **Proud without being boastful** — The quality speaks. We just describe it honestly.
-- **Warm but not casual** — This is a premium brand. Not corporate. Not bro. Somewhere between a Barcelona chef's Instagram and a Wynwood night out.
+- **Warm but not casual** — This is a premium brand. Not corporate. Not bro. Somewhere between a Barcelona market native's Instagram and a Wynwood night out.
 - **Storytelling when it matters** — Tía Tati. La Boqueria. Pau at the Airstream every night. Use these stories sparingly so they land.
 
 ### Voice Examples
 
 ✅ **DO:**
 > "Hand-cleaned. Every night. Claw and knuckle only."
-> "Maine lobster. Brown butter. Nothing more."
+> "Wild-caught Maine lobster. Brown butter. Nothing more."
 > "Open tonight. 5pm → 2am. Walk up."
-> "4.9 stars. 145 reviews. Zero press. All word of mouth."
+> "4.9 stars. 190+ reviews. Zero press. All word of mouth."
 > "Caviar on anything. Because why not."
 
 ❌ **DON'T:**
@@ -129,7 +130,7 @@ Every post falls under one of these 4 pillars:
 - La Boqueria / Barcelona roots
 - Tía Tati & the ceviche recipe
 - The name "Lobsteria" explained
-- O-1 visa / water polo / chef journey
+- O-1 visa / water polo / the road to opening Lobsteria
 
 **Sample content:**
 - "He grew up going to La Boqueria. Now he runs a lobster roll spot in Wynwood." (Reel)
@@ -158,7 +159,7 @@ Every post falls under one of these 4 pillars:
 
 **Sample content:**
 - Pull quote: *"The first bite was insane."* — Tony Lopez, Google Local Guide
-- "145 Google reviews. 4.9 stars. No press. Just word of mouth."
+- "190+ Google reviews. 4.9 stars. No press. Just word of mouth."
 - Repost a customer's video with credit
 
 ---
@@ -178,7 +179,7 @@ Vintage nautical badge style. Script lettering. Lobster claws. Oyster shell. Gol
 - **Dark, moody, warm** — not bright white studio food photography
 - **Close-up texture** — butter, lobster claw, caviar pearls
 - **Night energy** — the Airstream at night, lantern light
-- **Real, not staged** — Pau actually cleaning lobster, not a model chef
+- **Real, not staged** — Pau actually cleaning lobster, not a stand-in
 
 ### Video Style (Reels / TikTok)
 - POV / behind-the-counter angles
@@ -206,7 +207,7 @@ Vintage nautical badge style. Script lettering. Lobster claws. Oyster shell. Gol
 ### Facebook (Lobsteria Page) — SECONDARY
 - Cross-post from Instagram
 - Events, catering announcements
-- Boost posts via Meta Ads
+- Organic only — no paid boosting (see brand-rules.md: no paid ads on Instagram/Meta)
 
 ### Google Business Profile — LOCAL DISCOVERY
 - Regular posts (2x/week)
@@ -225,7 +226,7 @@ Vintage nautical badge style. Script lettering. Lobster claws. Oyster shell. Gol
 *"Tonight: [special]. Open 5pm. See you at the Airstream."*
 
 ### For Press / Media
-*"4.9 stars. 145 reviews. Zero press. Built entirely on word of mouth. The most interesting seafood story in Miami nobody's written yet."*
+*"4.9 stars. 190+ reviews. Zero press. Built entirely on word of mouth. The most interesting seafood story in Miami nobody's written yet."*
 
 ### For Catering / Events
 *"Branded Lobsteria event boxes. Rows of lobster rolls with caviar and house sauces. Pickup or delivery. Pre-order at lobsteria.co."*

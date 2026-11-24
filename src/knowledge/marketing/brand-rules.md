@@ -40,10 +40,16 @@ Source: direct instruction from Pau, 2026-11-24.
   every pipeline stage, including anything produced by Lobsteria Creative
   Studio.
 
-## Known conflict to resolve
-- `brand-strategy.md` currently describes Pau as "chef" in multiple places
-  (origin story, brand voice description, "chef-owned" positioning). This
-  needs a decision: a direct relabel ("chef" → "owner"/"founder") vs. a
-  fuller rewrite of the water-polo-to-kitchen narrative, since "chef" is
-  embedded in storytelling, not just a tag. Flagged 2026-11-24, not yet
-  resolved.
+## Resolved conflicts (2026-11-24)
+- `brand-strategy.md` relabeled every "chef" reference to "owner" (origin
+  line, positioning, voice description, O-1/water-polo bio line, photography
+  style note), and reworded the water-polo-to-kitchen narrative so it no
+  longer implies Pau held a chef title.
+- `brand-strategy.md` Facebook platform section said "Boost posts via Meta
+  Ads" — contradicted the no-paid-Meta-ads rule. Changed to organic-only.
+- `brand-strategy.md` had a stale "145 reviews" figure in three places;
+  updated to "190+ reviews" to match the current, already-updated website
+  copy.
+- Lobster product descriptions in `brand-strategy.md` now include
+  "wild-caught" where the product is named (Brand Values #1, the DO voice
+  example), matching the canonical phrase in this file.
