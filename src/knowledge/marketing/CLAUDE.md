@@ -6,6 +6,8 @@
 3. Ask: "What do you want to work on?"
 
 ## Always:
+- Read `brand-rules.md` FIRST, before anything else — mandatory rules that
+  override any conflicting language in other files
 - Read `lobsteria-master-brief.md` before doing anything brand or menu related
 - Read `brand-strategy.md` before writing any copy, captions, or ads
 - Read `strategy-tracker.md` for the full detailed plan if needed
