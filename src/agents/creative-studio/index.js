@@ -10,7 +10,13 @@ const STUDIO_DIR = path.resolve(__dirname, '../../../creative-studio');
 const ORIGINALS_DIR = path.join(STUDIO_DIR, 'originals');
 const ANALYZED_DIR = path.join(STUDIO_DIR, 'analyzed');
 const PROJECTS_DIR = path.join(STUDIO_DIR, 'projects');
-const KNOWLEDGE_DIR = path.resolve(__dirname, '../../knowledge/marketing');
+
+// Subfolder name -> source tag passed to Gemini (QC bar differs: glasses
+// footage has no framing/zoom control, that's the format, not a defect).
+const SOURCE_DIRS = {
+  iphone: path.join(ORIGINALS_DIR, 'iphone'),
+  glasses: path.join(ORIGINALS_DIR, 'glasses'),
+};
 
 const MIME_BY_EXT = {
   '.mp4': 'video/mp4',
@@ -35,7 +41,7 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     this.log('Scanning creative-studio/originals for new media...');
     await this.ensureDirs();
 
-    const brandRules = await this.loadBrandRules();
+    const qcChecklist = await this.loadQcChecklist();
     const pending = await this.findUnanalyzed();
 
     if (pending.length === 0) {
@@ -44,13 +50,13 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     }
 
     const results = [];
-    for (const fileName of pending) {
+    for (const item of pending) {
       try {
-        const result = await this.processOne(fileName, brandRules);
+        const result = await this.processOne(item, qcChecklist);
         results.push(result);
       } catch (err) {
-        this.error(`Failed processing ${fileName}`, err);
-        results.push({ fileName, error: err.message });
+        this.error(`Failed processing ${item.fileName}`, err);
+        results.push({ fileName: item.fileName, error: err.message });
       }
     }
 
@@ -62,53 +68,60 @@ Never approve or publish anything yourself — every piece stops at "finished" f
   }
 
   async ensureDirs() {
-    for (const dir of [ORIGINALS_DIR, ANALYZED_DIR, PROJECTS_DIR]) {
+    for (const dir of [ANALYZED_DIR, PROJECTS_DIR, ...Object.values(SOURCE_DIRS)]) {
       await fs.mkdir(dir, { recursive: true });
     }
   }
 
-  async loadBrandRules() {
+  async loadQcChecklist() {
     try {
-      return await fs.readFile(path.join(KNOWLEDGE_DIR, 'brand-rules.md'), 'utf-8');
+      return await fs.readFile(path.join(STUDIO_DIR, 'qc-checklist.md'), 'utf-8');
     } catch {
       return '';
     }
   }
 
   async findUnanalyzed() {
-    const entries = await fs.readdir(ORIGINALS_DIR, { withFileTypes: true });
-    const mediaFiles = entries
-      .filter((e) => e.isFile() && MIME_BY_EXT[path.extname(e.name).toLowerCase()])
-      .map((e) => e.name);
-
     const unanalyzed = [];
-    for (const fileName of mediaFiles) {
-      const analyzedPath = path.join(ANALYZED_DIR, `${fileName}.json`);
+    for (const [source, dir] of Object.entries(SOURCE_DIRS)) {
+      let entries;
       try {
-        await fs.access(analyzedPath);
+        entries = await fs.readdir(dir, { withFileTypes: true });
       } catch {
-        unanalyzed.push(fileName);
+        continue;
+      }
+      const mediaFiles = entries
+        .filter((e) => e.isFile() && MIME_BY_EXT[path.extname(e.name).toLowerCase()])
+        .map((e) => e.name);
+
+      for (const fileName of mediaFiles) {
+        const analyzedPath = path.join(ANALYZED_DIR, `${fileName}.json`);
+        try {
+          await fs.access(analyzedPath);
+        } catch {
+          unanalyzed.push({ fileName, source, dir });
+        }
       }
     }
     return unanalyzed;
   }
 
-  async processOne(fileName, brandRules) {
-    const filePath = path.join(ORIGINALS_DIR, fileName);
+  async processOne({ fileName, source, dir }, qcChecklist) {
+    const filePath = path.join(dir, fileName);
     const ext = path.extname(fileName).toLowerCase();
     const mimeType = MIME_BY_EXT[ext];
     const isVideo = mimeType.startsWith('video/');
 
-    this.log(`Probing ${fileName}...`);
+    this.log(`Probing ${fileName} (${source})...`);
     const metadata = await probe(filePath);
 
     this.log(`Analyzing ${fileName} with Gemini...`);
-    const analysisText = await analyzeMedia(filePath, mimeType, { brandRules });
+    const analysisText = await analyzeMedia(filePath, mimeType, { qcChecklist, source });
 
     const analyzedPath = path.join(ANALYZED_DIR, `${fileName}.json`);
     await fs.writeFile(
       analyzedPath,
-      JSON.stringify({ fileName, mimeType, metadata, analysis: analysisText, analyzedAt: new Date().toISOString() }, null, 2)
+      JSON.stringify({ fileName, source, mimeType, metadata, analysis: analysisText, analyzedAt: new Date().toISOString() }, null, 2)
     );
 
     let proxyPath = null;
@@ -126,6 +139,6 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     }
 
     this.log(`Done: ${fileName}`);
-    return { fileName, metadata, analyzedPath, proxyPath, thumbnailPath };
+    return { fileName, source, metadata, analyzedPath, proxyPath, thumbnailPath };
   }
 }

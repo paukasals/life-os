@@ -17,7 +17,11 @@ see the open decisions below).
 
 ## Pipeline stages
 
-1. **originals/** — raw ingested footage/photos, untouched, as shot.
+1. **originals/** — raw ingested footage/photos, untouched, as shot. Two
+   subfolders: `originals/iphone/` and `originals/glasses/` — the QC step
+   applies a different bar to each (glasses footage has no framing/zoom
+   control; that's the format, not a defect). Drop files into whichever
+   matches how they were captured.
 2. **analyzed/** — originals plus AI-generated understanding (what's in the
    shot, usable clips, quality flags) from the video-understanding step.
 3. **projects/** — in-progress edits: draft cuts, selected clips, graphics

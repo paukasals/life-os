@@ -22,25 +22,42 @@ async function waitUntilActive(ai, fileName, { timeoutMs = 120000, intervalMs = 
 }
 
 /**
- * Upload a video/image file to Gemini and ask it to analyze it for Lobsteria
- * creative content: what's in frame, usable clips, quality flags, brand-rule
- * risks. Returns the model's raw text response (caller parses/stores it).
+ * Upload a video/image file to Gemini and run it through the Creative Studio
+ * QC checklist (brand rules, food safety, legal/compliance, technical
+ * quality, virality/hook strength, content pillar fit). Returns the model's
+ * raw text response (caller parses/stores it).
+ *
+ * `qcChecklist` should be the contents of creative-studio/qc-checklist.md —
+ * a condensed checklist, not the full reference docs, to keep each call
+ * reasonably sized. Pass `source` ('iphone' | 'glasses') since the QC bar
+ * differs slightly (glasses footage is fixed ~100° FOV, no zoom, no
+ * framing control — don't flag that as a defect).
  */
-export async function analyzeMedia(filePath, mimeType, { brandRules = '' } = {}) {
+export async function analyzeMedia(filePath, mimeType, { qcChecklist = '', source = 'iphone' } = {}) {
   const ai = client();
   const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
   const active = await waitUntilActive(ai, uploaded.name);
 
-  const prompt = `You are reviewing raw footage/photos for Lobsteria, a Miami lobster roll Airstream food truck, for use in social content.
+  const sourceNote = source === 'glasses'
+    ? 'This clip is from Meta Nova POV glasses: fixed ~100° wide angle, no zoom, no framing control while wearing — do not flag wide framing or lack of composition as a defect, that is the format.'
+    : 'This clip is from an iPhone (Osmo gimbal or tripod) — normal framing/composition standards apply.';
 
-${brandRules ? `Mandatory brand rules to check against:\n${brandRules}\n\n` : ''}
-Analyze this media and respond in this exact structure:
+  const prompt = `You are the Quality Assurance step for Lobsteria Creative Studio, reviewing one piece of raw footage/photo before it goes any further in the pipeline. ${sourceNote}
+
+QC checklist to apply:
+${qcChecklist || '(no checklist provided — use general food-content judgment)'}
+
+Respond in this exact structure, one line per field, "none" if nothing applies:
 
 SUMMARY: (1-2 sentences, what's actually in the shot)
-USABLE_CLIPS: (timestamps or regions that are usable for social content, or "none" / "whole thing" for a photo)
-QUALITY_FLAGS: (blur, bad lighting, shaky, awkward framing — or "none")
-BRAND_RULE_RISKS: (anything in frame or implied that conflicts with the brand rules above — e.g. shows the lobster butter recipe, calls Pau "chef" on a sign, shows a discount sign — or "none")
-CONTENT_PILLAR_FIT: (which of: Product / Story / Vibe / Social Proof — fits best, or "unclear")`;
+USABLE_CLIPS: (timestamps/regions usable for social content, or "none" / "whole thing" for a photo)
+BRAND_RULE_RISKS: (specific checklist violations found, or "none")
+FOOD_SAFETY_FLAGS: (gloves missing, bare-hand contact, etc., or "none")
+LEGAL_FLAGS: (recognizable faces without known consent, minors, murals in focus, background music, or "none")
+TECHNICAL_FLAGS: (exposure, color temp, shake, framing — skip framing/zoom complaints for glasses source — or "none")
+HOOK_STRENGTH: (strong / weak / unclear, with a one-line reason — weak means the first 2-4s needs a re-cut, not a reshoot)
+CONTENT_PILLAR_FIT: (Product / Story / Vibe / Social Proof)
+RECOMMENDATION: (post-worthy / needs re-cut / needs reshoot / do-not-post, with a one-line reason)`;
 
   const response = await ai.models.generateContent({
     model: MODEL,
