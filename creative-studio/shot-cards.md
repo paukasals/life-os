@@ -284,9 +284,10 @@ LOBSTERIA × @paupau.ownerdiary Collab · Sun Oct 25 · 12-20s · real customer
   only if they tell you and agree. Caption quotes their exact words.
 - **Edit:** their exact words as the caption; hometown text only if agreed.
   Captions in both languages.
-- **Meta glasses note (from Video Plan PDF):** once they arrive, glasses
-  replace the tripod for this format — same rule: ask before recording, not
-  only before posting.
+- **Meta glasses update (2026-11-25):** Pau now owns Meta Nova glasses —
+  they can replace the tripod for this format, giving a true over-the-
+  shoulder POV instead of a fixed camera. Same rule applies: ask before
+  recording, not only before posting.
 
 ## CN — Counter Note (standard format for announcements)
 LOBSTERIA Story or Reel · 8-12s · silent · every holiday, special opening,
@@ -325,9 +326,31 @@ Event Box deadline, closure, "we're open tonight"
   doesn't cover key information, whole clip under 12 seconds.
 
 ## Personal brand cards — @paupau.ownerdiary
-Style: raw, honest, owner's point of view. Mostly one camera (often selfie
-or Dual Capture). Lighter production than LOBSTERIA. Speak, then subtitle in
-the other language.
+Style: raw, honest, owner's point of view. **Updated 2026-11-25: primary
+capture is now Meta Nova glasses POV** (real specs in
+camera-course-reference.md) — true first-person, hands-free, nothing to
+hold or point. iPhone (Osmo/tripod, selfie or Dual Capture) still used
+where glasses can't do the job: anything needing Pau's own face in frame
+(OD0, OD1, OD5 as written below), or a fixed third-person angle. Speak,
+then subtitle in the other language. Top KPI across this account: reach/
+virality — 3-second hold, shares/saves, % non-follower reach.
+
+**Per-card capture method (updated):**
+- OD0 "What my name means", OD1 "Why a 1976 Airstream?", OD5 "Maine or
+  Connecticut?" — **iPhone still required** (selfie/Dual Capture or the
+  tripod) because Pau's face needs to be in frame for the direct-address
+  delivery written below.
+- OD2 "4:45pm opening", OD3 "1am at the window", OD4 "2am closing", OD+
+  "Event Box day" — **glasses POV now the default.** Pau just works and
+  talks; the "say" lines below become voiceover recorded after, or spoken
+  naturally in the moment since glasses don't need framing. Dual Capture
+  notes in the original cards are no longer needed (glasses replace that
+  workaround entirely).
+- **Live** — stays iPhone/tripod (glasses have no live-stream-to-Instagram
+  path as part of this setup; revisit if that changes).
+- **S1/S2/S3 Stories** — "Pau talks at the window" stays iPhone (needs his
+  face); S2's build footage can mix in old photos/videos as already
+  planned.
 
 ### OD0 — What my name means
 Sun Oct 11 · ~20s · selfie at the window · pin

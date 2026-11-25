@@ -7,12 +7,63 @@ ULANZI light). This file extracts the technical rules the Creative Studio
 pipeline (Gemini QC, future auto-editor) should check footage against — not
 the per-video shot lists, which live in `shot-cards.md`.
 
-## Confirmed: Meta glasses are NOT part of the current shooting system
-The course says explicitly: "Meta glasses: not part of this course until you
-own them." Combined with the Video Plan PDF (also no glasses usage), the
-active capture system is **2 iPhones only** — Cam A (Osmo Mobile 7P) + Cam B
-(Neewer tripod or overhead clamp). If Pau wants glasses POV footage folded
-in, it needs an explicit addition to the plan, not an assumption.
+## Updated 2026-11-25: Meta Nova glasses are now the primary capture device
+for @paupau.ownerdiary
+
+Pau confirmed he owns **Meta Nova** glasses (Sandstone frame, clear lens).
+The course's original note ("not part of this course until you own them")
+no longer applies — superseded. Real specs (verified, not assumed):
+
+- **Camera:** 12MP ultra-wide, 100° field of view.
+- **Video:** 3K @ 30fps (max quality) · 1080p @ 30/60fps · 720p @ 120fps
+  (true slow motion, in-camera — no "fake" slo-mo needed) · built-in
+  hyperlapse mode.
+- **Audio:** 6 built-in microphones, open-ear speakers. Decent on its own;
+  for controlled dialogue (customer interviews, V10-style) still prefer a
+  Mic Mini TX clipped to clothing for isolation from Wynwood street noise —
+  glasses mic for ambient/room sound, Mic Mini for the voice that matters.
+- **Battery:** 8+ hours. **No display** — it's capture-only, nothing to
+  manage mid-shoot.
+- **No zoom control while wearing** — same discipline as the iPhone rule:
+  decide the shot by *positioning your body*, not a lens choice. Glasses
+  shoot at a fixed ~100° wide angle; "zoom" happens as a crop in editing.
+
+**Strategic priority, explicit:** the top KPI across all Lobsteria/Owner
+Diary content is **reach and virality** — 3-second hold rate, shares/saves,
+% non-follower reach, and making the Airstream a recognized name on Miami
+IG/TikTok. This doesn't replace the hook mechanics in Module 1 — it's the
+same mechanics, applied with more intent. Authentic, unscripted POV is
+*itself* one of the strongest-performing hook types for food content right
+now (see Module 6's own reference: Fallow's "POV: Line Chef" — real calls,
+real sizzle, no narration). Glasses are the tool that makes that format
+effortless instead of requiring a held camera.
+
+### Account split (confirmed by Pau)
+- **@paupau.ownerdiary** — primarily glasses POV footage. iPhones (Osmo/
+  tripod) used to assist specific videos (origin stories at the window,
+  anything needing a fixed third-person angle, anything where Pau needs to
+  see his own face — glasses can't do a selfie shot).
+- **@lobsteriamia** (brand account) — unchanged, iPhone-only (Cam A/B),
+  food is the subject, not Pau's POV.
+
+### New POV formats worth adding (glasses-specific, high-virality intent)
+These exploit what glasses do that a held camera can't — truly hands-free,
+first-person, nobody can tell it's "produced":
+1. **"POV: making your roll"** — the owner's actual eyeline while building a
+   real customer's order, start to finish, real kitchen sound, no
+   narration. (Direct descendant of the Fallow reference above.)
+2. **"A day in my life running a lobster truck"** — compilation across a
+   full shift (open → rush → 2am close), cut to a voiceover recorded after.
+   "Day in the life" + "own a business" is a proven high-retention genre.
+3. **"POV: handing you your roll"** — the literal hand-off moment from
+   Pau's eyes, ending on the customer's real reaction (same consent rule as
+   V10 — ask first).
+4. **"POV: 1am, still open"** — walks the late-night energy (Wynwood, the
+   glow, customers) without a human holding anything, free to actually work
+   while it records.
+- All of these still follow the V10/OD rule: **if it isn't genuinely
+  great, don't post it** — virality compounds off a few excellent clips,
+  not volume of mediocre ones.
 
 ## Camera settings (iPhone 17 Pro Max)
 

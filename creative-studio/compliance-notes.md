@@ -28,6 +28,13 @@ before relying on them commercially.
 - **Action item:** have an actual Florida attorney confirm the walk-up
   window / reasonable-expectation-of-privacy question before relying on
   customer-facing footage at any volume. Not done yet.
+- **Escalated priority (2026-11-25):** Meta Nova glasses are now Pau's
+  primary daily-wear capture device for @paupau.ownerdiary (always
+  recording during POV content, picks up bystanders/customers
+  automatically, no separate "point the camera" decision each time). This
+  moves the attorney consult from "before scaling" to **worth doing soon**
+  — continuous first-person recording during service is a meaningfully
+  different exposure than occasional planned iPhone shoots.
 - **Update 2026-11-25:** the real Video Plan PDF (see
   `video-production-spec.md`) already operationalizes sensible practice
   independent of this research: V10 "Pau at the Window" requires asking

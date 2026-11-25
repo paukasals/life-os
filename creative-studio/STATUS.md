@@ -104,10 +104,18 @@ hasta verificar sus criterios de aceptación").
    brand card — supersedes the shorter summaries for V1-V10 in
    video-plan-oct-2026.md). Both PDFs are internally consistent with each
    other and with brand-rules.md — no new contradictions found.
-   **Confirmed from the Camera Course:** Meta glasses are explicitly "not
-   part of this course until you own them" — consistent with the Video
-   Plan PDF not using them either. The active capture system is 2 iPhones
-   only (Cam A on Osmo Mobile 7P, Cam B on Neewer tripod/overhead clamp).
+   **Superseded 2026-11-25:** both PDFs originally assumed no glasses
+   ("not part of this course until you own them"). Pau confirmed he now
+   owns Meta Nova glasses (Sandstone/clear, 12MP, 100° FOV, 3K@30fps,
+   verified specs in camera-course-reference.md) and wants them as the
+   **primary capture device for @paupau.ownerdiary**, with iPhones
+   assisting specific videos. Updated camera-course-reference.md and
+   shot-cards.md accordingly. Explicit strategic priority set by Pau: reach/
+   virality (views, follower growth, becoming a recognized Miami IG/TikTok
+   name) is the top KPI across all content — documented in
+   camera-course-reference.md rather than treated as a tension with the
+   existing authenticity rules (the hook mechanics already in the course
+   ARE the viral mechanics; nothing in brand-rules.md needed to change).
    **Notable independent finding:** the course explicitly warns "InVideo AI
    ... must never replace a proper edit" for Pau's own footage (reviewers
    find its manual editing basic/clunky) — this validates the
