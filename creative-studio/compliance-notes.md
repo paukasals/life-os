@@ -28,6 +28,14 @@ before relying on them commercially.
 - **Action item:** have an actual Florida attorney confirm the walk-up
   window / reasonable-expectation-of-privacy question before relying on
   customer-facing footage at any volume. Not done yet.
+- **Update 2026-11-25:** the real Video Plan PDF (see
+  `video-production-spec.md`) already operationalizes sensible practice
+  independent of this research: V10 "Pau at the Window" requires asking
+  "Would you be OK if I film your first bite for our Instagram?" before
+  filming (not just before posting), and the weekly Live has a visible
+  consent sign at the window ("We may be live 🔴"). This is a good practical
+  baseline; the attorney consult is still worth doing before scaling
+  customer-facing content volume, but the MVP plan isn't exposed here.
 
 ## Platform publishing APIs (Instagram, TikTok)
 

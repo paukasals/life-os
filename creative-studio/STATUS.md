@@ -94,9 +94,14 @@ hasta verificar sus criterios de aceptación").
 3. **DaVinci Resolve Studio decision** — confirm you want to install it on
    your Mac and make the one-time ~$295 purchase, before the edit/render
    stage gets built around it.
-4. **The two training PDFs** mentioned in the directive (photography/video
-   training, daily capture guidelines) — needed to build the real knowledge
-   base section (directive §8). Can't be invented; need the actual files.
+4. **One of the two training PDFs received 2026-11-25**: the Video Plan
+   (Weeks 1-2, Oct 12-25) — full shoot calendar, camera system, B1/B2
+   reference formats, editing brief, approved/banned words, personal-brand
+   account structure. Ingested into `src/knowledge/marketing/video-plan-oct-2026.md`
+   and `creative-studio/video-production-spec.md`. Still missing: the
+   general photography/video training PDF referenced in the original
+   directive (lighting/composition fundamentals, not the week-specific
+   shoot plan). Can't invent its content; need the actual file.
 5. **Instagram/TikTok developer app review** — starting this requires your
    business details, a privacy policy link, and your explicit authorization
    (it's an external, auditable process tied to your real accounts).

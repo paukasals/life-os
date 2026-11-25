@@ -22,9 +22,20 @@ Source: direct instruction from Pau, 2026-11-24.
 - Slogan: **"Home of Miami's Most Famous Lobster Roll."**
 - Do not shorten to "Miami's famous ___" alone — that collides with Mason's
   positioning.
-- Never mix **LOBSTERIA** branding with **The Crepes and Waffles Bar
-  (Tcawbar)** — keep them as fully separate brands in copy, handles, and
-  visuals.
+
+## Account structure (refined 2026-11-25, from the Video Plan PDF)
+- **@lobsteriamia** (Instagram/TikTok) — LOBSTERIA brand account. Lobster
+  side only. Never shows or references Tcawbar.
+- **@thecrepesandwafflesbar** (Instagram) — Tcawbar brand account, not
+  posting yet. Crepe side only when it launches. Never shows or references
+  LOBSTERIA.
+- **@paupau.ownerdiary** (Instagram/TikTok/YouTube) — Pau's personal
+  account. The **one deliberate exception**: this account can show both
+  halves of the Airstream, since it's framed as the owner's life, not either
+  brand's storefront.
+- **Never**: a single post tagging all three accounts, or a brand account
+  showing the other brand's half. The personal account mixing both is by
+  design; a brand account doing so is not.
 
 ## Operational facts (must stay accurate in any copy)
 - Hours: **5pm–2am**.
