@@ -11,7 +11,7 @@ scratch, continue from here.
 |---|---|---|
 | 1. Discovery & Architecture | ✅ Done | Repo audited, tool landscape researched with sources, architecture decided (see Decisions below) |
 | 2. Foundation | 🟡 Partial | Folder structure + brand knowledge wired. Agent/skill specs for the 13 specialized roles not yet drafted. |
-| 3. MVP Pipeline | 🟡 Partial | Ingestion + analysis (FFmpeg + Gemini) built, syntax-checked, FFmpeg smoke-tested with a generated clip. **Not yet run against a real Gemini call or real Lobsteria footage** — blocked on credentials + material (see Blocked On). Edit/render step not started — blocked on a tooling decision (DaVinci on Pau's Mac vs. cloud). |
+| 3. MVP Pipeline | 🟡 Partial | Ingestion + analysis + **auto-cut** built end-to-end: QC analysis → transcribe + decide keep/cut (filler words, pauses, redone lines) → render (trim/concat + warm grade + burned captions). The render engine itself is verified against synthetic footage (10s source → correct 7s cut, right resolution, captions burned in, no errors). **The Gemini calls (QC analysis + transcription) are still unverified live** — no GEMINI_API_KEY configured yet, and no real Lobsteria footage to run it on (see Blocked On). DaVinci-level color grading not started (current grade is the FFmpeg "quick-look" preset from camera-course-reference.md, not Apple Log + LUT) — blocked on the DaVinci-on-Mac decision. |
 | 4. Professional Production | ⬜ Not started | Color grading, audio design, motion graphics — depends on Phase 3 landing first |
 | 5. Approval & Distribution | ⬜ Not started | Dashboard not built. Instagram/TikTok publishing confirmed to require app review (see compliance-notes.md) — this is a real multi-week external approval process, not something to build around |
 | 6. Commercial Intelligence | ⬜ Not started | Depends on real content existing first |
@@ -141,4 +141,21 @@ hasta verificar sus criterios de aceptación").
   notification the agent already sends.
 - The 13 specialized agent roles (Creative Director, Colorist, Sound
   Designer, etc.) are not yet built as separate agents/skills. Right now
-  there's one `CreativeStudioAgent` doing ingestion + analysis only.
+  there's one `CreativeStudioAgent` doing ingestion, analysis, and
+  auto-cut.
+- The auto-cut step only decides keep/cut **within one clip's own
+  transcript** (filler words, pauses, a redone line said again more
+  cleanly later in the same take). It does **not** compare across multiple
+  separate files to pick the better of two different takes recorded as
+  separate clips — that's a real gap if Pau shoots several full retakes of
+  the same video as separate files, not just redone lines within one
+  continuous recording.
+- Color grade is the FFmpeg "quick-look" preset (contrast/brightness/
+  saturation/color-balance/vignette/grain), not the Apple Log + LUT
+  pro-stage workflow — that needs either DaVinci or a proper LUT applied
+  via FFmpeg, neither built yet.
+- No platform-specific export variants yet (the render always outputs one
+  file) — acceptable for now since Instagram/TikTok/YouTube Shorts specs
+  converge on the same 1080x1920 format per camera-course-reference.md,
+  but B2-style videos wanting 24fps export need that passed explicitly
+  (the agent currently always renders at 30fps).

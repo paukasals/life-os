@@ -69,3 +69,67 @@ RECOMMENDATION: (post-worthy / needs re-cut / needs reshoot / do-not-post, with 
 
   return response.text;
 }
+
+const TRANSCRIPT_SCHEMA = {
+  type: 'object',
+  properties: {
+    language: { type: 'string', description: 'Primary spoken language, e.g. "en" or "es"' },
+    segments: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          start: { type: 'number', description: 'Start time in seconds, source timeline' },
+          end: { type: 'number', description: 'End time in seconds, source timeline' },
+          text: { type: 'string', description: 'What is said, or "" for silent/action-only segments' },
+          keep: { type: 'boolean', description: 'true = include in the final cut, false = remove' },
+          reason: { type: 'string', description: 'Why kept or removed, e.g. "filler word", "dead air", "redo of a cleaner later take", "clean delivery"' },
+        },
+        required: ['start', 'end', 'text', 'keep', 'reason'],
+      },
+    },
+  },
+  required: ['language', 'segments'],
+};
+
+/**
+ * Transcribe a talking video with timestamps and decide which segments to
+ * keep vs. cut: filler words ("um", "eh", false starts), dead air/long
+ * pauses, and — when a line is said more than once in the same clip —
+ * earlier redone attempts (keeps only the cleanest delivery). Segments
+ * covering pure action with no speech (e.g. a silent process shot) come
+ * back with text:"" and keep:true by default — the caller can override via
+ * `minSegmentSeconds` filtering if needed.
+ *
+ * This does NOT compare across multiple separate files (e.g. picking the
+ * better of two different takes recorded as separate clips) — that's a
+ * separate, not-yet-built feature. Scoped to decisions possible from a
+ * single clip's own transcript.
+ */
+export async function transcribeAndDecideCuts(filePath, mimeType, { language = 'auto-detect (English or Spanish)' } = {}) {
+  const ai = client();
+  const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
+  const active = await waitUntilActive(ai, uploaded.name);
+
+  const prompt = `Transcribe this video's spoken audio with precise segment timestamps (language: ${language}). Break it into short segments (phrases or sentences, a few seconds each).
+
+For each segment, decide keep=true or keep=false:
+- keep=false: filler words/sounds ("um", "eh", "este", "o sea" used as a verbal tic), dead air or a long unintentional pause, a stutter/false start, or an earlier redo of a line that gets said again more cleanly later in the clip (keep only the cleanest final delivery of a repeated line).
+- keep=true: clean delivery, meaningful silence that's part of the action (e.g. someone handing over food, a reaction shot), or any segment with no speech that shows real action.
+
+Be conservative: when genuinely unsure, keep=true — an under-aggressive cut is recoverable by hand, an over-aggressive one loses real footage. Give a short, specific reason for every segment, not a generic one.`;
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: createUserContent([
+      createPartFromUri(active.uri, mimeType),
+      prompt,
+    ]),
+    config: {
+      responseMimeType: 'application/json',
+      responseJsonSchema: TRANSCRIPT_SCHEMA,
+    },
+  });
+
+  return JSON.parse(response.text);
+}

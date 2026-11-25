@@ -27,6 +27,9 @@ see the open decisions below).
 3. **projects/** — in-progress edits: draft cuts, selected clips, graphics
    in progress, not yet finished.
 4. **finished/** — rendered output, technically complete, pending review.
+   For video: `<name>.cut.mp4` (auto-cut, graded, captioned render),
+   `<name>.srt` (captions), `<name>.transcript.json` (the full keep/cut
+   decision record, for debugging why something got cut).
 5. **approved/** — Pau has approved in the dashboard. Nothing moves past
    this stage without that explicit approval (see `brand-rules.md`:
    "Nothing publishes without Pau's approval in the dashboard").
