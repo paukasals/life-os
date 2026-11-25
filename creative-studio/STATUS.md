@@ -94,14 +94,25 @@ hasta verificar sus criterios de aceptación").
 3. **DaVinci Resolve Studio decision** — confirm you want to install it on
    your Mac and make the one-time ~$295 purchase, before the edit/render
    stage gets built around it.
-4. **One of the two training PDFs received 2026-11-25**: the Video Plan
-   (Weeks 1-2, Oct 12-25) — full shoot calendar, camera system, B1/B2
-   reference formats, editing brief, approved/banned words, personal-brand
-   account structure. Ingested into `src/knowledge/marketing/video-plan-oct-2026.md`
-   and `creative-studio/video-production-spec.md`. Still missing: the
-   general photography/video training PDF referenced in the original
-   directive (lighting/composition fundamentals, not the week-specific
-   shoot plan). Can't invent its content; need the actual file.
+4. **Both training PDFs now received.** The Video Plan (Weeks 1-2, Oct
+   12-25) ingested 2026-11-25 into `src/knowledge/marketing/video-plan-oct-2026.md`
+   and `creative-studio/video-production-spec.md`. The Camera Course (14
+   modules, 31 pages, Pau's own 8-week training curriculum) ingested
+   2026-11-25 into `creative-studio/camera-course-reference.md` (technical
+   camera/light/sound/editing rules — the QC reference) and
+   `creative-studio/shot-cards.md` (full detail per video/story/personal-
+   brand card — supersedes the shorter summaries for V1-V10 in
+   video-plan-oct-2026.md). Both PDFs are internally consistent with each
+   other and with brand-rules.md — no new contradictions found.
+   **Confirmed from the Camera Course:** Meta glasses are explicitly "not
+   part of this course until you own them" — consistent with the Video
+   Plan PDF not using them either. The active capture system is 2 iPhones
+   only (Cam A on Osmo Mobile 7P, Cam B on Neewer tripod/overhead clamp).
+   **Notable independent finding:** the course explicitly warns "InVideo AI
+   ... must never replace a proper edit" for Pau's own footage (reviewers
+   find its manual editing basic/clunky) — this validates the
+   CreativeStudioAgent's existing approach (rule-based FFmpeg pipeline, not
+   a generic "AI generates the edit" tool) rather than suggesting a change.
 5. **Instagram/TikTok developer app review** — starting this requires your
    business details, a privacy policy link, and your explicit authorization
    (it's an external, auditable process tied to your real accounts).

@@ -78,4 +78,20 @@ before relying on them commercially.
   not push-button publishing. Automated publishing is a Phase 5 item gated
   on those approvals, not something to fake with a "simulated publish."
 
-Last updated: 2026-11-24.
+## Additional rules found in the Camera Course PDF (2026-11-25)
+
+- **Minors:** never film minors without a parent's OK — stricter than the
+  general "ask before filming" rule above, explicit about children
+  specifically.
+- **Wynwood murals:** murals are the artists' copyrighted work. Brands have
+  been taken to court for using murals in commercial content. Keep murals
+  out of frame, or blurred in the background only, unless Pau has the
+  artist's permission. Relevant because Lobsteria's own content plan
+  involves lots of neighborhood/Airstream-exterior shots — Wynwood is known
+  for murals, so this will come up.
+- **Music:** only platforms' own commercial libraries or royalty-free
+  tracks — not just "don't use a licensed song as the backing track," but
+  also don't let a song play audibly in the background of a shot (same
+  mute/block risk).
+
+Last updated: 2026-11-25.
