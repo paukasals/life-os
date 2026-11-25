@@ -17,11 +17,21 @@ see the open decisions below).
 
 ## Pipeline stages
 
-1. **originals/** — raw ingested footage/photos, untouched, as shot. Two
-   subfolders: `originals/iphone/` and `originals/glasses/` — the QC step
-   applies a different bar to each (glasses footage has no framing/zoom
-   control; that's the format, not a defect). Drop files into whichever
-   matches how they were captured.
+1. **originals/** — raw ingested footage/photos, untouched, as shot.
+   - `originals/iphone/` and `originals/glasses/` — single-camera clips.
+     The QC step applies a different bar to each (glasses footage has no
+     framing/zoom control; that's the format, not a defect).
+   - `originals/takes/<take-id>/` — **2-3 simultaneous recordings of the
+     same moment** (e.g. Cam A on the Osmo + Cam B on the tripod, sometimes
+     + Meta Nova glasses POV). Name each file by role: `camA.mp4`,
+     `camB.mp4`, `glasses.mp4` (role = whatever's before the first `.` or
+     `_` in the filename, so `camB_take2.mov` also works). The pipeline
+     watches all files in a take together and decides which camera to show
+     for each moment — it does not need numeric sync, it matches the
+     content semantically (same words/action across cameras). A take needs
+     **at least 2 files** to use this path; a single file in its own take
+     folder gets skipped with a note to move it to iphone/ or glasses/
+     instead.
 2. **analyzed/** — originals plus AI-generated understanding (what's in the
    shot, usable clips, quality flags) from the video-understanding step.
 3. **projects/** — in-progress edits: draft cuts, selected clips, graphics

@@ -11,7 +11,7 @@ scratch, continue from here.
 |---|---|---|
 | 1. Discovery & Architecture | ✅ Done | Repo audited, tool landscape researched with sources, architecture decided (see Decisions below) |
 | 2. Foundation | 🟡 Partial | Folder structure + brand knowledge wired. Agent/skill specs for the 13 specialized roles not yet drafted. |
-| 3. MVP Pipeline | 🟡 Partial | Ingestion + analysis + **auto-cut** built end-to-end: QC analysis → transcribe + decide keep/cut (filler words, pauses, redone lines) → render (trim/concat + warm grade + burned captions). The render engine itself is verified against synthetic footage (10s source → correct 7s cut, right resolution, captions burned in, no errors). **The Gemini calls (QC analysis + transcription) are still unverified live** — no GEMINI_API_KEY configured yet, and no real Lobsteria footage to run it on (see Blocked On). DaVinci-level color grading not started (current grade is the FFmpeg "quick-look" preset from camera-course-reference.md, not Apple Log + LUT) — blocked on the DaVinci-on-Mac decision. |
+| 3. MVP Pipeline | 🟡 Partial | Ingestion + analysis + **auto-cut** (single-camera AND multicam) built end-to-end. Single clip: QC analysis → transcribe + decide keep/cut (filler words, pauses, redone lines) → render (trim/concat + warm grade + burned captions). Multicam (2-3 simultaneous recordings, e.g. Cam A + Cam B + glasses): Gemini watches all sources together, matches them semantically (not by numeric sync), and produces one ordered edit decision list choosing which camera to show per moment → renders by cutting from whichever source file each segment calls for. Render engine verified against synthetic footage for BOTH paths: single-file (10s → correct 7s cut, right resolution, captions burned in) and true multicam (2 genuinely different source files, confirmed by extracting frames and checking pixel color that the output actually switches cameras at the right timestamps, not just concatenating one file). **All Gemini calls (QC analysis, transcription, multicam decision) are still unverified live** — no GEMINI_API_KEY configured yet, and no real Lobsteria footage to run it on (see Blocked On). DaVinci-level color grading not started (current grade is the FFmpeg "quick-look" preset from camera-course-reference.md, not Apple Log + LUT) — blocked on the DaVinci-on-Mac decision. |
 | 4. Professional Production | ⬜ Not started | Color grading, audio design, motion graphics — depends on Phase 3 landing first |
 | 5. Approval & Distribution | ⬜ Not started | Dashboard not built. Instagram/TikTok publishing confirmed to require app review (see compliance-notes.md) — this is a real multi-week external approval process, not something to build around |
 | 6. Commercial Intelligence | ⬜ Not started | Depends on real content existing first |
@@ -143,13 +143,16 @@ hasta verificar sus criterios de aceptación").
   Designer, etc.) are not yet built as separate agents/skills. Right now
   there's one `CreativeStudioAgent` doing ingestion, analysis, and
   auto-cut.
-- The auto-cut step only decides keep/cut **within one clip's own
-  transcript** (filler words, pauses, a redone line said again more
-  cleanly later in the same take). It does **not** compare across multiple
-  separate files to pick the better of two different takes recorded as
-  separate clips — that's a real gap if Pau shoots several full retakes of
-  the same video as separate files, not just redone lines within one
-  continuous recording.
+- **Resolved 2026-11-25** (was a known gap): simultaneous multi-camera
+  recordings of the SAME moment (originals/takes/, see README.md) are now
+  handled — Gemini watches 2-3 synced sources together and picks the best
+  camera per moment. **Still a real gap**: choosing between two SEPARATE,
+  NOT-simultaneous full retakes of the same video (e.g. Pau redoes an
+  entire V2 take from scratch as its own file, not just a redone line
+  within one continuous recording) — nothing compares two independent
+  takes like that yet. If that's a common real workflow, it needs its own
+  feature, not an extension of the multicam path (multicam assumes the
+  sources are synchronized/simultaneous, not alternate attempts).
 - Color grade is the FFmpeg "quick-look" preset (contrast/brightness/
   saturation/color-balance/vignette/grain), not the Apple Log + LUT
   pro-stage workflow — that needs either DaVinci or a proper LUT applied

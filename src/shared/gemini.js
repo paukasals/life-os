@@ -133,3 +133,105 @@ Be conservative: when genuinely unsure, keep=true — an under-aggressive cut is
 
   return JSON.parse(response.text);
 }
+
+const MULTICAM_SCHEMA = {
+  type: 'object',
+  properties: {
+    segments: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          role: { type: 'string', description: 'Which source camera this segment uses — must be one of the role names given in the prompt' },
+          start: { type: 'number', description: "Start time in seconds, in THAT camera's OWN local timeline (not a shared/synced timeline)" },
+          end: { type: 'number', description: "End time in seconds, in THAT camera's OWN local timeline" },
+          text: { type: 'string', description: 'What is said/shown, or "" for silent action' },
+          reason: { type: 'string', description: 'Why this camera for this moment, e.g. "Cam B shows the hands on the key word", "Cam A for the direct-address line", "glasses POV for the hand-off reaction"' },
+        },
+        required: ['role', 'start', 'end', 'text', 'reason'],
+      },
+    },
+  },
+  required: ['segments'],
+};
+
+/**
+ * Given 2-3 synchronized recordings of the SAME real moment (e.g. Cam A on
+ * the Osmo + Cam B on the tripod, optionally + Meta Nova glasses POV),
+ * jointly decide which camera to show for each moment of the story and
+ * produce one ordered edit decision list — the "cut between Cam A and Cam
+ * B" grammar already written out per-video in shot-cards.md, generalized
+ * so it works on whatever footage actually comes in.
+ *
+ * Gemini watches all sources together and matches them semantically (same
+ * words spoken, same action happening) rather than needing numeric sync —
+ * each returned segment's start/end is in THAT SOURCE's own local
+ * timeline, directly usable by ffmpeg.js's renderMulticamCut with no
+ * further conversion. (sync.js's clap-offset math is a separate, optional
+ * path — useful for precise frame-accurate alignment, not required for
+ * this semantic approach.)
+ *
+ * Filler words/pauses are still cut per the same rules as
+ * transcribeAndDecideCuts, applied per source before being included.
+ *
+ * `sources`: [{ role, filePath, mimeType }, ...] — role names are free text
+ * but must be used consistently (e.g. 'camA', 'camB', 'glasses') since the
+ * caller maps them back to actual files by role.
+ */
+export async function decideMulticamEdit(sources, { editingGrammar = '' } = {}) {
+  const ai = client();
+
+  const uploadedParts = [];
+  for (const { role, filePath, mimeType } of sources) {
+    const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
+    const active = await waitUntilActive(ai, uploaded.name);
+    uploadedParts.push(createPartFromUri(active.uri, mimeType));
+    uploadedParts.push(`(The video above is role="${role}".)`);
+  }
+
+  const roleNames = sources.map((s) => s.role).join(', ');
+  const prompt = `These ${sources.length} videos (roles: ${roleNames}) are synchronized recordings of the SAME real moment, shot simultaneously from different cameras — match them by what's actually said/shown, not by numeric timing.
+
+${editingGrammar ? `Editing grammar to follow for this video:\n${editingGrammar}\n\n` : ''}
+Produce ONE ordered list of segments covering the full story from start to end, choosing the best camera (role) for each moment — e.g. the camera showing the speaker's face for a direct-address line, the camera showing hands/food for a demonstrated action, glasses POV for a genuine first-person moment. Cut filler words, dead air, false starts and redone lines the same way you would for a single clip — keep only the cleanest version of anything repeated.
+
+Each segment's start/end must be in that SPECIFIC source's own local timeline (seconds from the start of that file), not a shared clock. Be conservative on cuts: keep when unsure.`;
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: createUserContent([...uploadedParts, prompt]),
+    config: {
+      responseMimeType: 'application/json',
+      responseJsonSchema: MULTICAM_SCHEMA,
+    },
+  });
+
+  return JSON.parse(response.text);
+}
+
+/**
+ * Detect the sync clap/sharp-transient sound in a clip and return its
+ * timestamp (seconds) in that file's own local timeline. Optional,
+ * precise-alignment path — not required by decideMulticamEdit's semantic
+ * matching, but useful when frame-accurate sync matters more than
+ * Gemini's own content-matching (e.g. very short cutaways with little
+ * distinguishing dialogue).
+ */
+export async function detectSyncPoint(filePath, mimeType) {
+  const ai = client();
+  const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
+  const active = await waitUntilActive(ai, uploaded.name);
+
+  const prompt = `This clip starts with a single clap (hands clapped together once) used to sync multiple cameras. Find the exact timestamp, in seconds, of the clap sound. Respond with ONLY the number of seconds (e.g. "1.433"), nothing else.`;
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: createUserContent([createPartFromUri(active.uri, mimeType), prompt]),
+  });
+
+  const seconds = parseFloat(response.text.trim());
+  if (Number.isNaN(seconds)) {
+    throw new Error(`detectSyncPoint: could not parse a clap timestamp from Gemini's response: "${response.text}"`);
+  }
+  return seconds;
+}

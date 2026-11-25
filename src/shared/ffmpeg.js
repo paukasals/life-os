@@ -67,53 +67,83 @@ export async function extractThumbnail(filePath, outPath, atSeconds = 1) {
  * this function's output, so call buildSrtForCut with the same segments
  * passed here).
  */
-export async function renderCut(filePath, segments, outPath, {
-  grade = true,
-  srtPath = null,
-  fps = 30,
-} = {}) {
+export async function renderCut(filePath, segments, outPath, opts = {}) {
   if (!segments || segments.length === 0) {
     throw new Error('renderCut: no segments to keep — nothing to render');
   }
+  // Single-file cut is just a multicam cut with one input/one role —
+  // delegate so the two code paths can't drift apart.
+  const inputs = [{ role: 'source', filePath }];
+  const taggedSegments = segments.map((seg) => ({ ...seg, role: 'source' }));
+  return renderMulticamCut(inputs, taggedSegments, outPath, opts);
+}
 
-  const trimFilters = [];
-  const concatInputs = [];
-  segments.forEach((seg, i) => {
-    trimFilters.push(
-      `[0:v]trim=start=${seg.start}:end=${seg.end},setpts=PTS-STARTPTS[v${i}]`,
-      `[0:a]atrim=start=${seg.start}:end=${seg.end},asetpts=PTS-STARTPTS[a${i}]`
-    );
-    concatInputs.push(`[v${i}][a${i}]`);
-  });
-
-  const concatFilter = `${concatInputs.join('')}concat=n=${segments.length}:v=1:a=1[vcat][acat]`;
-
-  let videoLabel = 'vcat';
-  const postFilters = [];
+function buildGradeAndCaptionFilters(baseLabel, { grade, srtPath }) {
+  let videoLabel = baseLabel;
+  const filters = [];
   if (grade) {
-    postFilters.push(
-      `[vcat]eq=contrast=1.05:brightness=0.02:saturation=0.92,` +
+    filters.push(
+      `[${videoLabel}]eq=contrast=1.05:brightness=0.02:saturation=0.92,` +
       `colorbalance=rs=0.08:gs=0.0:bs=-0.08,` +
       `vignette=PI/6,` +
       `noise=alls=6:allf=t+u[vgraded]`
     );
     videoLabel = 'vgraded';
   }
-
   if (srtPath) {
-    // Escape for the ffmpeg filter-argument parser: backslashes, then colons.
     const escaped = srtPath.replace(/\\/g, '\\\\').replace(/:/g, '\\:');
-    postFilters.push(
+    filters.push(
       `[${videoLabel}]subtitles='${escaped}':force_style='FontSize=18,PrimaryColour=&H00FFFFFF,Outline=1,Shadow=1,Alignment=2,MarginV=120'[vcaptioned]`
     );
     videoLabel = 'vcaptioned';
   }
+  return { filters, videoLabel };
+}
 
+/**
+ * Multicam version of renderCut: cuts segments from MULTIPLE synchronized
+ * source files and concatenates them, picking whichever camera each
+ * segment calls for — the "cut between Cam A and Cam B" editing grammar
+ * from shot-cards.md, not just trimming one file.
+ *
+ * `inputs`: [{ role, filePath }, ...] — role must match the `role` field
+ * used in `segments`. Order here fixes the ffmpeg -i index per role.
+ * `segments`: [{ role, start, end }, ...] in EACH FILE'S OWN LOCAL
+ * timeline (already converted from the common/synced timeline via
+ * sync.js's toLocalSegments — this function does no sync math itself).
+ */
+export async function renderMulticamCut(inputs, segments, outPath, {
+  grade = true,
+  srtPath = null,
+  fps = 30,
+} = {}) {
+  if (!inputs || inputs.length === 0) throw new Error('renderMulticamCut: no inputs given');
+  if (!segments || segments.length === 0) throw new Error('renderMulticamCut: no segments to render');
+
+  const roleToIndex = {};
+  inputs.forEach((inp, i) => { roleToIndex[inp.role] = i; });
+
+  const trimFilters = [];
+  const concatInputs = [];
+  segments.forEach((seg, i) => {
+    const idx = roleToIndex[seg.role];
+    if (idx === undefined) {
+      throw new Error(`renderMulticamCut: segment ${i} references unknown role "${seg.role}" — inputs were [${inputs.map((x) => x.role).join(', ')}]`);
+    }
+    trimFilters.push(
+      `[${idx}:v]trim=start=${seg.start}:end=${seg.end},setpts=PTS-STARTPTS[v${i}]`,
+      `[${idx}:a]atrim=start=${seg.start}:end=${seg.end},asetpts=PTS-STARTPTS[a${i}]`
+    );
+    concatInputs.push(`[v${i}][a${i}]`);
+  });
+
+  const concatFilter = `${concatInputs.join('')}concat=n=${segments.length}:v=1:a=1[vcat][acat]`;
+  const { filters: postFilters, videoLabel } = buildGradeAndCaptionFilters('vcat', { grade, srtPath });
   const filterComplex = [...trimFilters, concatFilter, ...postFilters].join(';');
 
-  await run('ffmpeg', [
-    '-y',
-    '-i', filePath,
+  const args = ['-y'];
+  inputs.forEach((inp) => { args.push('-i', inp.filePath); });
+  args.push(
     '-filter_complex', filterComplex,
     '-map', `[${videoLabel}]`,
     '-map', '[acat]',
@@ -123,9 +153,10 @@ export async function renderCut(filePath, segments, outPath, {
     '-crf', '18',
     '-c:a', 'aac',
     '-b:a', '192k',
-    outPath,
-  ]);
+    outPath
+  );
 
+  await run('ffmpeg', args);
   return outPath;
 }
 
