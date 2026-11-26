@@ -3,7 +3,14 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { BaseAgent } from '../../shared/base-agent.js';
 import { probe, extractThumbnail, makeReviewProxy, renderCut, renderMulticamCut } from '../../shared/ffmpeg.js';
-import { analyzeMedia, transcribeAndDecideCuts, decideMulticamEdit, decideBestOfRetakes } from '../../shared/gemini.js';
+import {
+  analyzeMedia,
+  transcribeAndDecideCuts,
+  decideMulticamEdit,
+  decideBestOfRetakes,
+  translateSegments,
+  selectCoverFrame,
+} from '../../shared/gemini.js';
 import { buildSrtForCut } from '../../shared/srt.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,6 +44,18 @@ const MIME_BY_EXT = {
 // Recommendations that mean "don't spend a transcription+render call on this" —
 // the clip either isn't usable or needs to be reshot, not auto-cut.
 const SKIP_AUTOCUT_RECOMMENDATIONS = ['do-not-post', 'needs reshoot', 'needs_reshoot'];
+const WEAK_HOOK_PATTERNS = ['weak', 'needs re-cut', 'needs re_cut'];
+const MAX_HOOK_RETRIES = 1;
+
+// Optional environment knobs — none of this requires a paid service, all
+// are no-ops if unset. MUSIC_BED_PATH: a royalty-free track file Pau
+// supplies; BRAND_FONT_PATH: the real Lobsteria brand font, falls back to
+// a system font if unset; COLOR_LUT_PATH: a real .cube LUT for pro-stage
+// grading (see camera-course-reference.md "PRO: Apple Log 2"), falls back
+// to the FFmpeg quick-look preset if unset.
+const MUSIC_BED_PATH = process.env.CREATIVE_STUDIO_MUSIC_PATH || null;
+const BRAND_FONT_PATH = process.env.CREATIVE_STUDIO_FONT_PATH || null;
+const COLOR_LUT_PATH = process.env.CREATIVE_STUDIO_LUT_PATH || null;
 
 function extractField(analysisText, fieldName) {
   const re = new RegExp(`^${fieldName}:\\s*(.*)$`, 'im');
@@ -49,6 +68,15 @@ function extractField(analysisText, fieldName) {
 // "camB_take2.mov", "take1.mp4", "take2_redo.mov".
 function roleFromFileName(fileName) {
   return fileName.split(/[._]/)[0];
+}
+
+// Heuristic for the B2 "Process Reel" export spec (24fps, per
+// camera-course-reference.md) vs. the default 30fps: a silent, no-dialogue
+// clip reads as a process shot; anything with real spoken content is a
+// talking video and stays at 30fps.
+function chooseExportFps(keptSegments) {
+  const hasDialogue = keptSegments.some((s) => s.text && s.text.trim().length > 0);
+  return hasDialogue ? 30 : 24;
 }
 
 export class CreativeStudioAgent extends BaseAgent {
@@ -102,8 +130,9 @@ Never approve or publish anything yourself — every piece stops at "finished" f
 
     const okCount = results.filter((r) => !r.error).length;
     const cutCount = results.filter((r) => r.cutPath).length;
+    const needsReviewCount = results.filter((r) => r.recommendation?.includes('needs human review')).length;
     const failCount = results.length - okCount;
-    const message = `🎬 *Creative Studio*\nProcessed ${okCount} new item(s)${failCount ? `, ${failCount} failed` : ''}.${cutCount ? `\n${cutCount} auto-cut into creative-studio/finished/ — ready for your review.` : ''}\nNothing is approved or published automatically.`;
+    const message = `🎬 *Creative Studio*\nProcessed ${okCount} new item(s)${failCount ? `, ${failCount} failed` : ''}.${cutCount ? `\n${cutCount} auto-cut into creative-studio/finished/ — ready for your review.` : ''}${needsReviewCount ? `\n⚠️ ${needsReviewCount} flagged for a human look before any cut was made.` : ''}\nNothing is approved or published automatically.`;
     await this.notify(message, 'telegram');
     return results;
   }
@@ -154,6 +183,7 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     const ext = path.extname(fileName).toLowerCase();
     const mimeType = MIME_BY_EXT[ext];
     const isVideo = mimeType.startsWith('video/');
+    const base = path.basename(fileName, ext);
 
     this.log(`Probing ${fileName} (${source})...`);
     const metadata = await probe(filePath);
@@ -178,41 +208,25 @@ Never approve or publish anything yourself — every piece stops at "finished" f
 
     let thumbnailPath = null;
     if (isVideo) {
-      thumbnailPath = path.join(PROJECTS_DIR, `${path.basename(fileName, ext)}.thumb.jpg`);
+      thumbnailPath = path.join(PROJECTS_DIR, `${base}.thumb.jpg`);
       await extractThumbnail(filePath, thumbnailPath, Math.min(1, (metadata.durationSeconds ?? 2) / 2));
     }
 
-    let cutPath = null;
-    let srtPath = null;
+    let finalResult = { cutPath: null, srtPath: null };
     if (isVideo && !SKIP_AUTOCUT_RECOMMENDATIONS.some((r) => recommendation.includes(r))) {
       try {
-        this.log(`Transcribing + deciding cuts for ${fileName}...`);
-        const transcript = await transcribeAndDecideCuts(filePath, mimeType);
-        const kept = (transcript.segments ?? []).filter((s) => s.keep);
-
-        if (kept.length === 0) {
-          this.log(`Gemini kept zero segments for ${fileName} — skipping auto-cut, needs a human look.`);
-        } else {
-          const base = path.basename(fileName, ext);
-          srtPath = path.join(FINISHED_DIR, `${base}.srt`);
-          const { srtContent } = buildSrtForCut(kept);
-          await fs.writeFile(srtPath, srtContent);
-
-          cutPath = path.join(FINISHED_DIR, `${base}.cut.mp4`);
-          await renderCut(filePath, kept, cutPath, { grade: true, srtPath });
-
-          await fs.writeFile(
-            path.join(FINISHED_DIR, `${base}.transcript.json`),
-            JSON.stringify(transcript, null, 2)
-          );
-        }
+        finalResult = await this.decideAndRender({
+          groupId: base,
+          inputs: [{ role: 'source', filePath }],
+          decide: (strengthenHook) => transcribeAndDecideCuts(filePath, mimeType, { strengthenHook }).then((t) => ({ segments: t.segments })),
+        });
       } catch (err) {
         this.error(`Auto-cut failed for ${fileName}`, err);
       }
     }
 
     this.log(`Done: ${fileName}`);
-    return { fileName, source, metadata, analyzedPath, proxyPath, thumbnailPath, cutPath, srtPath, recommendation };
+    return { fileName, source, metadata, analyzedPath, proxyPath, thumbnailPath, recommendation, ...finalResult };
   }
 
   // ---- shared scanning for multi-file groups (takes/ and retakes/) ----
@@ -257,10 +271,7 @@ Never approve or publish anything yourself — every piece stops at "finished" f
 
   // Shared QC step for both takes/ and retakes/ — runs the SAME brand-
   // rule/food-safety/legal/technical checklist used for single clips, on
-  // EVERY file in the group, before any cut decision is made. Without
-  // this, multicam/retake footage would skip straight to editing with no
-  // check against brand-rules.md at all — not acceptable just because the
-  // footage happens to come in groups of 2-3 files instead of one.
+  // EVERY file in the group, before any cut decision is made.
   async qcGroupFiles(groupId, files, qcChecklist) {
     const qcResults = [];
     let anyBlocking = false;
@@ -285,32 +296,105 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     return { qcResults, anyBlocking };
   }
 
-  // Shared render step for both takes/ and retakes/ — the mechanics are
-  // identical (cut from whichever file each decided segment points to);
-  // only the Gemini decision step differs between the two callers.
-  async renderGroupEdit(groupId, files, edit, recommendationLabel) {
-    const segments = edit.segments ?? [];
+  /**
+   * The shared core of the pipeline, used by single clips AND both group
+   * types: run (or re-run) a cut decision, translate the kept text into
+   * the opposite language for captions (brand-rules.md's bilingual rule),
+   * render, QC the FINISHED render (not just the raw footage), retry once
+   * with a hook-strengthening instruction if flagged weak, then pick a
+   * real cover frame instead of a naive midpoint grab.
+   *
+   * `decide(strengthenHook)` must return `{ segments }` in the
+   * role/start/end/text/reason shape shared by all three Gemini decision
+   * functions.
+   */
+  async decideAndRender({ groupId, inputs, decide }) {
+    let edit = await decide(false);
+    let segments = edit.segments ?? [];
 
     if (segments.length === 0) {
-      this.log(`Gemini returned zero segments for group "${groupId}" — needs a human look.`);
-      return { fileName: groupId, recommendation: 'needs human review (empty edit decision)' };
+      this.log(`Gemini returned zero segments for "${groupId}" — needs a human look.`);
+      return { recommendation: 'needs human review (empty edit decision)' };
     }
 
-    const srtPath = path.join(FINISHED_DIR, `${groupId}.srt`);
-    const { srtContent } = buildSrtForCut(segments);
-    await fs.writeFile(srtPath, srtContent);
+    let attempt = 0;
+    let cutPath = null;
+    let srtPath = null;
+    let finalQcText = '';
+    let finalRecommendation = '';
 
-    const inputs = files.map(({ role, filePath }) => ({ role, filePath }));
-    const cutPath = path.join(FINISHED_DIR, `${groupId}.cut.mp4`);
-    await renderMulticamCut(inputs, segments, cutPath, { grade: true, srtPath });
+    for (;;) {
+      const translated = await translateSegments(segments);
+      srtPath = path.join(FINISHED_DIR, `${groupId}.srt`);
+      const { srtContent } = buildSrtForCut(translated);
+      await fs.writeFile(srtPath, srtContent);
+
+      const fps = chooseExportFps(segments);
+      cutPath = path.join(FINISHED_DIR, `${groupId}.cut.mp4`);
+
+      if (inputs.length === 1) {
+        await renderCut(inputs[0].filePath, segments, cutPath, {
+          grade: true,
+          srtPath,
+          fps,
+          lutPath: COLOR_LUT_PATH,
+          musicPath: MUSIC_BED_PATH,
+          fontPath: BRAND_FONT_PATH,
+        });
+      } else {
+        await renderMulticamCut(inputs, segments, cutPath, {
+          grade: true,
+          srtPath,
+          fps,
+          lutPath: COLOR_LUT_PATH,
+          musicPath: MUSIC_BED_PATH,
+          fontPath: BRAND_FONT_PATH,
+        });
+      }
+
+      this.log(`Final QC on rendered "${groupId}"...`);
+      const videoMime = 'video/mp4'; // renders are always mp4 regardless of source container
+      finalQcText = await analyzeMedia(cutPath, videoMime, { source: 'rendered' });
+      finalRecommendation = extractField(finalQcText, 'RECOMMENDATION').toLowerCase();
+
+      const isWeakHook = WEAK_HOOK_PATTERNS.some((p) => finalRecommendation.includes(p));
+      if (isWeakHook && attempt < MAX_HOOK_RETRIES) {
+        this.log(`"${groupId}" final QC flagged a weak hook — retrying with a hook-focused re-cut (attempt ${attempt + 1}/${MAX_HOOK_RETRIES})...`);
+        attempt += 1;
+        edit = await decide(true);
+        segments = edit.segments ?? segments;
+        continue;
+      }
+      break;
+    }
 
     await fs.writeFile(
       path.join(FINISHED_DIR, `${groupId}.edit-decision.json`),
       JSON.stringify(edit, null, 2)
     );
+    await fs.writeFile(
+      path.join(FINISHED_DIR, `${groupId}.final-qc.json`),
+      JSON.stringify({ analysis: finalQcText, recommendation: finalRecommendation, retries: attempt }, null, 2)
+    );
 
-    this.log(`Done: group "${groupId}"`);
-    return { fileName: groupId, cutPath, srtPath, recommendation: recommendationLabel };
+    let coverPath = null;
+    try {
+      const cover = await selectCoverFrame(cutPath, 'video/mp4');
+      coverPath = path.join(FINISHED_DIR, `${groupId}.cover.jpg`);
+      await extractThumbnail(cutPath, coverPath, cover.timestampSeconds);
+    } catch (err) {
+      this.error(`Cover-frame selection failed for "${groupId}", falling back to a midpoint frame`, err);
+      coverPath = path.join(FINISHED_DIR, `${groupId}.cover.jpg`);
+      await extractThumbnail(cutPath, coverPath, 1);
+    }
+
+    return {
+      cutPath,
+      srtPath,
+      coverPath,
+      recommendation: finalRecommendation || 'auto-cut, rendered',
+      hookRetries: attempt,
+    };
   }
 
   // ---- multicam takes: SIMULTANEOUS recordings of the same real moment ----
@@ -325,8 +409,14 @@ Never approve or publish anything yourself — every piece stops at "finished" f
       return { fileName: groupId, qcResults, recommendation: 'needs human review (QC flagged a source file)' };
     }
 
-    const edit = await decideMulticamEdit(files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType })));
-    return this.renderGroupEdit(groupId, files, edit, 'auto-cut from multicam take');
+    const inputs = files.map(({ role, filePath }) => ({ role, filePath }));
+    const sources = files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType }));
+    const result = await this.decideAndRender({
+      groupId,
+      inputs,
+      decide: (strengthenHook) => decideMulticamEdit(sources, { strengthenHook }),
+    });
+    return { fileName: groupId, qcResults, ...result };
   }
 
   // ---- retakes: SEPARATE, non-simultaneous full attempts at the same video ----
@@ -341,7 +431,13 @@ Never approve or publish anything yourself — every piece stops at "finished" f
       return { fileName: groupId, qcResults, recommendation: 'needs human review (QC flagged a source file)' };
     }
 
-    const edit = await decideBestOfRetakes(files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType })));
-    return this.renderGroupEdit(groupId, files, edit, 'auto-cut from best-of-retakes');
+    const inputs = files.map(({ role, filePath }) => ({ role, filePath }));
+    const sources = files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType }));
+    const result = await this.decideAndRender({
+      groupId,
+      inputs,
+      decide: (strengthenHook) => decideBestOfRetakes(sources, { strengthenHook }),
+    });
+    return { fileName: groupId, qcResults, ...result };
   }
 }

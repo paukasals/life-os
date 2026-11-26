@@ -2,6 +2,10 @@ import { GoogleGenAI, createPartFromUri, createUserContent } from '@google/genai
 
 const MODEL = 'gemini-3.8-flash';
 
+const HOOK_RETRY_INSTRUCTION = `
+
+IMPORTANT — this is a retry: a previous cut of this same footage was reviewed and flagged "weak hook" (low 3-second-hold potential per camera-course-reference.md's Reading Results). Focus specifically on the first 2-4 seconds: open on the strongest available visual/spoken moment (payoff-first, a question, or a sharp visual action), not a slow build. Everything after the opening can stay the same if it was already fine — don't change things that weren't the problem.`;
+
 function client() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
@@ -38,9 +42,12 @@ export async function analyzeMedia(filePath, mimeType, { qcChecklist = '', sourc
   const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
   const active = await waitUntilActive(ai, uploaded.name);
 
-  const sourceNote = source === 'glasses'
-    ? 'This clip is from Meta Nova POV glasses: fixed ~100° wide angle, no zoom, no framing control while wearing — do not flag wide framing or lack of composition as a defect, that is the format.'
-    : 'This clip is from an iPhone (Osmo gimbal or tripod) — normal framing/composition standards apply.';
+  const sourceNotes = {
+    glasses: 'This clip is from Meta Nova POV glasses: fixed ~100° wide angle, no zoom, no framing control while wearing — do not flag wide framing or lack of composition as a defect, that is the format.',
+    iphone: 'This clip is from an iPhone (Osmo gimbal or tripod) — normal framing/composition standards apply.',
+    rendered: 'This is a FINISHED, EDITED RENDER — already cut together from one or more sources, graded, and captioned. Do not re-litigate raw-footage framing choices. Instead check the OVERALL result: do the cuts feel smooth (no jarring jumps or awkward mid-action cuts), did editing introduce any new problem (captions overlapping important content, a cut landing on a bad frame), and does the finished piece still clear every checklist item now that it is assembled.',
+  };
+  const sourceNote = sourceNotes[source] ?? sourceNotes.iphone;
 
   const prompt = `You are the Quality Assurance step for Lobsteria Creative Studio, reviewing one piece of raw footage/photo before it goes any further in the pipeline. ${sourceNote}
 
@@ -106,7 +113,7 @@ const TRANSCRIPT_SCHEMA = {
  * separate, not-yet-built feature. Scoped to decisions possible from a
  * single clip's own transcript.
  */
-export async function transcribeAndDecideCuts(filePath, mimeType, { language = 'auto-detect (English or Spanish)' } = {}) {
+export async function transcribeAndDecideCuts(filePath, mimeType, { language = 'auto-detect (English or Spanish)', strengthenHook = false } = {}) {
   const ai = client();
   const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
   const active = await waitUntilActive(ai, uploaded.name);
@@ -117,7 +124,7 @@ For each segment, decide keep=true or keep=false:
 - keep=false: filler words/sounds ("um", "eh", "este", "o sea" used as a verbal tic), dead air or a long unintentional pause, a stutter/false start, or an earlier redo of a line that gets said again more cleanly later in the clip (keep only the cleanest final delivery of a repeated line).
 - keep=true: clean delivery, meaningful silence that's part of the action (e.g. someone handing over food, a reaction shot), or any segment with no speech that shows real action.
 
-Be conservative: when genuinely unsure, keep=true — an under-aggressive cut is recoverable by hand, an over-aggressive one loses real footage. Give a short, specific reason for every segment, not a generic one.`;
+Be conservative: when genuinely unsure, keep=true — an under-aggressive cut is recoverable by hand, an over-aggressive one loses real footage. Give a short, specific reason for every segment, not a generic one.${strengthenHook ? HOOK_RETRY_INSTRUCTION : ''}`;
 
   const response = await ai.models.generateContent({
     model: MODEL,
@@ -178,7 +185,7 @@ const MULTICAM_SCHEMA = {
  * but must be used consistently (e.g. 'camA', 'camB', 'glasses') since the
  * caller maps them back to actual files by role.
  */
-export async function decideMulticamEdit(sources, { editingGrammar = '' } = {}) {
+export async function decideMulticamEdit(sources, { editingGrammar = '', strengthenHook = false } = {}) {
   const ai = client();
 
   const uploadedParts = [];
@@ -195,7 +202,7 @@ export async function decideMulticamEdit(sources, { editingGrammar = '' } = {}) 
 ${editingGrammar ? `Editing grammar to follow for this video:\n${editingGrammar}\n\n` : ''}
 Produce ONE ordered list of segments covering the full story from start to end, choosing the best camera (role) for each moment — e.g. the camera showing the speaker's face for a direct-address line, the camera showing hands/food for a demonstrated action, glasses POV for a genuine first-person moment. Cut filler words, dead air, false starts and redone lines the same way you would for a single clip — keep only the cleanest version of anything repeated.
 
-Each segment's start/end must be in that SPECIFIC source's own local timeline (seconds from the start of that file), not a shared clock. Be conservative on cuts: keep when unsure.`;
+Each segment's start/end must be in that SPECIFIC source's own local timeline (seconds from the start of that file), not a shared clock. Be conservative on cuts: keep when unsure.${strengthenHook ? HOOK_RETRY_INSTRUCTION : ''}`;
 
   const response = await ai.models.generateContent({
     model: MODEL,
@@ -203,6 +210,98 @@ Each segment's start/end must be in that SPECIFIC source's own local timeline (s
     config: {
       responseMimeType: 'application/json',
       responseJsonSchema: MULTICAM_SCHEMA,
+    },
+  });
+
+  return JSON.parse(response.text);
+}
+
+const TRANSLATION_SCHEMA = {
+  type: 'object',
+  properties: {
+    targetLanguage: { type: 'string' },
+    translations: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          index: { type: 'number', description: 'Matches the index given in the input list' },
+          text: { type: 'string', description: 'Natural, spoken-register translation — not literal word-for-word' },
+        },
+        required: ['index', 'text'],
+      },
+    },
+  },
+  required: ['targetLanguage', 'translations'],
+};
+
+/**
+ * Translate kept segments into the OPPOSITE language for burned-in
+ * captions — per brand-rules.md's bilingual system: speak in one
+ * language, subtitle in the other (English speech -> Spanish captions,
+ * and vice versa). This is a real rule, not a nice-to-have: captions
+ * should never just repeat the spoken language.
+ *
+ * `segments`: [{ text, ... }] — only `text` and array order matter here;
+ * returns the SAME array with `text` replaced by the opposite-language
+ * translation, everything else (start/end/role) untouched, ready to pass
+ * straight to buildSrtForCut.
+ */
+export async function translateSegments(segments, { fromLanguage = 'auto-detect' } = {}) {
+  const ai = client();
+  const nonEmpty = segments.map((s, i) => ({ i, text: s.text })).filter((s) => s.text && s.text.trim());
+
+  if (nonEmpty.length === 0) {
+    return segments; // nothing to translate (silent/action-only clip)
+  }
+
+  const prompt = `Source language: ${fromLanguage}. Translate each of these spoken-video caption lines into the OPPOSITE language (English -> Spanish, Spanish -> English). Keep it natural and conversational, matching the tone of someone talking at a food truck window — not a literal or formal translation.
+
+Lines (by index):
+${nonEmpty.map((s) => `${s.i}: ${s.text}`).join('\n')}`;
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: createUserContent([prompt]),
+    config: {
+      responseMimeType: 'application/json',
+      responseJsonSchema: TRANSLATION_SCHEMA,
+    },
+  });
+
+  const { translations } = JSON.parse(response.text);
+  const byIndex = new Map(translations.map((t) => [t.index, t.text]));
+
+  return segments.map((seg, i) => (byIndex.has(i) ? { ...seg, text: byIndex.get(i) } : seg));
+}
+
+const COVER_FRAME_SCHEMA = {
+  type: 'object',
+  properties: {
+    timestampSeconds: { type: 'number', description: 'The single best moment for a cover/thumbnail frame' },
+    reason: { type: 'string' },
+  },
+  required: ['timestampSeconds', 'reason'],
+};
+
+/**
+ * Pick the single best cover/thumbnail frame — per the posting-system rule
+ * (video-plan-oct-2026.md): "a frame with the food centered." Replaces a
+ * naive midpoint-frame grab with an actual content-aware choice.
+ */
+export async function selectCoverFrame(filePath, mimeType) {
+  const ai = client();
+  const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
+  const active = await waitUntilActive(ai, uploaded.name);
+
+  const prompt = `Pick the single best frame in this video to use as the cover/thumbnail image — the moment the food (or, for a talking video, Pau) is most clearly and attractively in frame, well-lit, centered, nothing mid-motion or blurry. This is the first thing a scroller sees before the video even plays.`;
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: createUserContent([createPartFromUri(active.uri, mimeType), prompt]),
+    config: {
+      responseMimeType: 'application/json',
+      responseJsonSchema: COVER_FRAME_SCHEMA,
     },
   });
 
@@ -259,7 +358,7 @@ export async function detectSyncPoint(filePath, mimeType) {
  * available, it helps Gemini align takes that may have been delivered
  * slightly differently in wording each time.
  */
-export async function decideBestOfRetakes(takes, { script = '' } = {}) {
+export async function decideBestOfRetakes(takes, { script = '', strengthenHook = false } = {}) {
   const ai = client();
 
   const uploadedParts = [];
@@ -278,7 +377,7 @@ Compare the takes on delivery quality (energy, naturalness, clean pacing, no stu
 
 Produce ONE ordered list of segments assembling the best possible final version of the script from start to end. If one take is simply best throughout, the segments will naturally all point to that one role — that's a valid outcome, don't force variety. If different takes deliver different parts better, composite across them. Still cut filler words, dead air and false starts the same as you would within a single clip.
 
-Each segment's start/end must be in that SPECIFIC take's own local timeline (seconds from the start of that file). Be conservative: when two deliveries are close in quality, prefer the one that also lines up best with its neighbors to avoid an awkward tone jump between segments pulled from different takes.`;
+Each segment's start/end must be in that SPECIFIC take's own local timeline (seconds from the start of that file). Be conservative: when two deliveries are close in quality, prefer the one that also lines up best with its neighbors to avoid an awkward tone jump between segments pulled from different takes.${strengthenHook ? HOOK_RETRY_INSTRUCTION : ''}`;
 
   const response = await ai.models.generateContent({
     model: MODEL,

@@ -56,6 +56,22 @@ see the open decisions below).
 
 ## Status
 
-Folder structure only, as of 2026-11-24. No storage, video-understanding,
-editing, or publishing integration is wired up yet — those require new paid
-services and credentials, flagged separately for approval before building.
+See `STATUS.md` for the full, current state. As of 2026-11-26: ingestion,
+QC, auto-cut (single clip, multicam, retakes), bilingual captions, a music/
+brand-text/LUT-capable render, a final-render QC pass with one automatic
+hook retry, and content-aware cover-frame selection are all built. Storage
+and publishing integration are still not wired up (need new paid services/
+credentials, flagged for approval before building).
+
+## Optional environment variables (all no-ops if unset)
+
+- `CREATIVE_STUDIO_MUSIC_PATH` — a royalty-free background track file. If
+  set, it's mixed under the voice/sound at ~-22dB (adjustable in code),
+  looped to match the render's length. Nothing plays if unset.
+- `CREATIVE_STUDIO_FONT_PATH` — the real Lobsteria brand font (.ttf/.otf)
+  for the branded on-screen text system. Falls back to a system font
+  (DejaVu Sans Bold) if unset — fine for testing, not the real brand look.
+- `CREATIVE_STUDIO_LUT_PATH` — a real `.cube` 3D LUT for the "pro" color
+  grade (camera-course-reference.md's Apple Log 2 + LUT look), applied via
+  FFmpeg instead of needing DaVinci. Falls back to the FFmpeg "quick-look"
+  preset (contrast/warmth/vignette/grain) if unset.

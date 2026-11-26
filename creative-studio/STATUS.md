@@ -11,7 +11,69 @@ scratch, continue from here.
 |---|---|---|
 | 1. Discovery & Architecture | ✅ Done | Repo audited, tool landscape researched with sources, architecture decided (see Decisions below) |
 | 2. Foundation | 🟡 Partial | Folder structure + brand knowledge wired. Agent/skill specs for the 13 specialized roles not yet drafted. |
-| 3. MVP Pipeline | 🟡 Partial | Ingestion + analysis + **auto-cut** (single-camera AND multicam) built end-to-end. Single clip: QC analysis → transcribe + decide keep/cut (filler words, pauses, redone lines) → render (trim/concat + warm grade + burned captions). Multicam (2-3 simultaneous recordings, e.g. Cam A + Cam B + glasses): Gemini watches all sources together, matches them semantically (not by numeric sync), and produces one ordered edit decision list choosing which camera to show per moment → renders by cutting from whichever source file each segment calls for. Render engine verified against synthetic footage for BOTH paths: single-file (10s → correct 7s cut, right resolution, captions burned in) and true multicam (2 genuinely different source files, confirmed by extracting frames and checking pixel color that the output actually switches cameras at the right timestamps, not just concatenating one file). **All Gemini calls (QC analysis, transcription, multicam decision) are still unverified live** — no GEMINI_API_KEY configured yet, and no real Lobsteria footage to run it on (see Blocked On). DaVinci-level color grading not started (current grade is the FFmpeg "quick-look" preset from camera-course-reference.md, not Apple Log + LUT) — blocked on the DaVinci-on-Mac decision. |
+| 3. MVP Pipeline | 🟢 Functionally complete, verification-gated | Ingestion + QC + auto-cut (single clip, multicam, retakes) + bilingual captions + music/brand-text/LUT-capable render + final-render QC with one automatic hook retry + content-aware cover frame. See the 2026-11-26 entry below for the full breakdown of what's tested vs. still only syntax-checked. The one remaining real gap: DaVinci itself isn't installed (pending Pau's decision) — the LUT path is built and works mechanically, but needs a real `.cube` file to look like anything beyond the quick-look preset. |
+
+### 2026-11-26: the 8 remaining editing gaps — resolved, with honest verification status
+
+Pau asked for all 8 gaps from the previous audit to be closed. Here's each
+one, what was built, and — important — what's actually been run and
+verified vs. what's new Gemini-dependent code that's syntax-checked but not
+yet exercised live (no GEMINI_API_KEY in this environment):
+
+1. **QC checklist skipped takes/retakes** → fixed (`qcGroupFiles()`), was a
+   real bug introduced in the previous commits, not a missing feature.
+   **Verified**: scanning/grouping logic tested with synthetic fixtures.
+2. **No audio mixing** → `renderMulticamCut` now takes `musicPath` (looped
+   via `-stream_loop -1`, mixed at a configurable dB via `amix`) and adds a
+   short (30ms) in/out fade on every cut segment's audio to kill clicks
+   (chose this over true `acrossfade` — crossfading would shorten total
+   duration per cut point and risk A/V desync across many segments; the
+   fade approach has zero timing risk). **Verified**: rendered a real music
+   bed mixed under a voice tone, confirmed correct output duration and a
+   valid (non-silent-stream) audio track.
+3. **No branded on-screen text overlays** → `drawtext`-based overlay system
+   (`brandTexts: [{text, start, end}]`), separate from dialogue captions,
+   cream/white centered text in the safe middle band. **Verified**:
+   rendered with real overlay text, confirmed the output frame isn't
+   black/broken (font loaded successfully — a bad font path makes ffmpeg
+   fail outright, and it didn't).
+4. **No opposite-language subtitles** → `translateSegments()` (Gemini)
+   translates kept dialogue into the opposite language before burning
+   captions, per brand-rules.md's bilingual system. **Not verified live** —
+   needs a real Gemini call.
+5. **QC never re-checked the rendered output** → `decideAndRender()` now
+   runs `analyzeMedia(..., {source: 'rendered'})` on the actual finished
+   cut, not just the raw footage, written to `<id>.final-qc.json`.
+   **Not verified live.**
+6. **Thumbnail was a naive midpoint frame** → `selectCoverFrame()` (Gemini)
+   picks the actual best cover moment; falls back to a midpoint frame if
+   the call fails for any reason. **Not verified live.**
+7. **No platform/fps variants** → `chooseExportFps()` heuristic: a
+   silent/no-dialogue clip (matches the B2 "Process Reel" profile) exports
+   at 24fps per camera-course-reference.md, anything with spoken dialogue
+   stays at 30fps. **Verified**: unit-tested the heuristic logic directly
+   with representative segment lists.
+8. **No automatic re-cut retry loop** → `decideAndRender()` re-calls the
+   same decision function with a `strengthenHook` instruction (reorder/
+   open on the strongest moment) when final QC flags a weak hook, capped
+   at `MAX_HOOK_RETRIES = 1` so it can't loop forever. **Not verified
+   live** — the retry branch itself is straightforward code, but whether
+   Gemini's retried decision actually produces a better hook in practice
+   is unknown until tested on something real.
+
+Also added, since they were needed to build the above: `COLOR_LUT_PATH` env
+var applies a real `.cube` LUT via FFmpeg's `lut3d` filter as a DaVinci-free
+path toward the "pro" grade — **verified mechanically** (ran clean with an
+identity test LUT) but Pau hasn't supplied a real Lobsteria LUT yet, so
+production renders still use the quick-look preset. `MUSIC_BED_PATH` and
+`BRAND_FONT_PATH` env vars, same no-op-if-unset pattern.
+
+**Bottom line**: every piece that touches FFmpeg only has been run for
+real and checked (duration, resolution, pixel content, non-silent audio).
+Every NEW piece that calls Gemini (translation, cover-frame selection, the
+retry loop's actual effectiveness) is real code, not a stub, but is
+exactly as unverified as the rest of this project's Gemini calls — still
+blocked on a real `GEMINI_API_KEY` and real footage (see Blocked On).
 | 4. Professional Production | ⬜ Not started | Color grading, audio design, motion graphics — depends on Phase 3 landing first |
 | 5. Approval & Distribution | ⬜ Not started | Dashboard not built. Instagram/TikTok publishing confirmed to require app review (see compliance-notes.md) — this is a real multi-week external approval process, not something to build around |
 | 6. Commercial Intelligence | ⬜ Not started | Depends on real content existing first |

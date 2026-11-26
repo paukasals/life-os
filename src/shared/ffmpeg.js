@@ -78,10 +78,26 @@ export async function renderCut(filePath, segments, outPath, opts = {}) {
   return renderMulticamCut(inputs, taggedSegments, outPath, opts);
 }
 
-function buildGradeAndCaptionFilters(baseLabel, { grade, srtPath }) {
+const DEFAULT_FONT = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+
+function escapeFfmpegPath(p) {
+  return p.replace(/\\/g, '\\\\').replace(/:/g, '\\:').replace(/'/g, "\\'");
+}
+
+function buildGradeAndCaptionFilters(baseLabel, { grade, srtPath, lutPath, brandTexts, fontPath }) {
   let videoLabel = baseLabel;
   const filters = [];
-  if (grade) {
+
+  if (lutPath) {
+    // Pro-stage color: a real 3D LUT (.cube), the FFmpeg-only path toward
+    // the Apple Log + LUT look from camera-course-reference.md without
+    // requiring DaVinci. Takes precedence over the quick-look preset below
+    // (apply one or the other, not both — a LUT already does the warm/
+    // contrast work the quick-look preset approximates).
+    const escaped = escapeFfmpegPath(lutPath);
+    filters.push(`[${videoLabel}]lut3d=file='${escaped}'[vgraded]`);
+    videoLabel = 'vgraded';
+  } else if (grade) {
     filters.push(
       `[${videoLabel}]eq=contrast=1.05:brightness=0.02:saturation=0.92,` +
       `colorbalance=rs=0.08:gs=0.0:bs=-0.08,` +
@@ -90,14 +106,50 @@ function buildGradeAndCaptionFilters(baseLabel, { grade, srtPath }) {
     );
     videoLabel = 'vgraded';
   }
+
+  if (brandTexts && brandTexts.length > 0) {
+    // Styled on-screen brand text (hook/end text, e.g. "Every roll starts
+    // here.") — DISTINCT from dialogue captions below. Per
+    // camera-course-reference.md: cream/white, centered, safe middle band.
+    const font = escapeFfmpegPath(fontPath || DEFAULT_FONT);
+    brandTexts.forEach((bt, i) => {
+      const text = bt.text.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/:/g, '\\:').replace(/,/g, '\\,');
+      const nextLabel = `vbrand${i}`;
+      filters.push(
+        `[${videoLabel}]drawtext=fontfile='${font}':text='${text}':` +
+        `fontsize=54:fontcolor=white:borderw=2:bordercolor=black@0.6:` +
+        `x=(w-text_w)/2:y=h*0.72:` +
+        `enable='between(t,${bt.start},${bt.end})'[${nextLabel}]`
+      );
+      videoLabel = nextLabel;
+    });
+  }
+
   if (srtPath) {
-    const escaped = srtPath.replace(/\\/g, '\\\\').replace(/:/g, '\\:');
+    const escaped = escapeFfmpegPath(srtPath);
     filters.push(
       `[${videoLabel}]subtitles='${escaped}':force_style='FontSize=18,PrimaryColour=&H00FFFFFF,Outline=1,Shadow=1,Alignment=2,MarginV=120'[vcaptioned]`
     );
     videoLabel = 'vcaptioned';
   }
   return { filters, videoLabel };
+}
+
+/**
+ * Build the audio half of the trim filters with a short in/out fade on
+ * EVERY segment (default 30ms) — not a true crossfade (which would shift
+ * timing and risk A/V desync across many segments), just enough to kill
+ * the click/pop a hard cut leaves on a non-zero-crossing waveform. Cheap,
+ * safe, always-on correctness improvement; serves the same goal as
+ * "room tone under cuts" without needing an actual room-tone track.
+ */
+function audioTrimWithFade(inputIndex, seg, label, fadeSeconds) {
+  const duration = seg.end - seg.start;
+  const fade = Math.min(fadeSeconds, duration / 2.5); // never fade more than ~40% of a very short segment
+  return (
+    `[${inputIndex}:a]atrim=start=${seg.start}:end=${seg.end},asetpts=PTS-STARTPTS,` +
+    `afade=t=in:st=0:d=${fade},afade=t=out:st=${Math.max(0, duration - fade)}:d=${fade}[${label}]`
+  );
 }
 
 /**
@@ -116,6 +168,12 @@ export async function renderMulticamCut(inputs, segments, outPath, {
   grade = true,
   srtPath = null,
   fps = 30,
+  lutPath = null,
+  brandTexts = null,
+  fontPath = null,
+  musicPath = null,
+  musicVolumeDb = -22,
+  clickFadeSeconds = 0.03,
 } = {}) {
   if (!inputs || inputs.length === 0) throw new Error('renderMulticamCut: no inputs given');
   if (!segments || segments.length === 0) throw new Error('renderMulticamCut: no segments to render');
@@ -130,29 +188,43 @@ export async function renderMulticamCut(inputs, segments, outPath, {
     if (idx === undefined) {
       throw new Error(`renderMulticamCut: segment ${i} references unknown role "${seg.role}" — inputs were [${inputs.map((x) => x.role).join(', ')}]`);
     }
-    trimFilters.push(
-      `[${idx}:v]trim=start=${seg.start}:end=${seg.end},setpts=PTS-STARTPTS[v${i}]`,
-      `[${idx}:a]atrim=start=${seg.start}:end=${seg.end},asetpts=PTS-STARTPTS[a${i}]`
-    );
+    trimFilters.push(`[${idx}:v]trim=start=${seg.start}:end=${seg.end},setpts=PTS-STARTPTS[v${i}]`);
+    trimFilters.push(audioTrimWithFade(idx, seg, `a${i}`, clickFadeSeconds));
     concatInputs.push(`[v${i}][a${i}]`);
   });
 
-  const concatFilter = `${concatInputs.join('')}concat=n=${segments.length}:v=1:a=1[vcat][acat]`;
-  const { filters: postFilters, videoLabel } = buildGradeAndCaptionFilters('vcat', { grade, srtPath });
-  const filterComplex = [...trimFilters, concatFilter, ...postFilters].join(';');
+  const concatFilter = `${concatInputs.join('')}concat=n=${segments.length}:v=1:a=1[vcat][acatvoice]`;
+  const { filters: postFilters, videoLabel } = buildGradeAndCaptionFilters('vcat', { grade, srtPath, lutPath, brandTexts, fontPath });
+
+  // Music input, if any, is appended AFTER all the role inputs — its index
+  // is simply inputs.length (no filter_complex math needed to find it).
+  let audioLabel = 'acatvoice';
+  const musicFilters = [];
+  if (musicPath) {
+    const musicIdx = inputs.length;
+    musicFilters.push(
+      `[${musicIdx}:a]volume=${musicVolumeDb}dB[musicvol]`,
+      `[acatvoice][musicvol]amix=inputs=2:duration=first:dropout_transition=0[acat]`
+    );
+    audioLabel = 'acat';
+  }
+
+  const filterComplex = [...trimFilters, concatFilter, ...postFilters, ...musicFilters].join(';');
 
   const args = ['-y'];
   inputs.forEach((inp) => { args.push('-i', inp.filePath); });
+  if (musicPath) args.push('-stream_loop', '-1', '-i', musicPath);
   args.push(
     '-filter_complex', filterComplex,
     '-map', `[${videoLabel}]`,
-    '-map', '[acat]',
+    '-map', `[${audioLabel}]`,
     '-r', String(fps),
     '-c:v', 'libx264',
     '-preset', 'medium',
     '-crf', '18',
     '-c:a', 'aac',
     '-b:a', '192k',
+    '-shortest',
     outPath
   );
 
