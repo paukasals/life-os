@@ -43,6 +43,22 @@ before relying on them commercially.
   consent sign at the window ("We may be live 🔴"). This is a good practical
   baseline; the attorney consult is still worth doing before scaling
   customer-facing content volume, but the MVP plan isn't exposed here.
+- **Adopted policy, 2026-11-26** (Pau's decision, covers both the
+  recording-consent and image-rights questions at once): for any
+  customer-facing clip, **the "yes" has to be recorded on camera itself**
+  — the customer saying something like "sí, puedes grabarme" on the clip
+  is the consent record. No recorded on-camera yes → the clip is not used,
+  full stop, regardless of how good the footage is. This is simpler than
+  "ask off-camera, remember they said yes" and self-documents — the proof
+  of consent lives inside the asset itself.
+  - **Exception: minors.** A minor's own on-camera "yes" is not enough —
+    needs a parent/guardian's on-camera yes instead (or in addition). QC
+    should flag any clip with an apparent minor for manual review on this
+    specific point, not just general content review.
+  - This is a practical policy Pau is comfortable operating on now, not a
+    substitute for the attorney consult above — still recommended before
+    scaling volume, but no longer a hard blocker for the MVP given this
+    rule is in place.
 
 ## Platform publishing APIs (Instagram, TikTok)
 

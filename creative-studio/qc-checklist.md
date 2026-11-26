@@ -22,11 +22,14 @@ or Gemini) checks every clip against.
 - Hair not tied back/capped near food prep.
 
 ## Legal / compliance flags
-- A customer or staff member's face is clearly recognizable — was consent
-  confirmed? (Default assumption: NO unless the clip is tagged as a known
-  consented format, e.g. V10/OD "ask first" cards.)
-- A minor is visible in frame at all — stricter than the general rule,
-  flag regardless of apparent consent.
+- A customer or staff member's face is clearly recognizable — is there an
+  **on-camera recorded "yes"** to being filmed, in this same clip? That's
+  the whole consent standard (Pau's policy, 2026-11-26) — not an
+  off-camera verbal okay, not an assumption from context. No recorded yes
+  in the clip → flag "do-not-post", regardless of how good the footage is.
+- A minor is visible in frame at all — the minor's own on-camera yes is
+  NOT enough; flag unless a parent/guardian's on-camera yes is also in the
+  clip.
 - A Wynwood mural is in frame, in focus, identifiable as a specific artist's
   work — flag for blur/crop unless permission is on file.
 - Audible licensed/recognizable music playing in the background of the shot

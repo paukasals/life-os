@@ -252,14 +252,10 @@ hasta verificar sus criterios de aceptación").
   which is our actual problem. Cheap (~$0.01-0.03/short video).
 - **FFmpeg** for basic processing (trim, thumbnail, proxy, format): no
   quality compromise vs. paid tools for these operations, zero cost.
-- **DaVinci Resolve Studio (one-time ~$295) over Shotstack** for final
-  edit/render, now that Pau confirmed he's open to running it on his own
-  Mac: Resolve's color grading (color correction between iPhone/Meta-glasses
-  footage), Fusion (motion graphics), and Fairlight (audio) are a real
-  quality tier above Shotstack's templated cloud API. Shotstack stays as a
-  fallback for quick automated edits where polish doesn't matter.
-  **Not yet installed or integrated** — needs Pau's go-ahead to install
-  DaVinci Resolve Studio and the one-time purchase.
+- ~~DaVinci Resolve Studio over Shotstack~~ **Superseded 2026-11-26**: Pau
+  chose the free FFmpeg-LUT path instead of installing/paying for DaVinci
+  — see "LUT chosen and generated". Shotstack was never actually needed
+  either; FFmpeg covers the render.
 - **Remotion** for motion graphics (animated logo, lower-thirds): quality is
   genuinely professional-grade, not a budget compromise. Licensing is the
   open question — building this into an automated pipeline may trigger
@@ -269,13 +265,17 @@ hasta verificar sus criterios de aceptación").
 - **Adobe Firefly/Lightroom/Photoshop APIs**: held off. No clear specific
   need yet (pricing per "operation" isn't even publicly listed), and
   FFmpeg covers basic processing needs for now.
-- **No automated publishing yet**: Instagram and TikTok both require a
-  developer-app review process (weeks, needs Pau's business details and
-  explicit go-ahead to start) before real automated posting works. Building
-  around this with screen-scraping or unofficial automation would violate
-  both platforms' Terms — not doing that. MVP output target is finished,
-  platform-formatted files ready for manual posting, with automated
-  publishing deferred to Phase 5 once the app reviews are underway.
+- ~~No automated publishing yet~~ **Superseded 2026-11-26**: solved via
+  Buffer's own MCP server, not a direct Meta/TikTok developer-app
+  integration — no app review needed. See "Publishing pipeline connected".
+- **The 13 specialized agent roles are not being built.** Pau asked
+  directly what problem one unified `CreativeStudioAgent` actually causes
+  — answer: none, for how this is actually used (Pau driving it from a
+  Claude session, not a multi-person studio with separate staff per
+  stage). Splitting into 13 roles would only pay off if a human or a
+  differently-tuned model needed to own one stage independently. Decision:
+  keep the single agent; don't build the split unless a concrete need for
+  it shows up later.
 
 ## Blocked on Pau (can't proceed without these)
 
