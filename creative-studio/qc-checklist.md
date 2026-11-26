@@ -22,14 +22,25 @@ or Gemini) checks every clip against.
 - Hair not tied back/capped near food prep.
 
 ## Legal / compliance flags
-- A customer or staff member's face is clearly recognizable — is there an
-  **on-camera recorded "yes"** to being filmed, in this same clip? That's
-  the whole consent standard (Pau's policy, 2026-11-26) — not an
-  off-camera verbal okay, not an assumption from context. No recorded yes
-  in the clip → flag "do-not-post", regardless of how good the footage is.
-- A minor is visible in frame at all — the minor's own on-camera yes is
-  NOT enough; flag unless a parent/guardian's on-camera yes is also in the
-  clip.
+- A customer or staff member is an **identified participant** (speaking,
+  reacting to camera, named, or otherwise singled out as a subject of the
+  video) and their face is clearly recognizable — is there an **on-camera
+  recorded "yes"** to being filmed, in this same clip? That's the whole
+  consent standard (Pau's policy, 2026-11-26) — not an off-camera verbal
+  okay, not an assumption from context. No recorded yes in the clip →
+  flag "do-not-post", regardless of how good the footage is.
+  - **Not flagged**: someone merely visible in the background (e.g. a
+    queue, other diners not interacting with the shot) who isn't singled
+    out or identified — they're an unidentified member of the public, not
+    a participant. Don't flag footage just because people are visible
+    behind the main subject.
+  - **Couples/groups**: if two or more people are each giving their own
+    on-camera opinion/reaction, each one needs their own recorded yes —
+    one person's yes doesn't cover a second person who also speaks on
+    camera.
+- A minor is visible as an identified participant (not just in the
+  background) — the minor's own on-camera yes is NOT enough; flag unless
+  a parent/guardian's on-camera yes is also in the clip.
 - A Wynwood mural is in frame, in focus, identifiable as a specific artist's
   work — flag for blur/crop unless permission is on file.
 - Audible licensed/recognizable music playing in the background of the shot

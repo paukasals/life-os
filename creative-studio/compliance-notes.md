@@ -43,18 +43,48 @@ before relying on them commercially.
   consent sign at the window ("We may be live 🔴"). This is a good practical
   baseline; the attorney consult is still worth doing before scaling
   customer-facing content volume, but the MVP plan isn't exposed here.
-- **Adopted policy, 2026-11-26** (Pau's decision, covers both the
-  recording-consent and image-rights questions at once): for any
-  customer-facing clip, **the "yes" has to be recorded on camera itself**
-  — the customer saying something like "sí, puedes grabarme" on the clip
-  is the consent record. No recorded on-camera yes → the clip is not used,
-  full stop, regardless of how good the footage is. This is simpler than
-  "ask off-camera, remember they said yes" and self-documents — the proof
-  of consent lives inside the asset itself.
+- **Legal correction, 2026-11-26** (Pau, sourcing flsenate.gov — verified
+  against Fla. Stat. § 540.08): these are actually two separate legal
+  questions, not one, and the law is looser than the policy below on one
+  of them:
+  - **Right to use someone's likeness in marketing (§ 540.08):** requires
+    the person's consent, but the statute does NOT require it to be
+    written or on-camera — a verbal, off-camera "yes, go ahead" is legally
+    valid consent. There's also a real statutory exception: a person who
+    appears only as an unidentified member of the public (e.g., someone in
+    the background of a queue) doesn't need individual consent at all. For
+    a reel, framing tightly on whoever is actually participating resolves
+    this in practice — a line of people behind them is not, by itself, a
+    reason to get everyone's consent.
+  - **Right to record audio of a private conversation (§ 934.03,
+    all-party consent):** a separate question, and stricter — if a
+    conversation has a reasonable expectation of privacy, consent is
+    needed *before/during* the recording itself, not just before
+    publishing.
+  - **Couples/groups:** if two or more people are each giving their own
+    on-camera opinion (e.g., a couple both reacting to the food), get each
+    person's own yes, not just one on behalf of both.
+- **Adopted operating policy, 2026-11-26** (Pau's choice, after the
+  correction above — asked directly and confirmed keeping this): even
+  though the law permits off-camera verbal consent, **the automated QC
+  pipeline can only verify what's actually in the clip** — it has no way
+  to confirm an off-camera conversation happened. So the operating rule
+  stays stricter than the legal minimum on purpose: **the "yes" has to be
+  recorded on camera itself** for the clip to be used. This isn't "what
+  the law requires," it's "the only thing Gemini's QC step can actually
+  check without a separate manual consent-logging process." If Pau later
+  wants to rely on off-camera verbal consent for some content, that
+  needs a different verification step outside this automated pipeline
+  (e.g. Pau manually clearing a clip before it's ingested) — not
+  supported today.
   - **Exception: minors.** A minor's own on-camera "yes" is not enough —
     needs a parent/guardian's on-camera yes instead (or in addition). QC
     should flag any clip with an apparent minor for manual review on this
     specific point, not just general content review.
+  - **Bystanders exception carries over to the operating policy too:**
+    someone merely visible in the background/queue, not singled out or
+    identified, doesn't need an on-camera yes — this isn't a gap in the
+    stricter policy, it's the same statutory exception applying.
   - This is a practical policy Pau is comfortable operating on now, not a
     substitute for the attorney consult above — still recommended before
     scaling volume, but no longer a hard blocker for the MVP given this
