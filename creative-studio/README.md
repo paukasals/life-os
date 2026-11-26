@@ -69,8 +69,16 @@ credentials, flagged for approval before building).
   set, it's mixed under the voice/sound at ~-22dB (adjustable in code),
   looped to match the render's length. Nothing plays if unset.
 - `CREATIVE_STUDIO_FONT_PATH` — the real Lobsteria brand font (.ttf/.otf)
-  for the branded on-screen text system. Falls back to a system font
-  (DejaVu Sans Bold) if unset — fine for testing, not the real brand look.
+  for the branded on-screen text system. **Defaults to
+  `creative-studio/fonts/AlfaSlabOne-Regular.ttf`** — Alfa Slab One, a
+  free, OFL-licensed Google Font: a heavy slab serif that reads as a
+  serious vintage nautical badge/stamp, not a comic/meme face. Chosen over
+  the comic-style font Pau flagged from a reference account because that
+  one relied on a colored stroke effect rather than the typeface itself,
+  and didn't fit the brand tone. Set this var to a different font file to
+  use another one, or to the literal string `"none"` to disable it and
+  fall back to the system font (DejaVu Sans Bold) — fine for testing, not
+  the real brand look.
 - `CREATIVE_STUDIO_LUT_PATH` — a real `.cube` 3D LUT for the "pro" color
   grade (camera-course-reference.md's Apple Log 2 + LUT look), applied via
   FFmpeg instead of needing DaVinci. **Defaults to

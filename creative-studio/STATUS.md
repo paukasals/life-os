@@ -39,6 +39,36 @@ var needs to be set for the pro grade to apply. Set
 `CREATIVE_STUDIO_LUT_PATH=none` to fall back to the plain preset, or point
 it at a different `.cube` file to use something else later.
 
+### 2026-11-26: brand font chosen and installed (Alfa Slab One)
+
+Pau showed a reference account (@kinojerez) using a bold comic/meme-style
+font and asked if it fit Lobsteria's branding. Flagged that what stood out
+there was mostly a colored stroke/outline *effect*, not the typeface
+itself, and that a comic face doesn't match the "vintage nautical badge"
+look the course/plan already specify. Pau confirmed ("SI") wanting 2-3
+free alternatives instead.
+
+Picked **Alfa Slab One** (Google Fonts, OFL licensed — free for commercial
+use, no attribution required): a heavy slab serif that reads as a serious
+stamp/badge wordmark, which is exactly the documented brand tone, with
+none of the comic connotation. Downloaded the real file from Google's
+font CDN (`fonts.gstatic.com`, verified reachable), confirmed it's a valid
+TrueType font, and committed it to
+`creative-studio/fonts/AlfaSlabOne-Regular.ttf`.
+
+**Verified for real**: rendered an actual test clip through the full
+render pipeline (`renderMulticamCut`, with the "quick-look" grade +
+vignette + brand-text overlay all active, not just a bare `drawtext`
+test) and viewed the output frame directly — "LOBSTERIA" renders in bold
+white Alfa Slab One in its real lower-third position, reading as a heavy
+vintage stamp, not a meme font.
+
+This font is now the **default** (`BRAND_FONT_PATH` in the agent) — no
+env var needs to be set for branded on-screen text to use the real brand
+look. Set `CREATIVE_STUDIO_FONT_PATH=none` to fall back to the plain
+system font (DejaVu Sans Bold), or point it at a different font file to
+use something else later.
+
 ### 2026-11-26: the 8 remaining editing gaps — resolved, with honest verification status
 
 Pau asked for all 8 gaps from the previous audit to be closed. Here's each

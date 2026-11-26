@@ -49,12 +49,13 @@ const MAX_HOOK_RETRIES = 1;
 
 // Optional environment knobs — none of this requires a paid service, all
 // are no-ops if unset. MUSIC_BED_PATH: a royalty-free track file Pau
-// supplies; BRAND_FONT_PATH: the real Lobsteria brand font, falls back to
-// a system font if unset; COLOR_LUT_PATH: a real .cube LUT for pro-stage
-// grading (see camera-course-reference.md "PRO: Apple Log 2"), falls back
-// to the FFmpeg quick-look preset if unset.
+// supplies; BRAND_FONT_PATH: defaults to the committed Alfa Slab One brand
+// font (creative-studio/fonts/) — override with CREATIVE_STUDIO_FONT_PATH,
+// or set it to the literal string "none" to fall back to the plain system
+// font instead; COLOR_LUT_PATH: a real .cube LUT for pro-stage grading (see
+// camera-course-reference.md "PRO: Apple Log 2"), falls back to the FFmpeg
+// quick-look preset if unset.
 const MUSIC_BED_PATH = process.env.CREATIVE_STUDIO_MUSIC_PATH || null;
-const BRAND_FONT_PATH = process.env.CREATIVE_STUDIO_FONT_PATH || null;
 // Defaults to the generated Lobsteria LUT (creative-studio/luts/) so the
 // "pro" grade is on by default — no setup needed. Override with
 // CREATIVE_STUDIO_LUT_PATH, or set it to the literal string "none" to fall
@@ -63,6 +64,14 @@ const DEFAULT_LUT_PATH = path.join(STUDIO_DIR, 'luts', 'lobsteria-warm.cube');
 const COLOR_LUT_PATH = process.env.CREATIVE_STUDIO_LUT_PATH === 'none'
   ? null
   : (process.env.CREATIVE_STUDIO_LUT_PATH || DEFAULT_LUT_PATH);
+// Defaults to the committed Alfa Slab One brand font (Google Fonts, OFL
+// licensed — free for commercial use) so branded on-screen text uses the
+// real Lobsteria look by default. Override with CREATIVE_STUDIO_FONT_PATH,
+// or set it to the literal string "none" to fall back to the system font.
+const DEFAULT_FONT_PATH = path.join(STUDIO_DIR, 'fonts', 'AlfaSlabOne-Regular.ttf');
+const BRAND_FONT_PATH = process.env.CREATIVE_STUDIO_FONT_PATH === 'none'
+  ? null
+  : (process.env.CREATIVE_STUDIO_FONT_PATH || DEFAULT_FONT_PATH);
 
 function extractField(analysisText, fieldName) {
   const re = new RegExp(`^${fieldName}:\\s*(.*)$`, 'im');
