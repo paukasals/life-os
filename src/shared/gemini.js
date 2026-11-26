@@ -235,3 +235,59 @@ export async function detectSyncPoint(filePath, mimeType) {
   }
   return seconds;
 }
+
+/**
+ * Given 2+ SEPARATE, NOT-simultaneous full recordings of the same intended
+ * video (e.g. Pau records all of V2 once, isn't happy with it, records the
+ * whole thing again later as its own file) — different from
+ * decideMulticamEdit, which assumes synchronized/simultaneous sources.
+ * These takes happen at different times and can't be "cut between" at a
+ * shared timestamp; instead this compares them on content and delivery,
+ * then assembles the best version: either one take used throughout (if one
+ * is simply best), or the best delivery of each part of the script pulled
+ * from whichever take nailed it — mirroring the course's own rule ("record
+ * 3 full takes, keep the most natural one," generalized to a composite
+ * when that serves the result better than any single take alone).
+ *
+ * Returns the same { segments: [{ role, start, end, text, reason }] }
+ * shape as decideMulticamEdit — `role` here means "take1"/"take2"/etc.,
+ * and the result is renderable with the exact same renderMulticamCut
+ * (same mechanics: cut from whichever file each segment calls for).
+ *
+ * `script` (optional): the known intended script/lines for this video
+ * (e.g. the SAY (EN)/SAY (ES) text from shot-cards.md) — give it when
+ * available, it helps Gemini align takes that may have been delivered
+ * slightly differently in wording each time.
+ */
+export async function decideBestOfRetakes(takes, { script = '' } = {}) {
+  const ai = client();
+
+  const uploadedParts = [];
+  for (const { role, filePath, mimeType } of takes) {
+    const uploaded = await ai.files.upload({ file: filePath, config: { mimeType } });
+    const active = await waitUntilActive(ai, uploaded.name);
+    uploadedParts.push(createPartFromUri(active.uri, mimeType));
+    uploadedParts.push(`(The video above is role="${role}".)`);
+  }
+
+  const roleNames = takes.map((t) => t.role).join(', ');
+  const prompt = `These ${takes.length} videos (roles: ${roleNames}) are SEPARATE, independently recorded full attempts at the SAME intended video — NOT simultaneous cameras of one event. They were recorded at different times, possibly with slightly different wording or pacing each time.
+
+${script ? `Intended script for this video:\n${script}\n\n` : ''}
+Compare the takes on delivery quality (energy, naturalness, clean pacing, no stumbles — see the course's own rule: keep the most natural, not the most "perfect" line-reading) and on technical cleanliness (focus, framing, lighting consistency with the rest of the clip).
+
+Produce ONE ordered list of segments assembling the best possible final version of the script from start to end. If one take is simply best throughout, the segments will naturally all point to that one role — that's a valid outcome, don't force variety. If different takes deliver different parts better, composite across them. Still cut filler words, dead air and false starts the same as you would within a single clip.
+
+Each segment's start/end must be in that SPECIFIC take's own local timeline (seconds from the start of that file). Be conservative: when two deliveries are close in quality, prefer the one that also lines up best with its neighbors to avoid an awkward tone jump between segments pulled from different takes.`;
+
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: createUserContent([...uploadedParts, prompt]),
+    config: {
+      responseMimeType: 'application/json',
+      responseJsonSchema: MULTICAM_SCHEMA,
+    },
+  });
+
+  return JSON.parse(response.text);
+}

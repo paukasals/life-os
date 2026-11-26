@@ -3,22 +3,22 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { BaseAgent } from '../../shared/base-agent.js';
 import { probe, extractThumbnail, makeReviewProxy, renderCut, renderMulticamCut } from '../../shared/ffmpeg.js';
-import { analyzeMedia, transcribeAndDecideCuts, decideMulticamEdit } from '../../shared/gemini.js';
+import { analyzeMedia, transcribeAndDecideCuts, decideMulticamEdit, decideBestOfRetakes } from '../../shared/gemini.js';
 import { buildSrtForCut } from '../../shared/srt.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const STUDIO_DIR = path.resolve(__dirname, '../../../creative-studio');
 const ORIGINALS_DIR = path.join(STUDIO_DIR, 'originals');
 const TAKES_DIR = path.join(ORIGINALS_DIR, 'takes');
+const RETAKES_DIR = path.join(ORIGINALS_DIR, 'retakes');
 const ANALYZED_DIR = path.join(STUDIO_DIR, 'analyzed');
 const PROJECTS_DIR = path.join(STUDIO_DIR, 'projects');
 const FINISHED_DIR = path.join(STUDIO_DIR, 'finished');
 
 // Subfolder name -> source tag passed to Gemini (QC bar differs: glasses
 // footage has no framing/zoom control, that's the format, not a defect).
-// These are for SINGLE-camera clips. Simultaneous multi-camera recordings
-// of the same moment go in originals/takes/<take-id>/ instead (see
-// findUnprocessedTakes).
+// These are for SINGLE-camera clips. Two other folder types handle
+// multi-file groups — see originals/takes/ and originals/retakes/ below.
 const SOURCE_DIRS = {
   iphone: path.join(ORIGINALS_DIR, 'iphone'),
   glasses: path.join(ORIGINALS_DIR, 'glasses'),
@@ -44,12 +44,11 @@ function extractField(analysisText, fieldName) {
   return match ? match[1].trim() : '';
 }
 
-// A take file is named "<role>.<ext>" or "<role>_<anything>.<ext>" — role
-// is whatever comes before the first "." or "_". e.g. "camA.mp4",
-// "camB_take2.mov", "glasses.mp4".
+// A grouped-take file is named "<role>.<ext>" or "<role>_<anything>.<ext>" —
+// role is whatever comes before the first "." or "_". e.g. "camA.mp4",
+// "camB_take2.mov", "take1.mp4", "take2_redo.mov".
 function roleFromFileName(fileName) {
-  const base = fileName.split(/[._]/)[0];
-  return base;
+  return fileName.split(/[._]/)[0];
 }
 
 export class CreativeStudioAgent extends BaseAgent {
@@ -67,9 +66,10 @@ Never approve or publish anything yourself — every piece stops at "finished" f
 
     const qcChecklist = await this.loadQcChecklist();
     const pendingSingle = await this.findUnanalyzed();
-    const pendingTakes = await this.findUnprocessedTakes();
+    const pendingTakes = await this.findUnprocessedGroup(TAKES_DIR);
+    const pendingRetakes = await this.findUnprocessedGroup(RETAKES_DIR);
 
-    if (pendingSingle.length === 0 && pendingTakes.length === 0) {
+    if (pendingSingle.length === 0 && pendingTakes.length === 0 && pendingRetakes.length === 0) {
       this.log('No new originals to process.');
       return null;
     }
@@ -87,8 +87,16 @@ Never approve or publish anything yourself — every piece stops at "finished" f
       try {
         results.push(await this.processTake(take));
       } catch (err) {
-        this.error(`Failed processing take ${take.takeId}`, err);
-        results.push({ fileName: take.takeId, error: err.message });
+        this.error(`Failed processing take ${take.groupId}`, err);
+        results.push({ fileName: take.groupId, error: err.message });
+      }
+    }
+    for (const retake of pendingRetakes) {
+      try {
+        results.push(await this.processRetake(retake));
+      } catch (err) {
+        this.error(`Failed processing retake group ${retake.groupId}`, err);
+        results.push({ fileName: retake.groupId, error: err.message });
       }
     }
 
@@ -101,7 +109,7 @@ Never approve or publish anything yourself — every piece stops at "finished" f
   }
 
   async ensureDirs() {
-    for (const dir of [ANALYZED_DIR, PROJECTS_DIR, FINISHED_DIR, TAKES_DIR, ...Object.values(SOURCE_DIRS)]) {
+    for (const dir of [ANALYZED_DIR, PROJECTS_DIR, FINISHED_DIR, TAKES_DIR, RETAKES_DIR, ...Object.values(SOURCE_DIRS)]) {
       await fs.mkdir(dir, { recursive: true });
     }
   }
@@ -207,20 +215,20 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     return { fileName, source, metadata, analyzedPath, proxyPath, thumbnailPath, cutPath, srtPath, recommendation };
   }
 
-  // ---- multicam takes (originals/takes/<take-id>/{camA,camB,glasses}.*) ----
+  // ---- shared scanning for multi-file groups (takes/ and retakes/) ----
 
-  async findUnprocessedTakes() {
-    let takeDirs;
+  async findUnprocessedGroup(baseDir) {
+    let groupDirs;
     try {
-      takeDirs = (await fs.readdir(TAKES_DIR, { withFileTypes: true })).filter((e) => e.isDirectory());
+      groupDirs = (await fs.readdir(baseDir, { withFileTypes: true })).filter((e) => e.isDirectory());
     } catch {
       return [];
     }
 
-    const takes = [];
-    for (const { name: takeId } of takeDirs) {
-      const takeDir = path.join(TAKES_DIR, takeId);
-      const outPath = path.join(FINISHED_DIR, `${takeId}.cut.mp4`);
+    const groups = [];
+    for (const { name: groupId } of groupDirs) {
+      const groupDir = path.join(baseDir, groupId);
+      const outPath = path.join(FINISHED_DIR, `${groupId}.cut.mp4`);
       try {
         await fs.access(outPath);
         continue; // already processed
@@ -228,50 +236,68 @@ Never approve or publish anything yourself — every piece stops at "finished" f
         // not processed yet, fall through
       }
 
-      const entries = await fs.readdir(takeDir, { withFileTypes: true });
+      const entries = await fs.readdir(groupDir, { withFileTypes: true });
       const files = entries
         .filter((e) => e.isFile() && MIME_BY_EXT[path.extname(e.name).toLowerCase()])
         .map((e) => ({
           fileName: e.name,
           role: roleFromFileName(e.name),
-          filePath: path.join(takeDir, e.name),
+          filePath: path.join(groupDir, e.name),
           mimeType: MIME_BY_EXT[path.extname(e.name).toLowerCase()],
         }));
 
       if (files.length < 2) {
-        this.log(`Take "${takeId}" has fewer than 2 camera files — treat it as a single clip instead, skipping multicam path.`);
+        this.log(`Group "${groupId}" in ${path.basename(baseDir)}/ has fewer than 2 files — move it to iphone/ or glasses/ for single-clip processing instead.`);
         continue;
       }
-      takes.push({ takeId, files });
+      groups.push({ groupId, files });
     }
-    return takes;
+    return groups;
   }
 
-  async processTake({ takeId, files }) {
-    this.log(`Processing multicam take "${takeId}" (${files.map((f) => f.role).join(', ')})...`);
-
-    const edit = await decideMulticamEdit(files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType })));
+  // Shared render step for both takes/ and retakes/ — the mechanics are
+  // identical (cut from whichever file each decided segment points to);
+  // only the Gemini decision step differs between the two callers.
+  async renderGroupEdit(groupId, files, edit, recommendationLabel) {
     const segments = edit.segments ?? [];
 
     if (segments.length === 0) {
-      this.log(`Gemini returned zero segments for take "${takeId}" — needs a human look.`);
-      return { fileName: takeId, recommendation: 'needs human review (empty edit decision)' };
+      this.log(`Gemini returned zero segments for group "${groupId}" — needs a human look.`);
+      return { fileName: groupId, recommendation: 'needs human review (empty edit decision)' };
     }
 
-    const srtPath = path.join(FINISHED_DIR, `${takeId}.srt`);
+    const srtPath = path.join(FINISHED_DIR, `${groupId}.srt`);
     const { srtContent } = buildSrtForCut(segments);
     await fs.writeFile(srtPath, srtContent);
 
     const inputs = files.map(({ role, filePath }) => ({ role, filePath }));
-    const cutPath = path.join(FINISHED_DIR, `${takeId}.cut.mp4`);
+    const cutPath = path.join(FINISHED_DIR, `${groupId}.cut.mp4`);
     await renderMulticamCut(inputs, segments, cutPath, { grade: true, srtPath });
 
     await fs.writeFile(
-      path.join(FINISHED_DIR, `${takeId}.edit-decision.json`),
+      path.join(FINISHED_DIR, `${groupId}.edit-decision.json`),
       JSON.stringify(edit, null, 2)
     );
 
-    this.log(`Done: take "${takeId}"`);
-    return { fileName: takeId, cutPath, srtPath, recommendation: 'auto-cut from multicam take' };
+    this.log(`Done: group "${groupId}"`);
+    return { fileName: groupId, cutPath, srtPath, recommendation: recommendationLabel };
+  }
+
+  // ---- multicam takes: SIMULTANEOUS recordings of the same real moment ----
+  // originals/takes/<take-id>/{camA,camB,glasses}.*
+
+  async processTake({ groupId, files }) {
+    this.log(`Processing multicam take "${groupId}" (${files.map((f) => f.role).join(', ')})...`);
+    const edit = await decideMulticamEdit(files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType })));
+    return this.renderGroupEdit(groupId, files, edit, 'auto-cut from multicam take');
+  }
+
+  // ---- retakes: SEPARATE, non-simultaneous full attempts at the same video ----
+  // originals/retakes/<video-id>/{take1,take2,take3}.*
+
+  async processRetake({ groupId, files }) {
+    this.log(`Processing retake group "${groupId}" (${files.map((f) => f.role).join(', ')})...`);
+    const edit = await decideBestOfRetakes(files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType })));
+    return this.renderGroupEdit(groupId, files, edit, 'auto-cut from best-of-retakes');
   }
 }

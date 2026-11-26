@@ -146,13 +146,19 @@ hasta verificar sus criterios de aceptación").
 - **Resolved 2026-11-25** (was a known gap): simultaneous multi-camera
   recordings of the SAME moment (originals/takes/, see README.md) are now
   handled — Gemini watches 2-3 synced sources together and picks the best
-  camera per moment. **Still a real gap**: choosing between two SEPARATE,
-  NOT-simultaneous full retakes of the same video (e.g. Pau redoes an
-  entire V2 take from scratch as its own file, not just a redone line
-  within one continuous recording) — nothing compares two independent
-  takes like that yet. If that's a common real workflow, it needs its own
-  feature, not an extension of the multicam path (multicam assumes the
-  sources are synchronized/simultaneous, not alternate attempts).
+  camera per moment.
+- **Resolved 2026-11-26** (was the remaining gap): SEPARATE, non-
+  simultaneous full retakes of the same video (originals/retakes/) are now
+  handled too — `decideBestOfRetakes()` compares complete independent
+  attempts on delivery quality and either uses one throughout or
+  composites the best delivery of each part across takes. Reuses the exact
+  same render engine as multicam (`renderMulticamCut`) since the cutting
+  mechanics are identical — only the Gemini decision prompt differs
+  between "these are synchronized camera angles" and "these are separate
+  attempts recorded at different times." Folder scanning for both group
+  types (`takes/` and `retakes/`) shares one `findUnprocessedGroup()`
+  helper; verified with synthetic fixtures that both correctly detect
+  their groups and file roles.
 - Color grade is the FFmpeg "quick-look" preset (contrast/brightness/
   saturation/color-balance/vignette/grain), not the Apple Log + LUT
   pro-stage workflow — that needs either DaVinci or a proper LUT applied

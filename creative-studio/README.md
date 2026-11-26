@@ -28,10 +28,18 @@ see the open decisions below).
      `_` in the filename, so `camB_take2.mov` also works). The pipeline
      watches all files in a take together and decides which camera to show
      for each moment — it does not need numeric sync, it matches the
-     content semantically (same words/action across cameras). A take needs
-     **at least 2 files** to use this path; a single file in its own take
-     folder gets skipped with a note to move it to iphone/ or glasses/
-     instead.
+     content semantically (same words/action across cameras).
+   - `originals/retakes/<video-id>/` — **separate, non-simultaneous full
+     attempts** at the same intended video (e.g. Pau records all of V2,
+     isn't happy, records the whole thing again later as its own file).
+     Different from `takes/`: these happen at different times and can't be
+     cut between at a shared timestamp. Name each file `take1.mp4`,
+     `take2.mp4`, etc. The pipeline compares the full takes on delivery and
+     either uses one throughout (if one is simply best) or composites the
+     best delivery of each part across takes.
+   - Both group types need **at least 2 files** to use their path; a
+     single file in its own group folder gets skipped with a note to move
+     it to iphone/ or glasses/ instead.
 2. **analyzed/** — originals plus AI-generated understanding (what's in the
    shot, usable clips, quality flags) from the video-understanding step.
 3. **projects/** — in-progress edits: draft cuts, selected clips, graphics
