@@ -73,5 +73,10 @@ credentials, flagged for approval before building).
   (DejaVu Sans Bold) if unset — fine for testing, not the real brand look.
 - `CREATIVE_STUDIO_LUT_PATH` — a real `.cube` 3D LUT for the "pro" color
   grade (camera-course-reference.md's Apple Log 2 + LUT look), applied via
-  FFmpeg instead of needing DaVinci. Falls back to the FFmpeg "quick-look"
-  preset (contrast/warmth/vignette/grain) if unset.
+  FFmpeg instead of needing DaVinci. **Defaults to
+  `creative-studio/luts/lobsteria-warm.cube`** — a LUT built from scratch
+  for this project (see `creative-studio/tools/generate-lobsteria-lut.mjs`)
+  implementing warm highlights, teal-leaning shadows, and -7% saturation,
+  so the pro grade is on by default with no setup needed. Set this var to
+  a different `.cube` path to use another LUT, or to the literal string
+  `"none"` to disable LUT grading and fall back to the plain FFmpeg preset.

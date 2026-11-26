@@ -11,7 +11,33 @@ scratch, continue from here.
 |---|---|---|
 | 1. Discovery & Architecture | ✅ Done | Repo audited, tool landscape researched with sources, architecture decided (see Decisions below) |
 | 2. Foundation | 🟡 Partial | Folder structure + brand knowledge wired. Agent/skill specs for the 13 specialized roles not yet drafted. |
-| 3. MVP Pipeline | 🟢 Functionally complete, verification-gated | Ingestion + QC + auto-cut (single clip, multicam, retakes) + bilingual captions + music/brand-text/LUT-capable render + final-render QC with one automatic hook retry + content-aware cover frame. See the 2026-11-26 entry below for the full breakdown of what's tested vs. still only syntax-checked. The one remaining real gap: DaVinci itself isn't installed (pending Pau's decision) — the LUT path is built and works mechanically, but needs a real `.cube` file to look like anything beyond the quick-look preset. |
+| 3. MVP Pipeline | 🟢 Functionally complete, verification-gated | Ingestion + QC + auto-cut (single clip, multicam, retakes) + bilingual captions + music/brand-text/LUT-capable render + final-render QC with one automatic hook retry + content-aware cover frame. See the 2026-11-26 entries below for the full breakdown of what's tested vs. still only syntax-checked. Color grade is now resolved: Pau chose the LUT path over installing DaVinci — see "LUT chosen and generated" below. |
+
+### 2026-11-26: LUT chosen and generated (no DaVinci needed)
+
+Pau asked for the best free LUT. Couldn't download one: this environment's
+network policy blocks the free-LUT sites found via research (freevisuals.net
+and similar returned a 403 at the proxy level — not fixable from here).
+Rather than leave it blocked, generated a real LUT from scratch:
+`creative-studio/tools/generate-lobsteria-lut.mjs` produces
+`creative-studio/luts/lobsteria-warm.cube` (17×17×17, committed to the
+repo), implementing exactly the documented "warm amber, food brightest"
+recipe — warm highlights, teal-leaning shadows, mild contrast, -7%
+saturation — rather than a generic downloaded preset of uncertain license.
+
+**Verified for real**, not just "ran without erroring": rendered the same
+test clip graded and ungraded, and tested pure color swatches through the
+LUT directly. A mid-gray swatch came back R=138/G=129/B=120 — a clear,
+intentional warm shift (confirms the highlight-warming direction). The
+shadow-teal effect is real in the math but subtle enough that it's lost in
+8-bit quantization on a pure-black test swatch — a tuning observation, not
+a bug (the lift values are deliberately small; could be increased if Pau
+wants the teal shadows more pronounced after seeing it on real footage).
+
+This LUT is now the **default** (`COLOR_LUT_PATH` in the agent) — no env
+var needs to be set for the pro grade to apply. Set
+`CREATIVE_STUDIO_LUT_PATH=none` to fall back to the plain preset, or point
+it at a different `.cube` file to use something else later.
 
 ### 2026-11-26: the 8 remaining editing gaps — resolved, with honest verification status
 
@@ -153,9 +179,9 @@ hasta verificar sus criterios de aceptación").
 2. **Real Lobsteria footage/photos** — at least one real clip or photo in
    `creative-studio/originals/` to validate the pipeline end-to-end, per
    the directive's own acceptance criteria (real material, not mocks).
-3. **DaVinci Resolve Studio decision** — confirm you want to install it on
-   your Mac and make the one-time ~$295 purchase, before the edit/render
-   stage gets built around it.
+3. ~~DaVinci Resolve Studio decision~~ **Resolved 2026-11-26**: Pau chose
+   the free LUT path instead of installing DaVinci. See "LUT chosen and
+   generated" above.
 4. **Both training PDFs now received.** The Video Plan (Weeks 1-2, Oct
    12-25) ingested 2026-11-25 into `src/knowledge/marketing/video-plan-oct-2026.md`
    and `creative-studio/video-production-spec.md`. The Camera Course (14

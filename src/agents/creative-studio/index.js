@@ -55,7 +55,14 @@ const MAX_HOOK_RETRIES = 1;
 // to the FFmpeg quick-look preset if unset.
 const MUSIC_BED_PATH = process.env.CREATIVE_STUDIO_MUSIC_PATH || null;
 const BRAND_FONT_PATH = process.env.CREATIVE_STUDIO_FONT_PATH || null;
-const COLOR_LUT_PATH = process.env.CREATIVE_STUDIO_LUT_PATH || null;
+// Defaults to the generated Lobsteria LUT (creative-studio/luts/) so the
+// "pro" grade is on by default — no setup needed. Override with
+// CREATIVE_STUDIO_LUT_PATH, or set it to the literal string "none" to fall
+// back to the plain FFmpeg quick-look preset instead.
+const DEFAULT_LUT_PATH = path.join(STUDIO_DIR, 'luts', 'lobsteria-warm.cube');
+const COLOR_LUT_PATH = process.env.CREATIVE_STUDIO_LUT_PATH === 'none'
+  ? null
+  : (process.env.CREATIVE_STUDIO_LUT_PATH || DEFAULT_LUT_PATH);
 
 function extractField(analysisText, fieldName) {
   const re = new RegExp(`^${fieldName}:\\s*(.*)$`, 'im');
