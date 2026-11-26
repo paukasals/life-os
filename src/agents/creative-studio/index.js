@@ -85,7 +85,7 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     }
     for (const take of pendingTakes) {
       try {
-        results.push(await this.processTake(take));
+        results.push(await this.processTake(take, qcChecklist));
       } catch (err) {
         this.error(`Failed processing take ${take.groupId}`, err);
         results.push({ fileName: take.groupId, error: err.message });
@@ -93,7 +93,7 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     }
     for (const retake of pendingRetakes) {
       try {
-        results.push(await this.processRetake(retake));
+        results.push(await this.processRetake(retake, qcChecklist));
       } catch (err) {
         this.error(`Failed processing retake group ${retake.groupId}`, err);
         results.push({ fileName: retake.groupId, error: err.message });
@@ -255,6 +255,36 @@ Never approve or publish anything yourself — every piece stops at "finished" f
     return groups;
   }
 
+  // Shared QC step for both takes/ and retakes/ — runs the SAME brand-
+  // rule/food-safety/legal/technical checklist used for single clips, on
+  // EVERY file in the group, before any cut decision is made. Without
+  // this, multicam/retake footage would skip straight to editing with no
+  // check against brand-rules.md at all — not acceptable just because the
+  // footage happens to come in groups of 2-3 files instead of one.
+  async qcGroupFiles(groupId, files, qcChecklist) {
+    const qcResults = [];
+    let anyBlocking = false;
+
+    for (const { fileName, role, filePath, mimeType } of files) {
+      const source = role === 'glasses' || /glasses/i.test(fileName) ? 'glasses' : 'iphone';
+      this.log(`QC-checking ${groupId}/${fileName} (${role})...`);
+      const analysisText = await analyzeMedia(filePath, mimeType, { qcChecklist, source });
+      const recommendation = extractField(analysisText, 'RECOMMENDATION').toLowerCase();
+
+      await fs.writeFile(
+        path.join(ANALYZED_DIR, `${groupId}__${fileName}.json`),
+        JSON.stringify({ groupId, fileName, role, source, mimeType, analysis: analysisText, recommendation, analyzedAt: new Date().toISOString() }, null, 2)
+      );
+
+      qcResults.push({ fileName, role, recommendation });
+      if (SKIP_AUTOCUT_RECOMMENDATIONS.some((r) => recommendation.includes(r))) {
+        anyBlocking = true;
+      }
+    }
+
+    return { qcResults, anyBlocking };
+  }
+
   // Shared render step for both takes/ and retakes/ — the mechanics are
   // identical (cut from whichever file each decided segment points to);
   // only the Gemini decision step differs between the two callers.
@@ -286,8 +316,15 @@ Never approve or publish anything yourself — every piece stops at "finished" f
   // ---- multicam takes: SIMULTANEOUS recordings of the same real moment ----
   // originals/takes/<take-id>/{camA,camB,glasses}.*
 
-  async processTake({ groupId, files }) {
+  async processTake({ groupId, files }, qcChecklist) {
     this.log(`Processing multicam take "${groupId}" (${files.map((f) => f.role).join(', ')})...`);
+
+    const { qcResults, anyBlocking } = await this.qcGroupFiles(groupId, files, qcChecklist);
+    if (anyBlocking) {
+      this.log(`Take "${groupId}" has a file flagged do-not-post/needs-reshoot — skipping auto-cut, needs a human look.`);
+      return { fileName: groupId, qcResults, recommendation: 'needs human review (QC flagged a source file)' };
+    }
+
     const edit = await decideMulticamEdit(files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType })));
     return this.renderGroupEdit(groupId, files, edit, 'auto-cut from multicam take');
   }
@@ -295,8 +332,15 @@ Never approve or publish anything yourself — every piece stops at "finished" f
   // ---- retakes: SEPARATE, non-simultaneous full attempts at the same video ----
   // originals/retakes/<video-id>/{take1,take2,take3}.*
 
-  async processRetake({ groupId, files }) {
+  async processRetake({ groupId, files }, qcChecklist) {
     this.log(`Processing retake group "${groupId}" (${files.map((f) => f.role).join(', ')})...`);
+
+    const { qcResults, anyBlocking } = await this.qcGroupFiles(groupId, files, qcChecklist);
+    if (anyBlocking) {
+      this.log(`Retake group "${groupId}" has a file flagged do-not-post/needs-reshoot — skipping auto-cut, needs a human look.`);
+      return { fileName: groupId, qcResults, recommendation: 'needs human review (QC flagged a source file)' };
+    }
+
     const edit = await decideBestOfRetakes(files.map(({ role, filePath, mimeType }) => ({ role, filePath, mimeType })));
     return this.renderGroupEdit(groupId, files, edit, 'auto-cut from best-of-retakes');
   }
