@@ -5,6 +5,14 @@ authoritative, most detailed version of each video's shot list — richer than
 the summaries in `video-plan-oct-2026.md`. A = iPhone on Osmo Mobile 7P,
 B = iPhone on Neewer tripod (or overhead clamp where noted).
 
+**Note on "lock WB" (V1, CN):** the native iPhone Camera app — what weeks
+1-5 actually use, per camera-course-reference.md's own BASIC/PRO split —
+has no manual white-balance lock. "Lock WB" here means the practical BASIC-
+level equivalent: one consistent light source for the whole take, so color
+doesn't visibly drift, corrected further in editing if needed. A real
+numeric WB lock (4000-4500K) needs the Blackmagic Camera app, which that
+same file marks as the PRO stage starting week 6 — not needed yet.
+
 ## V1 — Cracked. Picked. Cleaned by hand.
 LOBSTERIA · The Standard · Mon Oct 12 5:30pm · 12-15s · silent
 
