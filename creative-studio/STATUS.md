@@ -1,6 +1,6 @@
 # Lobsteria Creative Studio — Implementation Status
 
-Last updated: 2026-11-24. This file is the source of truth for what's
+Last updated: 2026-11-26. This file is the source of truth for what's
 actually built vs. planned. A new session should read this before doing
 anything else in this department — don't re-audit the whole repo from
 scratch, continue from here.
@@ -290,12 +290,14 @@ hasta verificar sus criterios de aceptación").
   types (`takes/` and `retakes/`) shares one `findUnprocessedGroup()`
   helper; verified with synthetic fixtures that both correctly detect
   their groups and file roles.
-- Color grade is the FFmpeg "quick-look" preset (contrast/brightness/
-  saturation/color-balance/vignette/grain), not the Apple Log + LUT
-  pro-stage workflow — that needs either DaVinci or a proper LUT applied
-  via FFmpeg, neither built yet.
-- No platform-specific export variants yet (the render always outputs one
-  file) — acceptable for now since Instagram/TikTok/YouTube Shorts specs
-  converge on the same 1080x1920 format per camera-course-reference.md,
-  but B2-style videos wanting 24fps export need that passed explicitly
-  (the agent currently always renders at 30fps).
+- **Resolved 2026-11-26**: color grade now defaults to the real Lobsteria
+  warm LUT (`creative-studio/luts/lobsteria-warm.cube`) via FFmpeg's
+  `lut3d` filter, not the plain "quick-look" preset — no DaVinci needed.
+  Set `CREATIVE_STUDIO_LUT_PATH=none` to fall back to the plain preset.
+- **Resolved 2026-11-26**: fps now varies automatically — `chooseExportFps()`
+  exports at 24fps for silent/no-dialogue clips (the B2 "Process Reel"
+  profile) and 30fps for anything with spoken dialogue, per
+  camera-course-reference.md. Still only one output file per render (no
+  separate per-platform crops/durations) — acceptable for now since
+  Instagram/TikTok/YouTube Shorts specs converge on the same 1080x1920
+  format.
