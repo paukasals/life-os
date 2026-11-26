@@ -279,8 +279,9 @@ hasta verificar sus criterios de aceptación").
 
 ## Blocked on Pau (can't proceed without these)
 
-1. **Gemini API key** — free, from https://aistudio.google.com/apikey.
-   Needed to run the analysis step for real.
+1. ~~Gemini API key~~ **Resolved 2026-11-25**: configured in local `.env`
+   and verified live with a real API call
+   (`curl -H "x-goog-api-key: ..." .../v1beta/models` → HTTP 200).
 2. **Real Lobsteria footage/photos** — at least one real clip or photo in
    `creative-studio/originals/` to validate the pipeline end-to-end, per
    the directive's own acceptance criteria (real material, not mocks).
