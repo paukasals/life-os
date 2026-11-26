@@ -70,15 +70,15 @@ credentials, flagged for approval before building).
   looped to match the render's length. Nothing plays if unset.
 - `CREATIVE_STUDIO_FONT_PATH` — the real Lobsteria brand font (.ttf/.otf)
   for the branded on-screen text system. **Defaults to
-  `creative-studio/fonts/AlfaSlabOne-Regular.ttf`** — Alfa Slab One, a
-  free, OFL-licensed Google Font: a heavy slab serif that reads as a
-  serious vintage nautical badge/stamp, not a comic/meme face. Chosen over
-  the comic-style font Pau flagged from a reference account because that
-  one relied on a colored stroke effect rather than the typeface itself,
-  and didn't fit the brand tone. Set this var to a different font file to
-  use another one, or to the literal string `"none"` to disable it and
-  fall back to the system font (DejaVu Sans Bold) — fine for testing, not
-  the real brand look.
+  `creative-studio/fonts/Bevan-Regular.ttf`** — Bevan, a free, OFL-licensed
+  Google Font: a warm, rounded slab serif. Chosen after comparing 18+ free
+  fonts against realistic use (both a large logo lockup and small
+  burned-in captions, since most viewers watch muted): it's the one that
+  stays legible and food/vintage-appropriate at caption size, rather than
+  reading as a military badge, a comic face, or a stiff formal serif. Set
+  this var to a different font file to use another one, or to the literal
+  string `"none"` to disable it and fall back to the system font (DejaVu
+  Sans Bold) — fine for testing, not the real brand look.
 - `CREATIVE_STUDIO_LUT_PATH` — a real `.cube` 3D LUT for the "pro" color
   grade (camera-course-reference.md's Apple Log 2 + LUT look), applied via
   FFmpeg instead of needing DaVinci. **Defaults to

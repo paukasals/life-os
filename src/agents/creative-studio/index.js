@@ -64,11 +64,11 @@ const DEFAULT_LUT_PATH = path.join(STUDIO_DIR, 'luts', 'lobsteria-warm.cube');
 const COLOR_LUT_PATH = process.env.CREATIVE_STUDIO_LUT_PATH === 'none'
   ? null
   : (process.env.CREATIVE_STUDIO_LUT_PATH || DEFAULT_LUT_PATH);
-// Defaults to the committed Alfa Slab One brand font (Google Fonts, OFL
-// licensed — free for commercial use) so branded on-screen text uses the
-// real Lobsteria look by default. Override with CREATIVE_STUDIO_FONT_PATH,
-// or set it to the literal string "none" to fall back to the system font.
-const DEFAULT_FONT_PATH = path.join(STUDIO_DIR, 'fonts', 'AlfaSlabOne-Regular.ttf');
+// Defaults to the committed Bevan brand font (Google Fonts, OFL licensed —
+// free for commercial use) so branded on-screen text uses the real
+// Lobsteria look by default. Override with CREATIVE_STUDIO_FONT_PATH, or
+// set it to the literal string "none" to fall back to the system font.
+const DEFAULT_FONT_PATH = path.join(STUDIO_DIR, 'fonts', 'Bevan-Regular.ttf');
 const BRAND_FONT_PATH = process.env.CREATIVE_STUDIO_FONT_PATH === 'none'
   ? null
   : (process.env.CREATIVE_STUDIO_FONT_PATH || DEFAULT_FONT_PATH);

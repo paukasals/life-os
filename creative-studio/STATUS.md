@@ -39,29 +39,42 @@ var needs to be set for the pro grade to apply. Set
 `CREATIVE_STUDIO_LUT_PATH=none` to fall back to the plain preset, or point
 it at a different `.cube` file to use something else later.
 
-### 2026-11-26: brand font chosen and installed (Alfa Slab One)
+### 2026-11-26: brand font chosen and installed (Bevan)
 
 Pau showed a reference account (@kinojerez) using a bold comic/meme-style
 font and asked if it fit Lobsteria's branding. Flagged that what stood out
 there was mostly a colored stroke/outline *effect*, not the typeface
 itself, and that a comic face doesn't match the "vintage nautical badge"
-look the course/plan already specify. Pau confirmed ("SI") wanting 2-3
-free alternatives instead.
+look the course/plan already specify. Pau confirmed ("SI") wanting free
+alternatives instead.
 
-Picked **Alfa Slab One** (Google Fonts, OFL licensed — free for commercial
-use, no attribution required): a heavy slab serif that reads as a serious
-stamp/badge wordmark, which is exactly the documented brand tone, with
-none of the comic connotation. Downloaded the real file from Google's
-font CDN (`fonts.gstatic.com`, verified reachable), confirmed it's a valid
-TrueType font, and committed it to
-`creative-studio/fonts/AlfaSlabOne-Regular.ttf`.
+Went through several rounds — Pau rejected each batch, so rather than keep
+guessing, compared 18 free Google Fonts in total across four screenshots
+(Alfa Slab One, Bevan, Graduate, Staatliches, Rokkitt, Arvo, Vidaloka,
+Crete Round, Cinzel, Stint Ultra Condensed, Nova Cut, Average, Marcellus,
+Black Ops One, Six Caps, Abril Fatface, Playfair Display, Special Elite,
+Rammetto One), then gave an honest ranked recommendation tested at
+realistic sizes — both a large logo lockup AND small burned-in-caption
+size, since most viewers watch muted and captions matter more than the
+logo for actual watch time.
+
+Pau picked **Bevan** (Google Fonts, OFL licensed — free for commercial
+use, no attribution required) for everything — logo and captions both.
+It's a warm, rounded slab serif: vintage without reading as a military
+badge (Cinzel/Black Ops One), a comic face (the original reference), or a
+stiff formal serif (Playfair/Vidaloka) — and unlike Graduate (an earlier
+favorite), its lowercase stays real lowercase rather than auto-converting
+to small caps, which matters for long captions reading naturally.
+Downloaded the real file from Google's font CDN (`fonts.gstatic.com`,
+verified reachable), confirmed it's a valid TrueType font, and committed
+it to `creative-studio/fonts/Bevan-Regular.ttf` (replacing the earlier
+Alfa Slab One file, which was removed).
 
 **Verified for real**: rendered an actual test clip through the full
 render pipeline (`renderMulticamCut`, with the "quick-look" grade +
 vignette + brand-text overlay all active, not just a bare `drawtext`
 test) and viewed the output frame directly — "LOBSTERIA" renders in bold
-white Alfa Slab One in its real lower-third position, reading as a heavy
-vintage stamp, not a meme font.
+white Bevan in its real lower-third position.
 
 This font is now the **default** (`BRAND_FONT_PATH` in the agent) — no
 env var needs to be set for branded on-screen text to use the real brand
