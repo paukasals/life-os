@@ -86,9 +86,13 @@ bucket"):
   Enable this under the bucket's Settings tab → Public Access (off by
   default — R2 buckets are private until you turn this on).
 
-**Verified**: the module throws a clear error naming exactly which env
-vars are missing if called before they're set — not yet exercised against
-a real R2 bucket (no Cloudflare account created yet).
+**Verified for real, 2026-11-26**: uploaded a real test file to the real
+`lobsteria-creative-studio` bucket via `uploadToR2()`, then fetched the
+returned public URL from outside this environment (this sandbox's own
+network policy blocks `*.r2.dev`, so Pau confirmed it from his own
+browser) — the file content came back correctly. Test object deleted
+afterward. The full chain (local file → R2 → public URL) works end to
+end.
 
 ## Optional environment variables (all no-ops if unset)
 

@@ -82,6 +82,65 @@ look. Set `CREATIVE_STUDIO_FONT_PATH=none` to fall back to the plain
 system font (DejaVu Sans Bold), or point it at a different font file to
 use something else later.
 
+### 2026-11-26: scope simplified — dropped the no-Pau-present automation
+
+Pau asked, pointedly: if this is going to be driven from a Claude Desktop/
+Code session rather than run unattended, what are Phases 5-7 (dashboard,
+auto-publish, commercial intelligence, optimization) actually for? Fair
+question — the original 7-phase plan assumed an autonomous architecture
+(a cron job watches a folder, processes footage with nobody present,
+notifies Pau, auto-publishes once approved). That's not how Pau intends
+to use this.
+
+Rather than keep carrying that scope forward, cut it: no dashboard (Pau
+reviewing output live in a Claude conversation already IS the approval
+step), no autonomous publish loop (Pau saying "sube esto a Buffer" in that
+same conversation already IS the publish step), no standing "commercial
+intelligence" system (Pau can ask Claude to pull and analyze Buffer
+insights whenever he wants, on demand — see below — rather than needing
+an automated learning loop). Phase 4 (motion graphics) stays, but as
+something built case-by-case when asked, not as a standing system.
+
+### 2026-11-26: publishing pipeline connected (Buffer + Cloudflare R2)
+
+Investigated (with real research, not assumptions) whether automated
+publishing was even possible without the Instagram/TikTok developer-app
+review flagged as a blocker. Found that Buffer already has its own
+approved Meta/TikTok integration, and — better than hand-building a
+Buffer API wrapper by guessing at field names — Buffer has an **official
+MCP server** for Claude (`https://mcp.buffer.com/mcp`, discoverable from
+Buffer's own Settings → API → Connect an Agent page). Added it to this
+project (`claude mcp add --transport http buffer https://mcp.buffer.com/mcp`,
+Pau authorized), Pau signed in via `/mcp` in a new session.
+
+**Verified for real**: called `get_account` and `list_channels` live —
+confirmed connected to Pau's real Buffer account (pau.kasals@gmail.com)
+with 3 real channels: lobsteriamia (TikTok), Lobsteria (Facebook page),
+lobsteriamia (Instagram business). Going forward, publishing a finished
+video is just asking Claude to do it in a session — no custom publish
+code needed in this repo at all.
+
+Buffer's API needs a public URL for video files (no direct upload), so
+also built `src/shared/storage.js` (`uploadToR2`) using Cloudflare R2
+(S3-compatible, free tier, zero egress fees — `@aws-sdk/client-s3`
+added as a dependency, no new vulnerabilities introduced per `npm audit`).
+Pau created the Cloudflare account and the `lobsteria-creative-studio`
+bucket, enabled its Public Development URL, and generated an Account API
+token. Credentials stored in `.env` (gitignored, confirmed) — **still
+needs adding to Railway's production variables**, same as `GEMINI_API_KEY`
+was.
+
+**Verified for real, full chain**: uploaded a real test file to the real
+bucket via `uploadToR2()`, Pau opened the returned public URL
+(`https://pub-....r2.dev/...`) in his own browser (this sandbox's network
+policy blocks `*.r2.dev`, so Pau confirmed it, not me) — content came back
+correctly. Test file deleted afterward. Local file → R2 → public URL →
+(next: Buffer) works end to end.
+
+**Not yet tested**: actually calling Buffer's `create_post` with a real
+R2-hosted video URL — needs a real finished video, which needs real
+footage (still Pau's own "when I start filming").
+
 ### 2026-11-26: the 8 remaining editing gaps — resolved, with honest verification status
 
 Pau asked for all 8 gaps from the previous audit to be closed. Here's each
@@ -252,9 +311,12 @@ hasta verificar sus criterios de aceptación").
    find its manual editing basic/clunky) — this validates the
    CreativeStudioAgent's existing approach (rule-based FFmpeg pipeline, not
    a generic "AI generates the edit" tool) rather than suggesting a change.
-5. **Instagram/TikTok developer app review** — starting this requires your
-   business details, a privacy policy link, and your explicit authorization
-   (it's an external, auditable process tied to your real accounts).
+5. ~~Instagram/TikTok developer app review~~ **Resolved 2026-11-26**: not
+   needed. Publishing goes through Buffer (connected via Buffer's own MCP
+   server, see "Publishing pipeline connected" below), which already has
+   its own approved Meta/TikTok integration — no separate developer-app
+   review required unless we bypass Buffer later, which there's no reason
+   to do.
 6. **Florida recording-consent confirmation** — recommend an actual
    attorney consult before relying on customer-facing footage from the Meta
    glasses at any commercial volume (see compliance-notes.md). Not blocking
@@ -263,13 +325,18 @@ hasta verificar sus criterios de aceptación").
 
 ## Known limitations
 
-- This repo's deploy target (Railway) is not suitable for hosting a video
-  asset library or for running DaVinci Resolve (which needs a GUI session,
-  can't run headless). Object storage (recommended: Cloudflare R2) is still
-  an open decision, not yet built.
-- No dashboard exists yet (directive §15). Approval today = Pau looking at
-  files directly in `creative-studio/finished/` plus the Telegram
-  notification the agent already sends.
+- **Resolved 2026-11-26**: object storage is built and verified — see
+  "Publishing pipeline connected" below. (Railway itself still isn't
+  suitable for hosting a video library or running DaVinci — unchanged,
+  but no longer relevant since R2 solves the hosting need directly.)
+- **Resolved 2026-11-26** (descoped, not built): no dashboard, and none is
+  planned. Pau clarified he drives this pipeline from inside a Claude
+  Desktop/Code session, not via an unattended background system — so
+  approval IS Pau reviewing the output in that same conversation, and
+  publishing is Pau saying "sube esto a Buffer" in that conversation. The
+  original Phase 5 dashboard + autonomous-publish design assumed a
+  no-Pau-present architecture that doesn't match how this is actually
+  used; see "Scope simplified" below.
 - The 13 specialized agent roles (Creative Director, Colorist, Sound
   Designer, etc.) are not yet built as separate agents/skills. Right now
   there's one `CreativeStudioAgent` doing ingestion, analysis, and
