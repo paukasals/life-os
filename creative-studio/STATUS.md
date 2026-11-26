@@ -126,9 +126,12 @@ also built `src/shared/storage.js` (`uploadToR2`) using Cloudflare R2
 added as a dependency, no new vulnerabilities introduced per `npm audit`).
 Pau created the Cloudflare account and the `lobsteria-creative-studio`
 bucket, enabled its Public Development URL, and generated an Account API
-token. Credentials stored in `.env` (gitignored, confirmed) — **still
-needs adding to Railway's production variables**, same as `GEMINI_API_KEY`
-was.
+token. Credentials stored in `.env` (gitignored, confirmed) and added to
+Railway's production variables (Pau confirmed 2026-11-26), same as
+`GEMINI_API_KEY` was. **Not verified against the Railway runtime
+itself** — no access to that deployment from here to test; the first
+real exercise of it in production will be whenever the agent actually
+needs to publish a finished video there.
 
 **Verified for real, full chain**: uploaded a real test file to the real
 bucket via `uploadToR2()`, Pau opened the returned public URL
