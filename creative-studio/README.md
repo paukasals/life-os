@@ -63,6 +63,33 @@ hook retry, and content-aware cover-frame selection are all built. Storage
 and publishing integration are still not wired up (need new paid services/
 credentials, flagged for approval before building).
 
+## Publishing: Cloudflare R2 + Buffer
+
+Finished videos get published via Buffer (connected in Claude Desktop/Code
+via Buffer's own MCP server — ask Claude to "sube esto a Buffer" once a
+video is approved). Buffer's API only accepts a public URL for the video
+file, not a direct upload, so finished renders first need to live
+somewhere public: Cloudflare R2 (free tier covers this volume, zero
+egress fees).
+
+`src/shared/storage.js` (`uploadToR2(filePath, key)`) uploads a file and
+returns its public URL. Needs 5 env vars, all required together (no
+partial/no-op mode, since there's no sensible default for "where's my
+bucket"):
+
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` — from
+  Cloudflare dashboard → R2 → Manage API Tokens → Create API Token (Object
+  Read & Write). The secret is only shown once at creation — save it then.
+- `R2_BUCKET_NAME` — the bucket name you chose when creating it (R2 →
+  Overview → Create bucket).
+- `R2_PUBLIC_URL_BASE` — the bucket's public URL, no trailing slash.
+  Enable this under the bucket's Settings tab → Public Access (off by
+  default — R2 buckets are private until you turn this on).
+
+**Verified**: the module throws a clear error naming exactly which env
+vars are missing if called before they're set — not yet exercised against
+a real R2 bucket (no Cloudflare account created yet).
+
 ## Optional environment variables (all no-ops if unset)
 
 - `CREATIVE_STUDIO_MUSIC_PATH` — a royalty-free background track file. If
